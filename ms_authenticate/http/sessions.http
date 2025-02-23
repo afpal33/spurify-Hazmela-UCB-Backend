@@ -25,3 +25,78 @@ Content-Type: application/json
 POST http://localhost:7001/auth/refresh-token
 Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0QGVtYWlsLmNvbSIsImlhdCI6MTc0MDI2ODQ2MiwiZXhwIjoxNzQwODczMjYyfQ.gkWFDSbD6z6L7g19wpCb_CD6xPrGaM81CGE1AAeA7Gk
 Content-Type: application/json
+
+
+
+
+### 1. Intentar login con contraseña incorrecta
+POST http://localhost:7001/auth/login
+Content-Type: application/json
+
+{
+  "email": "test@email.com",
+  "password": "123456"
+}
+
+### 2. Intentar login con datos correctos
+POST http://localhost:7001/auth/login
+Content-Type: application/json
+
+{
+  "email": "test@email.com",
+  "password": "123456"
+}
+
+### 3. Consultar intentos de login del usuario
+GET http://localhost:7001/login-attempts/{{userId}}
+Authorization: Bearer {{accessToken}}
+
+### 4. Consultar sesiones activas del usuario
+GET http://localhost:7001/sessions/{{userId}}
+Authorization: Bearer {{accessToken}}
+
+
+
+### 1. Iniciar sesión y obtener tokens
+POST http://localhost:7001/auth/login
+Content-Type: application/json
+
+{
+  "email": "test@email.com",
+  "password": "123456"
+}
+
+### 2. Verificar si el accessToken es válido
+GET http://localhost:7001/auth/validate-token
+Authorization: Bearer {{accessToken}}
+
+### 3. Cerrar sesión y revocar el refreshToken
+DELETE http://localhost:7001/sessions/logout
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0QGVtYWlsLmNvbSIsImlhdCI6MTc0MDI3NDM3NywiZXhwIjoxNzQwODc5MTc3fQ.urcOQ3frlddFG5TibWtWzqBe_jrz5ZR3TIaf-Eb5O5Y
+Content-Type: application/json
+
+### 4. Intentar usar el mismo refreshToken después del logout (Debe fallar)
+POST http://localhost:7001/auth/refresh-token
+Authorization: Bearer {{refreshToken}}
+Content-Type: application/json
+
+
+
+
+### 1. Iniciar sesión (registrará evento LOGIN en audit_logs)
+POST http://localhost:7001/auth/login
+Content-Type: application/json
+
+{
+  "email": "test@email.com",
+  "password": "123456"
+}
+
+### 2. Cerrar sesión (registrará evento LOGOUT en audit_logs)
+DELETE http://localhost:7001/sessions/logout
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0QGVtYWlsLmNvbSIsImlhdCI6MTc0MDI3NTY2MiwiZXhwIjoxNzQwODgwNDYyfQ.PeosaeBhny99ZfbqOPMllvMRpoqr8FjwfpOxMfULnVg
+Content-Type: application/json
+
+### 3. Consultar registros de auditoría del usuario
+GET http://localhost:7001/audit-logs/{{userId}}
+Authorization: Bearer {{adminToken}}

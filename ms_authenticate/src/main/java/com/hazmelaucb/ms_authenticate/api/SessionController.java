@@ -2,6 +2,7 @@ package com.hazmelaucb.ms_authenticate.api;
 
 import com.hazmelaucb.ms_authenticate.bl.SessionService;
 import com.hazmelaucb.ms_authenticate.dto.ActiveSessionResponse;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,16 +25,19 @@ public class SessionController {
     }
 
     @DeleteMapping("/logout")
-    public ResponseEntity<String> logout(@RequestHeader("Authorization") String authHeader) {
+    public ResponseEntity<String> logout(@RequestHeader("Authorization") String authHeader, HttpServletRequest request) {
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             return ResponseEntity.badRequest().body("Token inválido");
         }
 
         String refreshToken = authHeader.substring(7); // Remueve "Bearer "
-        sessionService.logoutByToken(refreshToken);
+
+        sessionService.logoutByToken(refreshToken, request); // 🔹 Ahora pasamos también `request`
 
         return ResponseEntity.ok("✅ Sesión cerrada correctamente.");
     }
+
+
 
 
 

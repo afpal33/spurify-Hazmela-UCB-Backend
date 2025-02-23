@@ -9,6 +9,7 @@ import com.hazmelaucb.ms_authenticate.dto.RegisterRequest;
 import com.hazmelaucb.ms_authenticate.entity.ActiveSessionEntity;
 import com.hazmelaucb.ms_authenticate.entity.UserEntity;
 import com.hazmelaucb.ms_authenticate.security.JwtTokenProvider;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,45 +22,80 @@ import java.util.Optional;
 public class AuthService {
 
     private final UserRepository userRepository;
-    private final ActiveSessionRepository activeSessionRepository;
     private final JwtTokenProvider jwtTokenProvider;
     private final PasswordEncoder passwordEncoder;
+    private final AuthenticationManager authenticationManager;
+    private final LoginAttemptService loginAttemptService;
+    private final ActiveSessionRepository activeSessionRepository;
+    private final RevokedTokenService revokedTokenService;
+    private final AuditLogService auditLogService;
 
 
-    public AuthService(UserRepository userRepository, ActiveSessionRepository activeSessionRepository, JwtTokenProvider jwtTokenProvider, PasswordEncoder passwordEncoder) {
+    public AuthService(UserRepository userRepository,
+                       JwtTokenProvider jwtTokenProvider,
+                       PasswordEncoder passwordEncoder,
+                       AuthenticationManager authenticationManager,
+                       LoginAttemptService loginAttemptService,
+                       ActiveSessionRepository activeSessionRepository,
+                       RevokedTokenService revokedTokenService,
+                       AuditLogService auditLogService) {
         this.userRepository = userRepository;
-        this.activeSessionRepository = activeSessionRepository;
         this.jwtTokenProvider = jwtTokenProvider;
         this.passwordEncoder = passwordEncoder;
+        this.authenticationManager = authenticationManager;
+        this.loginAttemptService = loginAttemptService;
+        this.activeSessionRepository = activeSessionRepository;
+        this.revokedTokenService = revokedTokenService;
+        this.auditLogService = auditLogService;
     }
 
     public AuthResponse login(AuthRequest request, HttpServletRequest httpRequest) {
+        String ip = httpRequest.getRemoteAddr();
+        String userAgent = httpRequest.getHeader("User-Agent");
+
         UserEntity user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
-        if (!passwordEncoder.matches(request.getPassword(), user.getHashedPassword())) {
-            throw new RuntimeException("Contraseña incorrecta");
+        if (user.isLocked()) {
+            throw new RuntimeException("Tu cuenta ha sido bloqueada por intentos fallidos. Contacta con soporte.");
         }
+
+        if (!passwordEncoder.matches(request.getPassword(), user.getHashedPassword())) {
+            user.registerFailedAttempt();
+            userRepository.save(user);
+            loginAttemptService.registerLoginAttempt(user, false, ip, userAgent);
+            throw new RuntimeException("Contraseña incorrecta. Intentos fallidos: " + user.getFailedAttempts());
+        }
+
+        // Restablecer intentos fallidos y desbloquear usuario si es necesario
+        user.resetFailedAttempts();
+        user.updateLastLogin(ip, userAgent);
+        userRepository.save(user);
+
+        loginAttemptService.registerLoginAttempt(user, true, ip, userAgent);
+
+        // 🔹 Registrar evento de auditoría
+        auditLogService.registerAuditLog(user, "LOGIN", ip, userAgent);
 
         String accessToken = jwtTokenProvider.generateToken(user.getEmail());
         String refreshToken = jwtTokenProvider.generateRefreshToken(user.getEmail());
 
-        // Obtener información del cliente
-        String ip = httpRequest.getRemoteAddr();
-        String userAgent = httpRequest.getHeader("User-Agent");
+        // Eliminar sesiones activas previas y registrar nueva sesión
+        activeSessionRepository.deleteByUser(user);
 
-        // Guardar sesión en la base de datos
         ActiveSessionEntity session = new ActiveSessionEntity();
         session.setUser(user);
         session.setRefreshToken(refreshToken);
         session.setIp(ip);
         session.setUserAgent(userAgent);
-        session.setExpiryDate(new Timestamp(System.currentTimeMillis() + 604800000)); // 7 días
+        session.setExpiryDate(new Timestamp(System.currentTimeMillis() + 604800000));
 
         activeSessionRepository.save(session);
 
         return new AuthResponse(accessToken, refreshToken);
     }
+
+
 
     public void register(RegisterRequest request) {
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
@@ -97,6 +133,7 @@ public class AuthService {
 
         return new AuthResponse(newAccessToken, refreshToken);
     }
+
 
 
 }

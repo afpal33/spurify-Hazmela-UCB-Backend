@@ -5,6 +5,7 @@ import com.hazmelaucb.ms_authenticate.bl.AuthService;
 import com.hazmelaucb.ms_authenticate.dto.AuthRequest;
 import com.hazmelaucb.ms_authenticate.dto.AuthResponse;
 import com.hazmelaucb.ms_authenticate.dto.RegisterRequest;
+import com.hazmelaucb.ms_authenticate.security.JwtTokenProvider;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,9 +15,11 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final AuthService authService;
+    private final JwtTokenProvider jwtTokenProvider;
 
-    public AuthController(AuthService authService) {
+    public AuthController(AuthService authService, JwtTokenProvider jwtTokenProvider) {
         this.authService = authService;
+        this.jwtTokenProvider = jwtTokenProvider;
     }
 
     @PostMapping("/login")
@@ -41,5 +44,22 @@ public class AuthController {
 
         return ResponseEntity.ok(newTokens);
     }
+
+    @GetMapping("/validate-token")
+    public ResponseEntity<String> validateToken(@RequestHeader("Authorization") String authHeader) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.badRequest().body("Token inválido");
+        }
+
+        String token = authHeader.substring(7); // Remueve "Bearer "
+        boolean isValid = jwtTokenProvider.validateToken(token);
+
+        if (!isValid) {
+            return ResponseEntity.status(401).body("Token revocado o inválido.");
+        }
+
+        return ResponseEntity.ok("Token válido.");
+    }
+
 
 }

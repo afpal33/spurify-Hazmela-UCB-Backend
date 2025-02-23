@@ -1,5 +1,6 @@
 package com.hazmelaucb.ms_authenticate.security;
 
+import com.hazmelaucb.ms_authenticate.bl.RevokedTokenService;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -12,9 +13,11 @@ import java.util.Date;
 public class JwtTokenProvider {
 
     private final Key secretKey;
+    private final RevokedTokenService revokedTokenService;
 
-    public JwtTokenProvider() {
+    public JwtTokenProvider(RevokedTokenService revokedTokenService) {
         this.secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS256); // 🔥 Genera una clave segura automáticamente
+        this.revokedTokenService = revokedTokenService;
     }
 
     public String generateToken(String email) {
@@ -42,5 +45,23 @@ public class JwtTokenProvider {
                 .parseClaimsJws(token)
                 .getBody()
                 .getSubject();
+    }
+
+    public boolean validateToken(String token) {
+        if (revokedTokenService.isTokenRevoked(token)) {
+            System.out.println("❌ Token revocado: " + token);
+            return false;
+        }
+
+        try {
+            Jwts.parserBuilder()
+                    .setSigningKey(secretKey)
+                    .build()
+                    .parseClaimsJws(token);
+            return true;
+        } catch (Exception e) {
+            System.out.println("❌ Token inválido: " + e.getMessage());
+            return false;
+        }
     }
 }
