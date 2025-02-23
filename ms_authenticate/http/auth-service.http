@@ -1,0 +1,22 @@
+### 📌 1. Registro de Usuario
+POST http://localhost:7001/auth/register
+Content-Type: application/json
+
+{
+  "email": "test@email3.com",
+  "password": "123456"
+}
+
+### 📌 2. Inicio de Sesión (Login)
+POST http://localhost:7001/auth/login
+Content-Type: application/json
+
+{
+  "email": "test@email.com",
+  "password": "123456"
+}
+
+### Refrescar Access Token con el Refresh Token
+POST http://localhost:7001/auth/refresh-token
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0QGVtYWlsLmNvbSIsImlhdCI6MTc0MDI2ODQxMSwiZXhwIjoxNzQwODczMjExfQ.1vNkk5eZdFkm3ZY1ggM-xZU21fOKBJCRQlWSPMBT6Oc
+Content-Type: application/json

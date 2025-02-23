@@ -1,0 +1,27 @@
+### 1. Login y guardar sesión
+POST http://localhost:7001/auth/login
+Content-Type: application/json
+
+{
+  "email": "test@email.com",
+  "password": "123456"
+}
+### 2. Ver sesiones activas del usuario
+GET http://localhost:8080/sessions/{{userId}}
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+### 3. Cerrar sesión específica con refreshToken en el header
+DELETE http://localhost:7001/sessions/logout
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0QGVtYWlsLmNvbSIsImlhdCI6MTc0MDI2ODQ2MiwiZXhwIjoxNzQwODczMjYyfQ.gkWFDSbD6z6L7g19wpCb_CD6xPrGaM81CGE1AAeA7Gk
+Content-Type: application/json
+
+### 4. Cerrar todas las sesiones activas del usuario
+DELETE http://localhost:8080/sessions/logout/all/{{userId}}
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+### Refrescar Access Token con el Refresh Token
+POST http://localhost:7001/auth/refresh-token
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0QGVtYWlsLmNvbSIsImlhdCI6MTc0MDI2ODQ2MiwiZXhwIjoxNzQwODczMjYyfQ.gkWFDSbD6z6L7g19wpCb_CD6xPrGaM81CGE1AAeA7Gk
+Content-Type: application/json
