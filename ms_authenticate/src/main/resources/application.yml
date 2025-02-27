@@ -1,0 +1,15 @@
+spring.application.name: ms_authenticate
+server:
+  port: 7001
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/ms_auth_hazmelaucb_db
+    username: postgres
+    password: 1590PPL
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
