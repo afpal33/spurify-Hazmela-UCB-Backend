@@ -8,10 +8,10 @@
 		<version>3.4.3</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.micro</groupId>
-	<artifactId>anuncios</artifactId>
+	<groupId>com.hazmelaucb</groupId>
+	<artifactId>ms_anuncios</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>anuncios</name>
+	<name>ms_anuncios</name>
 	<description>Demo project for Spring Boot</description>
 	<url/>
 	<licenses>
