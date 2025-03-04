@@ -20,3 +20,57 @@ Content-Type: application/json
 POST http://localhost:7001/auth/refresh-token
 Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0QGVtYWlsLmNvbSIsImlhdCI6MTc0MDI2ODQxMSwiZXhwIjoxNzQwODczMjExfQ.1vNkk5eZdFkm3ZY1ggM-xZU21fOKBJCRQlWSPMBT6Oc
 Content-Type: application/json
+
+
+
+
+### 1. Registrar un usuario (será ESTUDIANTE por defecto)
+POST http://localhost:7001/auth/register
+Content-Type: application/json
+
+{
+  "email": "estudiante@example.com",
+  "password": "123456"
+}
+
+### 1. Registrar un usuario (será ESTUDIANTE por defecto)
+POST http://localhost:7001/auth/register
+Content-Type: application/json
+
+{
+  "email": "ADMIN@example.com",
+  "password": "123456"
+}
+
+### 2. Iniciar sesión (veremos que no puede acceder a endpoints ADMIN)
+POST http://localhost:7001/auth/login
+Content-Type: application/json
+
+{
+  "email": "ADMIN@example.com",
+  "password": "123456"
+}
+
+### 2. Iniciar sesión admin
+POST http://localhost:7001/auth/login
+Content-Type: application/json
+
+{
+  "email": "test@email4.com",
+  "password": "123456"
+}
+
+
+### 3. Intentar acceder a endpoint de ADMIN (Debe fallar)
+GET http://localhost:7001/admin/unlock-user/estudiante@example.com
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJlc3R1ZGlhbnRlQGV4YW1wbGUuY29tIiwicm9sZSI6IkVTVFVESUFOVEUiLCJpYXQiOjE3NDEwMjA4NTIsImV4cCI6MTc0MTEwNzI1Mn0.M_RArEoxiiKtvnXIFTdGfZKR_IEzk9NQUavdlxWz9V0
+
+### 4. Asignar rol ADMIN a un usuario
+PUT http://localhost:7001/admin/assign-admin/ADMIN@example.com
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0QGVtYWlsNC5jb20iLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3NDEwMjExOTAsImV4cCI6MTc0MTEwNzU5MH0.2Z_ZoVhoC22TAV2ScuNQQbmppbhDxfXzKBdOJniRF-w
+
+### 5. Ahora el usuario puede acceder a endpoints de ADMIN
+GET http://localhost:7001/admin/unlock-user/estudiante@example.com
+Authorization: Bearer {{accessToken}}
+
+
