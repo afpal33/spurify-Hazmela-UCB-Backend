@@ -1,4 +1,4 @@
-### 1. Login y guardar sesión
+### 1. Login
 POST http://localhost:7001/auth/login
 Content-Type: application/json
 
@@ -38,16 +38,8 @@ Content-Type: application/json
   "password": "123456"
 }
 
-### 2. Intentar login con datos correctos
-POST http://localhost:7001/auth/login
-Content-Type: application/json
 
-{
-  "email": "test@email.com",
-  "password": "123456"
-}
-
-### 3. Consultar intentos de login del usuario
+###  Consultar intentos de login del usuario
 GET http://localhost:7001/login-attempts/{{userId}}
 Authorization: Bearer {{accessToken}}
 

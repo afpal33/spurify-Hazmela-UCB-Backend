@@ -2,11 +2,13 @@ package com.hazmelaucb.ms_authenticate.bl;
 
 
 import com.hazmelaucb.ms_authenticate.dao.ActiveSessionRepository;
+import com.hazmelaucb.ms_authenticate.dao.RoleRepository;
 import com.hazmelaucb.ms_authenticate.dao.UserRepository;
 import com.hazmelaucb.ms_authenticate.dto.AuthRequest;
 import com.hazmelaucb.ms_authenticate.dto.AuthResponse;
 import com.hazmelaucb.ms_authenticate.dto.RegisterRequest;
 import com.hazmelaucb.ms_authenticate.entity.ActiveSessionEntity;
+import com.hazmelaucb.ms_authenticate.entity.RoleEntity;
 import com.hazmelaucb.ms_authenticate.entity.UserEntity;
 import com.hazmelaucb.ms_authenticate.security.JwtTokenProvider;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -29,6 +31,7 @@ public class AuthService {
     private final ActiveSessionRepository activeSessionRepository;
     private final RevokedTokenService revokedTokenService;
     private final AuditLogService auditLogService;
+    private final RoleRepository roleRepository;
 
 
     public AuthService(UserRepository userRepository,
@@ -38,7 +41,8 @@ public class AuthService {
                        LoginAttemptService loginAttemptService,
                        ActiveSessionRepository activeSessionRepository,
                        RevokedTokenService revokedTokenService,
-                       AuditLogService auditLogService) {
+                       AuditLogService auditLogService,
+                       RoleRepository roleRepository) {
         this.userRepository = userRepository;
         this.jwtTokenProvider = jwtTokenProvider;
         this.passwordEncoder = passwordEncoder;
@@ -47,6 +51,7 @@ public class AuthService {
         this.activeSessionRepository = activeSessionRepository;
         this.revokedTokenService = revokedTokenService;
         this.auditLogService = auditLogService;
+        this.roleRepository = roleRepository;
     }
 
     public AuthResponse login(AuthRequest request, HttpServletRequest httpRequest) {
@@ -77,7 +82,7 @@ public class AuthService {
         // 🔹 Registrar evento de auditoría
         auditLogService.registerAuditLog(user, "LOGIN", ip, userAgent);
 
-        String accessToken = jwtTokenProvider.generateToken(user.getEmail());
+        String accessToken = jwtTokenProvider.generateToken(user);
         String refreshToken = jwtTokenProvider.generateRefreshToken(user.getEmail());
 
         // Eliminar sesiones activas previas y registrar nueva sesión
@@ -104,10 +109,17 @@ public class AuthService {
 
         UserEntity newUser = new UserEntity();
         newUser.setEmail(request.getEmail());
-        newUser.setHashedPassword(passwordEncoder.encode(request.getPassword())); // Se cifra la contraseña
+        newUser.setHashedPassword(passwordEncoder.encode(request.getPassword()));
         newUser.setAuthMethod("EMAIL");
+
+        // 🔹 Asignar rol "ESTUDIANTE" por defecto
+        RoleEntity estudianteRole = roleRepository.findByName("ESTUDIANTE")
+                .orElseThrow(() -> new RuntimeException("Rol 'ESTUDIANTE' no encontrado"));
+        newUser.getRoles().add(estudianteRole);
+
         userRepository.save(newUser);
     }
+
 
     public AuthResponse refreshAccessToken(String refreshToken) {
         System.out.println("🔄 Intentando refrescar el token...");
@@ -129,7 +141,7 @@ public class AuthService {
 
         System.out.println("✅ Usuario encontrado: " + user.getEmail());
 
-        String newAccessToken = jwtTokenProvider.generateToken(user.getEmail());
+        String newAccessToken = jwtTokenProvider.generateToken(user);
 
         return new AuthResponse(newAccessToken, refreshToken);
     }

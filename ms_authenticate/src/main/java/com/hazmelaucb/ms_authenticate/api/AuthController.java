@@ -2,9 +2,13 @@ package com.hazmelaucb.ms_authenticate.api;
 
 
 import com.hazmelaucb.ms_authenticate.bl.AuthService;
+import com.hazmelaucb.ms_authenticate.dao.RoleRepository;
+import com.hazmelaucb.ms_authenticate.dao.UserRepository;
 import com.hazmelaucb.ms_authenticate.dto.AuthRequest;
 import com.hazmelaucb.ms_authenticate.dto.AuthResponse;
 import com.hazmelaucb.ms_authenticate.dto.RegisterRequest;
+import com.hazmelaucb.ms_authenticate.entity.RoleEntity;
+import com.hazmelaucb.ms_authenticate.entity.UserEntity;
 import com.hazmelaucb.ms_authenticate.security.JwtTokenProvider;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
@@ -16,10 +20,15 @@ public class AuthController {
 
     private final AuthService authService;
     private final JwtTokenProvider jwtTokenProvider;
+    private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
 
-    public AuthController(AuthService authService, JwtTokenProvider jwtTokenProvider) {
+    public AuthController(AuthService authService, JwtTokenProvider jwtTokenProvider,
+                          UserRepository userRepository, RoleRepository roleRepository) {
         this.authService = authService;
         this.jwtTokenProvider = jwtTokenProvider;
+        this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
     }
 
     @PostMapping("/login")
@@ -61,5 +70,19 @@ public class AuthController {
         return ResponseEntity.ok("Token válido.");
     }
 
+
+    @PutMapping("/assign-admin/{email}")
+    public ResponseEntity<String> assignAdminRole(@PathVariable String email) {
+        UserEntity user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        RoleEntity adminRole = roleRepository.findByName("ADMIN")
+                .orElseThrow(() -> new RuntimeException("Rol 'ADMIN' no encontrado"));
+
+        user.getRoles().add(adminRole);
+        userRepository.save(user);
+
+        return ResponseEntity.ok("✅ Usuario ahora es ADMIN.");
+    }
 
 }
