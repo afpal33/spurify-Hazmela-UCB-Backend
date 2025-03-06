@@ -1,0 +1,111 @@
+### Crear Estudiante
+POST http://localhost:7002/api/students
+Content-Type: application/json
+
+{
+  "firstName": "John",
+  "lastName": "Doe",
+  "email": "john.doe@example.com",
+  "phone": "123456789",
+  "address": "123 Main St",
+  "birthDate": "2000-01-01",
+  "gender": "MALE",
+  "country": "USA",
+  "city": "New York",
+  "university": "NY University",
+  "career": "Computer Science",
+  "semester": 1,
+  "average": 8.50,
+  "studyMode": "ONLINE",
+  "experience": "Internship at XYZ",
+  "highlightedProjects": "Project ABC",
+  "coursesCertifications": "Certification 123",
+  "academicInterests": "AI, ML",
+  "linkedin": "https://linkedin.com/in/johndoe",
+  "github": "https://github.com/johndoe",
+  "website": "https://johndoe.com",
+  "profilePicture": "http://example.com/profile.jpg",
+  "documentUniversity": "http://example.com/doc.pdf",
+  "completeProfile": true
+}
+
+### Crear Administrador
+POST http://localhost:7002/api/admins
+Content-Type: application/json
+
+{
+  "firstName": "Alice",
+  "lastName": "Smith",
+  "email": "alice.smith2@example.com",
+  "phone": "987654321",
+  "role": "SUPER_ADMIN",
+  "permissions": ["READ", "WRITE", "DELETE"]
+}
+
+### Obtener Todos los Estudiantes
+GET http://localhost:7002/api/students
+
+### Obtener Todos los Administradores
+GET http://localhost:7002/api/admins
+
+### Obtener Estudiante por ID
+# Reemplazar <student_id> con el UUID real del estudiante
+GET http://localhost:7002/api/students/6b4e5516-5f9b-484d-8bca-07fda7079d1f
+
+### Actualizar Estudiante
+PUT http://localhost:7002/api/students/6b4e5516-5f9b-484d-8bca-07fda7079d1f
+Content-Type: application/json
+
+{
+  "firstName": "John Updated",
+  "lastName": "Doe Updated",
+  "email": "john.doe@example.com",
+  "phone": "123456789",
+  "address": "456 New Address",
+  "birthDate": "2000-01-01",
+  "gender": "MALE",
+  "country": "USA",
+  "city": "New York",
+  "university": "NY University",
+  "career": "Computer Science",
+  "semester": 2,
+  "average": 9.0,
+  "studyMode": "ONLINE",
+  "experience": "Internship at XYZ",
+  "highlightedProjects": "Project ABC Updated",
+  "coursesCertifications": "Certification 123 Updated",
+  "academicInterests": "AI, ML, Data Science",
+  "linkedin": "https://linkedin.com/in/johndoeupdated",
+  "github": "https://github.com/johndoeupdated",
+  "website": "https://johndoe.com",
+  "profilePicture": "http://example.com/profile_updated.jpg",
+  "documentUniversity": "http://example.com/doc_updated.pdf",
+  "completeProfile": true
+}
+
+### Eliminar Estudiante
+DELETE http://localhost:7002/api/students/6b4e5516-5f9b-484d-8bca-07fda7079d1f
+
+### Obtener Administrador por ID
+# Reemplazar <admin_id> con el UUID real del administrador
+GET http://localhost:7002/api/admins/9c1743b4-d2b8-4f07-8cfe-d38e8b7d95a8
+
+### Actualizar Administrador
+PUT http://localhost:7002/api/admins/9c1743b4-d2b8-4f07-8cfe-d38e8b7d95a8
+Content-Type: application/json
+
+{
+  "firstName": "Alice Updated",
+  "lastName": "Smith Updated",
+  "email": "alice.smith2@example.com",
+  "phone": "987654321",
+  "role": "ADMIN",
+  "permissions": ["READ", "WRITE"]
+}
+
+### Eliminar Administrador
+DELETE http://localhost:7002/api/admins/9c1743b4-d2b8-4f07-8cfe-d38e8b7d95a8
+
+### Deshabilitar Usuario
+# Reemplazar <user_id> con el UUID real del usuario (estudiante o administrador) a deshabilitar
+PATCH http://localhost:7002/api/users/9c1743b4-d2b8-4f07-8cfe-d38e8b7d95a8/disable
