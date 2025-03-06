@@ -1,70 +1,71 @@
--- Crear la base de datos
+-- Create the database
 CREATE DATABASE ms_user_hazmelaucb_db;
 
--- Tabla base de usuarios (datos generales)
-CREATE TABLE usuario (
-                         id_usuario UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-                         nombre VARCHAR(100) NOT NULL,
-                         apellido VARCHAR(100) NOT NULL,
-                         email VARCHAR(150) UNIQUE NOT NULL,
-                         telefono VARCHAR(20),
-                         fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                         tipo_usuario VARCHAR(20) CHECK (tipo_usuario IN ('ESTUDIANTE', 'ADMIN')),
-                         activo BOOLEAN DEFAULT TRUE
+
+-- Base table for users (general data)
+CREATE TABLE "user" (
+                        user_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+                        first_name VARCHAR(100) NOT NULL,
+                        last_name VARCHAR(100) NOT NULL,
+                        email VARCHAR(150) UNIQUE NOT NULL,
+                        phone VARCHAR(20),
+                        registration_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                        user_type VARCHAR(20) CHECK (user_type IN ('STUDENT', 'ADMIN')),
+                        active BOOLEAN DEFAULT TRUE
 );
 
--- Tabla específica para estudiantes (perfil completo)
-CREATE TABLE estudiante (
-                            id_usuario UUID PRIMARY KEY REFERENCES usuario(id_usuario) ON DELETE CASCADE,
-                            direccion TEXT NOT NULL,
-                            fecha_nacimiento DATE NOT NULL,
-                            genero VARCHAR(20) CHECK (genero IN ('MASCULINO', 'FEMENINO', 'OTRO')),
-                            pais VARCHAR(100) NOT NULL,
-                            ciudad VARCHAR(100) NOT NULL,
-                            universidad VARCHAR(255) NOT NULL,
-                            carrera VARCHAR(255) NOT NULL,
-                            semestre INT CHECK (semestre > 0),
-                            promedio DECIMAL(3,2) CHECK (promedio BETWEEN 0 AND 10),
-                            modalidad_estudio VARCHAR(50) CHECK (modalidad_estudio IN ('PRESENCIAL', 'VIRTUAL', 'HIBRIDO')),
-                            experiencia TEXT,
-                            proyectos_destacados TEXT,
-                            cursos_certificaciones TEXT,
-                            intereses_academicos TEXT,
-                            linkedin TEXT,
-                            github TEXT,
-                            website TEXT,
-                            foto_perfil TEXT,
-                            perfil_completo BOOLEAN DEFAULT FALSE
+-- Specific table for students (complete profile)
+CREATE TABLE student (
+                         user_id UUID PRIMARY KEY REFERENCES "user"(user_id) ON DELETE CASCADE,
+                         address TEXT NOT NULL,
+                         birth_date DATE NOT NULL,
+                         gender VARCHAR(20) CHECK (gender IN ('MALE', 'FEMALE', 'OTHER')),
+                         country VARCHAR(100) NOT NULL,
+                         city VARCHAR(100) NOT NULL,
+                         university VARCHAR(255) NOT NULL,
+                         career VARCHAR(255) NOT NULL,
+                         semester INT CHECK (semester > 0),
+                         average DECIMAL(3,2) CHECK (average BETWEEN 0 AND 10),
+                         study_mode VARCHAR(50) CHECK (study_mode IN ('ON-CAMPUS', 'ONLINE', 'HYBRID')),
+                         experience TEXT,
+                         highlighted_projects TEXT,
+                         courses_certifications TEXT,
+                         academic_interests TEXT,
+                         linkedin TEXT,
+                         github TEXT,
+                         website TEXT,
+                         profile_picture TEXT,
+                         document_university  TEXT,
+                         complete_profile BOOLEAN DEFAULT FALSE
 );
 
--- Tabla específica para administradores
-CREATE TABLE administrador (
-                               id_usuario UUID PRIMARY KEY REFERENCES usuario(id_usuario) ON DELETE CASCADE,
-                               rol VARCHAR(100) NOT NULL,
-                               permisos TEXT[]
+-- Specific table for administrators
+CREATE TABLE administrator (
+                               user_id UUID PRIMARY KEY REFERENCES "user"(user_id) ON DELETE CASCADE,
+                               role VARCHAR(100) NOT NULL,
+                               permissions TEXT[]
 );
 
--- Tabla de habilidades
-CREATE TABLE habilidad (
-                           id_habilidad SERIAL PRIMARY KEY,
-                           nombre VARCHAR(100) UNIQUE NOT NULL
+-- Skills table
+CREATE TABLE skill (
+                       skill_id SERIAL PRIMARY KEY,
+                       name VARCHAR(100) UNIQUE NOT NULL
 );
 
--- Relación N a N entre estudiantes y habilidades
-CREATE TABLE estudiante_habilidad (
-                                      id_usuario UUID REFERENCES estudiante(id_usuario) ON DELETE CASCADE,
-                                      id_habilidad INT REFERENCES habilidad(id_habilidad) ON DELETE CASCADE,
-                                      PRIMARY KEY (id_usuario, id_habilidad)
+-- Many-to-Many relationship between students and skills
+CREATE TABLE student_skill (
+                               user_id UUID REFERENCES student(user_id) ON DELETE CASCADE,
+                               skill_id INT REFERENCES skill(skill_id) ON DELETE CASCADE,
+                               PRIMARY KEY (user_id, skill_id)
 );
 
--- Tabla de auditoría de usuarios
-CREATE TABLE auditoria_usuario (
-                                   id_auditoria SERIAL PRIMARY KEY,
-                                   id_usuario UUID NOT NULL,
-                                   accion VARCHAR(50) CHECK (accion IN ('CREAR', 'MODIFICAR', 'ELIMINAR')),
-                                   fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                                   datos_anteriores JSONB,
-                                   direccion VARCHAR(100) NOT NULL,
-                                   ip VARCHAR(100) NOT NULL,
-                                   usuario_admin UUID REFERENCES administrador(id_usuario)
+-- User audit table
+CREATE TABLE user_audit (
+                            audit_id SERIAL PRIMARY KEY,
+                            user_id UUID NOT NULL,
+                            action VARCHAR(50) CHECK (action IN ('CREATE', 'UPDATE', 'DELETE')),
+                            action_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                            previous_data JSONB,
+                            device_address VARCHAR(100) NOT NULL,
+                            ip_address VARCHAR(100) NOT NULL
 );
