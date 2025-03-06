@@ -1,4 +1,4 @@
-package com.hazmelaucb.ms_user.utils;
+package com.hazmelaucb.ms_user.utils.exceptions;
 
 
 public class BadRequestException extends RuntimeException {

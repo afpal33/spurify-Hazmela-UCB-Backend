@@ -2,7 +2,7 @@ package com.hazmelaucb.ms_user.bl;
 
 import com.hazmelaucb.ms_user.dao.UserRepository;
 import com.hazmelaucb.ms_user.entity.User;
-import com.hazmelaucb.ms_user.utils.ResourceNotFoundException;
+import com.hazmelaucb.ms_user.utils.exceptions.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
