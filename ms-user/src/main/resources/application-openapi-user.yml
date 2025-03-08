@@ -1,0 +1,38 @@
+springdoc:
+  swagger-ui.path: /openapi/swagger-ui.html
+  api-docs.path: /openapi/v3/api-docs
+  packagesToScan: com.hazmelaucb.ms_user.api
+  pathsToMatch: /**
+
+api:
+  common:
+    version: 1.0.0
+    title: API de Usuarios
+    description: Servicio para la gestión de informacion generalde usuarios administradores y usuarios
+    termsOfService: https://www.hazmelaucb.com/terminos
+    license: Licencia MIT
+    licenseUrl: https://opensource.org/licenses/MIT
+    externalDocDesc: Documentación en Wiki
+    externalDocUrl: https://www.hazmelaucb.com/wiki
+    contact:
+      name: Soporte HazmeLaUCB
+      url: https://www.hazmelaucb.com/contacto
+      email: soporte@hazmelaucb.com
+
+  responseCodes:
+    ok.description: OK, operación exitosa.
+    noContent.description: Usuario deshabilitado exitosamente, sin contenido de respuesta.
+    badRequest.description: Bad Request, solicitud incorrecta o datos inválidos.
+    notFound.description: No se encontró el usuario con el ID especificado.
+    unprocessableEntity.description: No se puede procesar la acción debido a restricciones.
+
+  user:
+    disable:
+      description: Deshabilita un usuario en la red social.
+      notes: |
+        # Respuesta exitosa
+        - El usuario será marcado como inactivo en el sistema.
+
+        # Respuestas con error
+        1. Si el ID no existe, retorna **404 - Not Found**.
+        2. Si la acción no se puede realizar por restricciones, retorna **422 - Unprocessable Entity**.
