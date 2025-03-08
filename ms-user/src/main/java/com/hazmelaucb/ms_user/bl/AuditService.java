@@ -3,7 +3,7 @@ package com.hazmelaucb.ms_user.bl;
 
 import com.hazmelaucb.ms_user.dao.UserAuditRepository;
 import com.hazmelaucb.ms_user.entity.UserAudit;
-import com.hazmelaucb.ms_user.utils.ServiceException;
+import com.hazmelaucb.ms_user.utils.exceptions.ServiceException;
 import com.hazmelaucb.ms_user.utils.ServiceUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
