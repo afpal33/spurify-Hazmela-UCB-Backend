@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: ms_anuncios
+    name: ms-anuncios
   datasource:
     url: jdbc:postgresql://localhost:5432/anuncios_db
     username: postgres
@@ -20,6 +20,31 @@ spring:
   config:
     import:
       - "classpath:application-openapi-anuncio.yml"
+      - "classpath:application-openapi-tag.yml"
+  profiles:
+    include:
+      - openapi-anuncio
+      - openapi-tag
+
+# Aquí podemos incluir configuración adicional para unificar ambas APIs
+springdoc:
+  api-docs:
+    groups:
+      enabled: true
+  swagger-ui:
+    path: /swagger-ui.html
+    display-request-duration: true
+    groups-order: DESC
+    operationsSorter: method
+    disable-swagger-default-url: true
+
+  group-configs:
+    - group: anuncios
+      paths-to-match: /api/anuncios/**
+      packages-to-scan: com.hazmelaucb.ms_anuncios.controller
+    - group: tags
+      paths-to-match: /api/tags/**
+      packages-to-scan: com.hazmelaucb.ms_anuncios.controller
 
 logging:
   level:

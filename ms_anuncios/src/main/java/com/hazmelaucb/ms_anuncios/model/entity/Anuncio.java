@@ -3,6 +3,8 @@ package com.hazmelaucb.ms_anuncios.model.entity;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "anuncio")
@@ -35,6 +37,14 @@ public class Anuncio {
     
     @Column(name = "updated_at")
     private ZonedDateTime updatedAt;
+    
+    @ManyToMany
+    @JoinTable(
+        name = "anuncio_tag",
+        joinColumns = @JoinColumn(name = "anuncio_id"),
+        inverseJoinColumns = @JoinColumn(name = "tag_id")
+    )
+    private Set<Tag> tags = new HashSet<>();
     
     // Constructores
     public Anuncio() {
@@ -121,5 +131,23 @@ public class Anuncio {
 
     public void setUpdatedAt(ZonedDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public Set<Tag> getTags() {
+        return tags;
+    }
+
+    public void setTags(Set<Tag> tags) {
+        this.tags = tags;
+    }
+    
+    public void agregarTag(Tag tag) {
+        this.tags.add(tag);
+        tag.getAnuncios().add(this);
+    }
+    
+    public void removerTag(Tag tag) {
+        this.tags.remove(tag);
+        tag.getAnuncios().remove(this);
     }
 }

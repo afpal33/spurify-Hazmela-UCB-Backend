@@ -2,6 +2,8 @@ package com.hazmelaucb.ms_anuncios.model.dto;
 
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 public class AnuncioDTO {
     
@@ -14,6 +16,7 @@ public class AnuncioDTO {
     private String estado;
     private ZonedDateTime createdAt;
     private ZonedDateTime updatedAt;
+    private Set<TagDTO> tags = new HashSet<>();
     
     // Constructores
     public AnuncioDTO() {
@@ -90,5 +93,13 @@ public class AnuncioDTO {
 
     public void setUpdatedAt(ZonedDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public Set<TagDTO> getTags() {
+        return tags;
+    }
+
+    public void setTags(Set<TagDTO> tags) {
+        this.tags = tags;
     }
 }
