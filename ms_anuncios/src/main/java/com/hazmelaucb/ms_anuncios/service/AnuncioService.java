@@ -2,9 +2,11 @@ package com.hazmelaucb.ms_anuncios.service;
 
 import com.hazmelaucb.ms_anuncios.model.dto.AnuncioCrearDTO;
 import com.hazmelaucb.ms_anuncios.model.dto.AnuncioDTO;
+import com.hazmelaucb.ms_anuncios.model.dto.TagDTO;
 import com.hazmelaucb.ms_anuncios.model.entity.Anuncio;
 import com.hazmelaucb.ms_anuncios.model.enums.EstadoAnuncio;
 import com.hazmelaucb.ms_anuncios.repository.AnuncioRepository;
+import com.hazmelaucb.ms_anuncios.repository.TagRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,10 +21,12 @@ import java.util.stream.Collectors;
 public class AnuncioService {
     
     private final AnuncioRepository anuncioRepository;
+    private final TagRepository tagRepository;
     
     @Autowired
-    public AnuncioService(AnuncioRepository anuncioRepository) {
+    public AnuncioService(AnuncioRepository anuncioRepository, TagRepository tagRepository) {
         this.anuncioRepository = anuncioRepository;
+        this.tagRepository = tagRepository;
     }
     
     @Transactional(readOnly = true)
@@ -133,7 +137,57 @@ public class AnuncioService {
         return convertirADTO(anuncioRepository.save(anuncio));
     }
     
-    // Método auxiliar para convertir Anuncio a AnuncioDTO
+    @Transactional
+    public AnuncioDTO agregarTagAAnuncio(Integer anuncioId, Integer tagId) {
+        Anuncio anuncio = anuncioRepository.findById(anuncioId.longValue())
+                .orElseThrow(() -> new NoSuchElementException("Anuncio no encontrado con ID: " + anuncioId));
+            
+        com.hazmelaucb.ms_anuncios.model.entity.Tag tag = tagRepository.findById(tagId.longValue())
+                .orElseThrow(() -> new NoSuchElementException("Tag no encontrado con ID: " + tagId));
+        
+        anuncio.agregarTag(tag);
+        anuncio = anuncioRepository.save(anuncio);
+        
+        return convertirADTO(anuncio);
+    }
+    
+    @Transactional(readOnly = true)
+    public List<TagDTO> obtenerTagsDeAnuncio(Integer anuncioId) {
+        Anuncio anuncio = anuncioRepository.findById(anuncioId.longValue())
+                .orElseThrow(() -> new NoSuchElementException("Anuncio no encontrado con ID: " + anuncioId));
+            
+        return anuncio.getTags().stream()
+                .map(this::convertirTagADTO)
+                .collect(Collectors.toList());
+    }
+    
+    @Transactional
+    public AnuncioDTO eliminarTagDeAnuncio(Integer anuncioId, Integer tagId) {
+        Anuncio anuncio = anuncioRepository.findById(anuncioId.longValue())
+                .orElseThrow(() -> new NoSuchElementException("Anuncio no encontrado con ID: " + anuncioId));
+            
+        com.hazmelaucb.ms_anuncios.model.entity.Tag tag = tagRepository.findById(tagId.longValue())
+                .orElseThrow(() -> new NoSuchElementException("Tag no encontrado con ID: " + tagId));
+        
+        if (!anuncio.getTags().contains(tag)) {
+            throw new IllegalArgumentException("La etiqueta con ID: " + tagId + " no está asociada al anuncio con ID: " + anuncioId);
+        }
+        
+        anuncio.removerTag(tag);
+        anuncio = anuncioRepository.save(anuncio);
+        
+        return convertirADTO(anuncio);
+    }
+    
+    // Método auxiliar para convertir Tag a TagDTO
+    private TagDTO convertirTagADTO(com.hazmelaucb.ms_anuncios.model.entity.Tag tag) {
+        TagDTO dto = new TagDTO();
+        dto.setId(tag.getId());
+        dto.setNombre(tag.getNombre());
+        return dto;
+    }
+    
+    // Método actualizado para convertir Anuncio a AnuncioDTO
     private AnuncioDTO convertirADTO(Anuncio anuncio) {
         AnuncioDTO dto = new AnuncioDTO();
         dto.setId(anuncio.getId());
@@ -145,6 +199,14 @@ public class AnuncioService {
         dto.setEstado(anuncio.getEstado());
         dto.setCreatedAt(anuncio.getCreatedAt());
         dto.setUpdatedAt(anuncio.getUpdatedAt());
+        
+        // Añadir tags al DTO
+        if (anuncio.getTags() != null) {
+            anuncio.getTags().forEach(tag -> {
+                dto.getTags().add(convertirTagADTO(tag));
+            });
+        }
+        
         return dto;
     }
 }

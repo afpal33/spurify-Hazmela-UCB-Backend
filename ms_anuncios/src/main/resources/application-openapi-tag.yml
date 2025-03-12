@@ -98,34 +98,13 @@ api:
 
         # Respuestas con error
         1. Si el ID no existe, retorna **404 - Anuncio no encontrado**.
-    
-    # Añadimos operaciones relacionadas con tags
-    getTagsByAnuncioId:
-      description: Retorna todas las etiquetas asociadas a un anuncio específico
+
+  tag:
+    getAnunciosByTagId:
+      description: Retorna todos los anuncios asociados a una etiqueta específica
       notes: |
         # Respuesta exitosa
-        - Devuelve una lista de etiquetas (tags) del anuncio.
+        - Devuelve una lista de anuncios que tienen esta etiqueta.
 
         # Respuestas con error
-        1. Si el ID no existe, retorna **404 - Anuncio no encontrado**.
-    
-    addTagToAnuncio:
-      description: Asocia una etiqueta existente a un anuncio
-      notes: |
-        # Respuesta exitosa
-        - Devuelve el anuncio con la etiqueta añadida.
-
-        # Respuestas con error
-        1. Si el ID del anuncio no existe, retorna **404 - Anuncio no encontrado**.
-        2. Si el ID del tag no existe, retorna **404 - Tag no encontrado**.
-    
-    removeTagFromAnuncio:
-      description: Elimina la asociación entre una etiqueta y un anuncio
-      notes: |
-        # Respuesta exitosa
-        - Devuelve el anuncio actualizado sin la etiqueta.
-
-        # Respuestas con error
-        1. Si el ID del anuncio no existe, retorna **404 - Anuncio no encontrado**.
-        2. Si el ID del tag no existe, retorna **404 - Tag no encontrado**.
-        3. Si la etiqueta no está asociada al anuncio, retorna **400 - Etiqueta no asociada al anuncio**.
+        1. Si el ID no existe, retorna **404 - Tag no encontrado**.
