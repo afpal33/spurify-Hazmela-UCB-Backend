@@ -10,11 +10,13 @@ public class RatingAuditoriaEntity {
     @Column(name = "id_rau")
     private Integer id;
 
-    @Column(name = "rating_id", nullable = false)
-    private Integer rating;
+    @ManyToOne
+    @JoinColumn(name = "rating_id", nullable = false)
+    private RatingEntity rating;
 
-    @Column(name = "anuncio_id", nullable = false)
-    private Integer anuncio;
+    @ManyToOne
+    @JoinColumn(name = "anuncio_id", nullable = false)
+    private AnuncioEntity anuncio;
 
     @Column(name = "user_id")
     private Integer userId;
@@ -24,13 +26,13 @@ public class RatingAuditoriaEntity {
     @Column(name = "fecha_cambio", nullable = false)
     private ZonedDateTime fechaCambio;
 
-    public RatingAuditoriaEntity(ZonedDateTime fechaCambio, String cambio, Integer userId, Integer anuncio, Integer rating, Integer id) {
-        this.fechaCambio = fechaCambio;
-        this.cambio = cambio;
-        this.userId = userId;
-        this.anuncio = anuncio;
-        this.rating = rating;
+    public RatingAuditoriaEntity(Integer id, RatingEntity rating, AnuncioEntity anuncio, Integer userId, String cambio, ZonedDateTime fechaCambio) {
         this.id = id;
+        this.rating = rating;
+        this.anuncio = anuncio;
+        this.userId = userId;
+        this.cambio = cambio;
+        this.fechaCambio = fechaCambio;
     }
 
     public Integer getId() {
@@ -41,19 +43,19 @@ public class RatingAuditoriaEntity {
         this.id = id;
     }
 
-    public Integer getRating() {
+    public RatingEntity getRating() {
         return rating;
     }
 
-    public void setRating(Integer rating) {
+    public void setRating(RatingEntity rating) {
         this.rating = rating;
     }
 
-    public Integer getAnuncio() {
+    public AnuncioEntity getAnuncio() {
         return anuncio;
     }
 
-    public void setAnuncio(Integer anuncio) {
+    public void setAnuncio(AnuncioEntity anuncio) {
         this.anuncio = anuncio;
     }
 

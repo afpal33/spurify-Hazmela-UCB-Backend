@@ -10,13 +10,15 @@ public class RatingAnuncioEntity {
     @Column(name = "id_ra")
     private Integer id;
 
-    @Column(name = "anuncio_id", nullable = false)
-    private Integer anuncio;
+    @ManyToOne
+    @JoinColumn(name = "anuncio_id", nullable = false)
+    private AnuncioEntity anuncio;
 
-    @Column(name = "rating_id", nullable = false)
-    private Integer rating;
+    @ManyToOne
+    @JoinColumn(name = "rating_id", nullable = false)
+    private RatingEntity rating;
 
-    public RatingAnuncioEntity(Integer id, Integer anuncio, Integer rating) {
+    public RatingAnuncioEntity(Integer id, AnuncioEntity anuncio, RatingEntity rating) {
         this.id = id;
         this.anuncio = anuncio;
         this.rating = rating;
@@ -30,19 +32,19 @@ public class RatingAnuncioEntity {
         this.id = id;
     }
 
-    public Integer getAnuncio() {
+    public AnuncioEntity getAnuncio() {
         return anuncio;
     }
 
-    public void setAnuncio(Integer anuncio) {
+    public void setAnuncio(AnuncioEntity anuncio) {
         this.anuncio = anuncio;
     }
 
-    public Integer getRating() {
+    public RatingEntity getRating() {
         return rating;
     }
 
-    public void setRating(Integer rating) {
+    public void setRating(RatingEntity rating) {
         this.rating = rating;
     }
 }
