@@ -2,70 +2,106 @@ package com.hazmelaucb.ms_rating.controller;
 
 import com.hazmelaucb.ms_rating.model.dto.RatingRequestDTO;
 import com.hazmelaucb.ms_rating.model.dto.RatingResponseDTO;
-import com.hazmelaucb.ms_rating.model.entity.RatingEntity;
-import com.hazmelaucb.ms_rating.repository.RatingRepository;
+import com.hazmelaucb.ms_rating.service.RatingService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.ZonedDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/ratings")
+@RequestMapping("/api/ratings")
+@Tag(name = "Rating", description = "API for managing ratings")
 public class RatingController {
 
+    private final RatingService ratingService;
+
     @Autowired
-    private RatingRepository ratingRepository;
-
-    // Obtener todos los ratings
-    @GetMapping("/all")
-    public List<RatingResponseDTO> getAllRatings() {
-        return ratingRepository.findAll().stream()
-                .map(RatingResponseDTO::new)
-                .collect(Collectors.toList());
+    public RatingController(RatingService ratingService) {
+        this.ratingService = ratingService;
     }
 
-    // Obtener un rating por ID
+    @Operation(summary = "Get all ratings", description = "Returns a list of all ratings")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully retrieved ratings"),
+            @ApiResponse(responseCode = "500", description = "Server error")
+    })
+    @GetMapping
+    public ResponseEntity<List<RatingResponseDTO>> getAllRatings() {
+        List<RatingResponseDTO> ratings = ratingService.getAllRatings();
+        return ResponseEntity.ok(ratings);
+    }
+
+    @Operation(summary = "Get rating by ID", description = "Returns a rating by the provided ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully retrieved the rating"),
+            @ApiResponse(responseCode = "404", description = "Rating not found")
+    })
     @GetMapping("/{id}")
-    public ResponseEntity<RatingResponseDTO> getRatingById(@PathVariable Long id) {
-        return ratingRepository.findById(id)
-                .map(rating -> ResponseEntity.ok(new RatingResponseDTO(rating)))
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<RatingResponseDTO> getRatingById(
+            @Parameter(description = "ID of the rating to retrieve", required = true)
+            @PathVariable Long id) {
+        RatingResponseDTO rating = ratingService.getRatingById(id);
+        if (rating != null) {
+            return ResponseEntity.ok(rating);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
-    // Crear un nuevo rating
+    @Operation(summary = "Create a new rating", description = "Creates a new rating")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Successfully created the rating"),
+            @ApiResponse(responseCode = "400", description = "Invalid input data")
+    })
     @PostMapping
-    public ResponseEntity<RatingResponseDTO> createRating(@RequestBody RatingRequestDTO request) {
-        RatingEntity newRating = new RatingEntity();
-        newRating.setRating(request.getId());
-        newRating.setRatedAt(request.getRatedAt() != null ? request.getRatedAt() : ZonedDateTime.now());
-        newRating.setUpdatedAt(ZonedDateTime.now());
-
-        RatingEntity savedRating = ratingRepository.save(newRating);
-        return ResponseEntity.ok(new RatingResponseDTO(savedRating));
+    public ResponseEntity<RatingResponseDTO> createRating(
+            @Parameter(description = "Rating data to be created", required = true)
+            @RequestBody RatingRequestDTO ratingRequestDTO) {
+        RatingResponseDTO createdRating = ratingService.createRating(ratingRequestDTO);
+        return new ResponseEntity<>(createdRating, HttpStatus.CREATED);
     }
 
-    // Actualizar un rating existente
+    @Operation(summary = "Update an existing rating", description = "Updates the information of an existing rating")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully updated the rating"),
+            @ApiResponse(responseCode = "400", description = "Invalid input data"),
+            @ApiResponse(responseCode = "404", description = "Rating not found")
+    })
     @PutMapping("/{id}")
-    public ResponseEntity<RatingResponseDTO> updateRating(@PathVariable Long id, @RequestBody RatingRequestDTO request) {
-        return ratingRepository.findById(id).map(existingRating -> {
-            existingRating.setRating(request.getId());
-            existingRating.setUpdatedAt(ZonedDateTime.now());
-
-            RatingEntity updatedRating = ratingRepository.save(existingRating);
-            return ResponseEntity.ok(new RatingResponseDTO(updatedRating));
-        }).orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<RatingResponseDTO> updateRating(
+            @Parameter(description = "ID of the rating to update", required = true)
+            @PathVariable Long id,
+            @Parameter(description = "Updated rating data", required = true)
+            @RequestBody RatingRequestDTO ratingRequestDTO) {
+        RatingResponseDTO updatedRating = ratingService.updateRating(id, ratingRequestDTO);
+        if (updatedRating != null) {
+            return ResponseEntity.ok(updatedRating);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
-    // Eliminar un rating
+    @Operation(summary = "Delete a rating", description = "Deletes a rating by ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Successfully deleted the rating"),
+            @ApiResponse(responseCode = "404", description = "Rating not found")
+    })
     @DeleteMapping("/{id}")
-    public ResponseEntity<Object> deleteRating(@PathVariable Long id) {
-        return ratingRepository.findById(id).map(rating -> {
-            ratingRepository.delete(rating);
+    public ResponseEntity<Void> deleteRating(
+            @Parameter(description = "ID of the rating to delete", required = true)
+            @PathVariable Long id) {
+        boolean isDeleted = ratingService.deleteRating(id);
+        if (isDeleted) {
             return ResponseEntity.noContent().build();
-        }).orElse(ResponseEntity.notFound().build());
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 }
-
