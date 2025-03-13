@@ -10,10 +10,10 @@ import java.time.ZonedDateTime;
 public class RatingEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id_rating;
+    private Long id_rating;
 
     @Column(nullable = false)
-    private Integer rating;
+    private Long rating;
 
     @Column(name = "rated_at", nullable = false)
     private ZonedDateTime ratedAt;
@@ -21,26 +21,30 @@ public class RatingEntity {
     @Column(name = "updated_at", nullable = false)
     private ZonedDateTime updatedAt;
 
-    public RatingEntity(Integer id_rating, Integer rating, ZonedDateTime updatedAt, ZonedDateTime ratedAt) {
+    public RatingEntity(Long id_rating, Long rating, ZonedDateTime updatedAt, ZonedDateTime ratedAt) {
         this.id_rating = id_rating;
         this.rating = rating;
         this.updatedAt = updatedAt;
         this.ratedAt = ratedAt;
     }
 
-    public Integer getId_rating() {
+    public RatingEntity() {
+
+    }
+
+    public Long getId_rating() {
         return id_rating;
     }
 
-    public void setId_rating(Integer id_rating) {
+    public void setId_rating(Long id_rating) {
         this.id_rating = id_rating;
     }
 
-    public Integer getRating() {
+    public Long getRating() {
         return rating;
     }
 
-    public void setRating(Integer rating) {
+    public void setRating(Long rating) {
         this.rating = rating;
     }
 

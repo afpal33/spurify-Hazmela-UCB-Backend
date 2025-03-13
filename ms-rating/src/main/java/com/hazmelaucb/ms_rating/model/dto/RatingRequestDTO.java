@@ -5,7 +5,7 @@ import com.hazmelaucb.ms_rating.model.entity.RatingEntity;
 import java.time.ZonedDateTime;
 
 public class RatingRequestDTO {
-    private Integer id;
+    private Long id;
     private ZonedDateTime ratedAt;
 
 
@@ -14,16 +14,16 @@ public class RatingRequestDTO {
         this.ratedAt = rating.getRatedAt();
     }
 
-    public RatingRequestDTO(Integer id, ZonedDateTime ratedAt) {
+    public RatingRequestDTO(Long id, ZonedDateTime ratedAt) {
         this.id = id;
         this.ratedAt = ratedAt;
     }
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
