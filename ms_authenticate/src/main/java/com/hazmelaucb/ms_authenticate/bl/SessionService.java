@@ -5,8 +5,12 @@ import com.hazmelaucb.ms_authenticate.dao.UserRepository;
 import com.hazmelaucb.ms_authenticate.dto.ActiveSessionResponse;
 import com.hazmelaucb.ms_authenticate.entity.ActiveSessionEntity;
 import com.hazmelaucb.ms_authenticate.entity.UserEntity;
+import com.hazmelaucb.ms_authenticate.utils.exceptions.InvalidTokenException;
+import com.hazmelaucb.ms_authenticate.utils.exceptions.SessionNotFoundException;
+import com.hazmelaucb.ms_authenticate.utils.exceptions.UserNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Optional;
@@ -30,8 +34,13 @@ public class SessionService {
     }
 
     public List<ActiveSessionResponse> getActiveSessions(UUID userId) {
+
+        if (userId == null) {
+            throw new IllegalArgumentException("El ID del usuario no puede ser nulo.");
+        }
+
         UserEntity user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+                .orElseThrow(() -> new UserNotFoundException("Usuario no encontrado"));
 
         return activeSessionRepository.findByUser(user).stream()
                 .map(session -> new ActiveSessionResponse(
@@ -45,10 +54,15 @@ public class SessionService {
     }
 
     public void logoutByToken(String refreshToken, HttpServletRequest request) {
+
+        if (!StringUtils.hasText(refreshToken)) {
+            throw new InvalidTokenException("El token no puede estar vacío o nulo.");
+        }
+
         Optional<ActiveSessionEntity> sessionOpt = activeSessionRepository.findByRefreshToken(refreshToken);
 
         if (sessionOpt.isEmpty()) {
-            throw new RuntimeException("Sesión no encontrada para este refresh token.");
+            throw new SessionNotFoundException("Sesión no encontrada para este refresh token.");
         }
 
         ActiveSessionEntity session = sessionOpt.get();
@@ -70,8 +84,13 @@ public class SessionService {
 
 
     public void logoutAll(UUID userId) {
+
+        if (userId == null) {
+            throw new IllegalArgumentException("El ID del usuario no puede ser nulo.");
+        }
+
         UserEntity user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+                .orElseThrow(() -> new UserNotFoundException("Usuario no encontrado"));
 
         activeSessionRepository.deleteByUser(user);
         System.out.println("✅ Todas las sesiones del usuario han sido eliminadas.");

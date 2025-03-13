@@ -1,8 +1,10 @@
 springdoc:
-  swagger-ui.path: /openapi/swagger-ui.html
-  api-docs.path: /openapi/v3/api-docs
-  packagesToScan: com.hazmelaucb.ms_user.api
-  pathsToMatch: /**
+  swagger-ui:
+    path: /swagger-ui.html
+  api-docs:
+    path: /v3/api-docs
+  packages-to-scan: "com.hazmelaucb.ms_user.api"
+  paths-to-match: "/**"
 
 api:
   common:
@@ -28,7 +30,7 @@ api:
 
   user:
     disable:
-      description: Deshabilita un usuario en la red social.
+      description: Deshabilita un usuario de la plataforma.
       notes: |
         # Respuesta exitosa
         - El usuario será marcado como inactivo en el sistema.

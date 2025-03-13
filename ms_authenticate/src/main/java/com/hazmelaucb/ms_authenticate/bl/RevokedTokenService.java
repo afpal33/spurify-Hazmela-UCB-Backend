@@ -2,7 +2,9 @@ package com.hazmelaucb.ms_authenticate.bl;
 
 import com.hazmelaucb.ms_authenticate.dao.RevokedTokenRepository;
 import com.hazmelaucb.ms_authenticate.entity.RevokedTokenEntity;
+import com.hazmelaucb.ms_authenticate.utils.exceptions.InvalidTokenException;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 @Service
 public class RevokedTokenService {
@@ -14,6 +16,11 @@ public class RevokedTokenService {
     }
 
     public void revokeToken(String jwtToken) {
+
+        if (!StringUtils.hasText(jwtToken)) {
+            throw new InvalidTokenException("El token no puede estar vacío o nulo.");
+        }
+
         if (isTokenRevoked(jwtToken)) {
             System.out.println("⚠️ Token ya está revocado: " + jwtToken);
             return; // Evitar duplicados
@@ -27,6 +34,9 @@ public class RevokedTokenService {
     }
 
     public boolean isTokenRevoked(String jwtToken) {
+        if (!StringUtils.hasText(jwtToken)) {
+            throw new InvalidTokenException("El token no puede estar vacío o nulo.");
+        }
         return revokedTokenRepository.findByJwtToken(jwtToken).isPresent();
     }
 }

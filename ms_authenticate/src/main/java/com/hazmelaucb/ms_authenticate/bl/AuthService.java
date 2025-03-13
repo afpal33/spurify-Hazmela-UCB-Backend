@@ -11,6 +11,11 @@ import com.hazmelaucb.ms_authenticate.entity.ActiveSessionEntity;
 import com.hazmelaucb.ms_authenticate.entity.RoleEntity;
 import com.hazmelaucb.ms_authenticate.entity.UserEntity;
 import com.hazmelaucb.ms_authenticate.security.JwtTokenProvider;
+import com.hazmelaucb.ms_authenticate.utils.exceptions.InvalidCredentialsException;
+import com.hazmelaucb.ms_authenticate.utils.exceptions.TokenInvalidException;
+import com.hazmelaucb.ms_authenticate.utils.exceptions.UserAlreadyExistsException;
+import com.hazmelaucb.ms_authenticate.utils.exceptions.UserNotFoundException;
+import jakarta.transaction.Transactional;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -54,22 +59,24 @@ public class AuthService {
         this.roleRepository = roleRepository;
     }
 
+
+    @Transactional
     public AuthResponse login(AuthRequest request, HttpServletRequest httpRequest) {
         String ip = httpRequest.getRemoteAddr();
         String userAgent = httpRequest.getHeader("User-Agent");
 
         UserEntity user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+                .orElseThrow(() -> new UserNotFoundException("Usuario no encontrado"));
 
         if (user.isLocked()) {
-            throw new RuntimeException("Tu cuenta ha sido bloqueada por intentos fallidos. Contacta con soporte.");
+            throw new InvalidCredentialsException("Tu cuenta está bloqueada por intentos fallidos.");
         }
 
         if (!passwordEncoder.matches(request.getPassword(), user.getHashedPassword())) {
             user.registerFailedAttempt();
             userRepository.save(user);
             loginAttemptService.registerLoginAttempt(user, false, ip, userAgent);
-            throw new RuntimeException("Contraseña incorrecta. Intentos fallidos: " + user.getFailedAttempts());
+            throw new InvalidCredentialsException("Contraseña incorrecta. Intentos fallidos: " + user.getFailedAttempts());
         }
 
         // Restablecer intentos fallidos y desbloquear usuario si es necesario
@@ -104,7 +111,7 @@ public class AuthService {
 
     public void register(RegisterRequest request) {
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
-            throw new RuntimeException("El usuario ya existe");
+            throw new UserAlreadyExistsException("El usuario ya existe");
         }
 
         UserEntity newUser = new UserEntity();
@@ -128,7 +135,7 @@ public class AuthService {
 
         if (sessionOpt.isEmpty()) {
             System.out.println("❌ ERROR: Sesión no encontrada en la base de datos para el refresh token.");
-            throw new RuntimeException("Refresh token inválido o sesión no encontrada");
+            throw new TokenInvalidException("Refresh token inválido o sesión no encontrada");
         }
 
         ActiveSessionEntity session = sessionOpt.get();
@@ -136,7 +143,7 @@ public class AuthService {
 
         if (user == null) {
             System.out.println("❌ ERROR: No se encontró un usuario asociado a la sesión.");
-            throw new RuntimeException("Usuario no encontrado para este refresh token");
+            throw new UserNotFoundException("Usuario no encontrado para este refresh token");
         }
 
         System.out.println("✅ Usuario encontrado: " + user.getEmail());
