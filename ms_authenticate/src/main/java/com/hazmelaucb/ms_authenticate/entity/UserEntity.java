@@ -2,6 +2,7 @@ package com.hazmelaucb.ms_authenticate.entity;
 
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.DynamicUpdate;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -13,6 +14,7 @@ import java.util.HashSet;
 
 @Entity
 @Table(name = "auth_users")
+@DynamicUpdate
 public class UserEntity {
 
     @Id
@@ -38,7 +40,7 @@ public class UserEntity {
     private Timestamp createdAt;
     private Timestamp updatedAt;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @JoinTable(
             name = "user_roles",
             joinColumns = @JoinColumn(name = "user_id"),
@@ -54,6 +56,9 @@ public class UserEntity {
         this.roles = roles;
     }
 
+    public void addRole(RoleEntity role) {
+        this.roles.add(role);
+    }
 
     public void registerFailedAttempt() {
         this.failedAttempts++;

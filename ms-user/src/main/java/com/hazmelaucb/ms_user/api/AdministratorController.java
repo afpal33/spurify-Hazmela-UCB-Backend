@@ -2,6 +2,7 @@ package com.hazmelaucb.ms_user.api;
 
 import com.hazmelaucb.ms_user.bl.AdministratorBL;
 import com.hazmelaucb.ms_user.dto.AdministratorDTO;
+import com.hazmelaucb.ms_user.dto.SuccessResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -56,11 +57,13 @@ public class AdministratorController {
             @ApiResponse(responseCode = "422", description = "${api.responseCodes.unprocessableEntity.description}")
     })
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteAdministrator(
+    public ResponseEntity<SuccessResponse> deleteAdministrator(
             @Parameter(description = "ID del administrador a eliminar", required = true)
             @PathVariable("id") UUID userId) {
-        administratorBL.deleteAdministrator(userId);
-        return ResponseEntity.noContent().build();
+
+        SuccessResponse response = administratorBL.deleteAdministrator(userId);
+
+        return ResponseEntity.ok(response);
     }
 
     @Operation(summary = "${api.administrator.getById.description}", description = "${api.administrator.getById.notes}")

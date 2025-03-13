@@ -3,16 +3,21 @@ package com.hazmelaucb.ms_user.bl;
 import com.hazmelaucb.ms_user.dao.StudentRepository;
 import com.hazmelaucb.ms_user.dao.UserRepository;
 import com.hazmelaucb.ms_user.dto.StudentDTO;
+import com.hazmelaucb.ms_user.dto.SuccessResponse;
 import com.hazmelaucb.ms_user.entity.Student;
 import com.hazmelaucb.ms_user.entity.User;
 import com.hazmelaucb.ms_user.utils.exceptions.BadRequestException;
 import com.hazmelaucb.ms_user.utils.exceptions.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import reactor.core.publisher.Mono;
+import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -30,6 +35,11 @@ public class StudentBL {
 
     @Transactional
     public StudentDTO createStudent(StudentDTO studentDTO) {
+        // Validar que el email tenga la extensión correcta
+        if (!studentDTO.getEmail().endsWith("@ucb.edu.bo")) {
+            throw new BadRequestException("El email debe tener la extensión @ucb.edu.bo");
+        }
+
         // Verificar que el email no exista
         if (userRepository.findByEmail(studentDTO.getEmail()).isPresent()) {
             throw new BadRequestException("El email ya existe");
@@ -118,15 +128,25 @@ public class StudentBL {
         return studentDTO;
     }
 
+
     @Transactional
-    public void deleteStudent(UUID userId) {
-        Student student = studentRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("Estudiante no encontrado"));
+    public ResponseEntity<SuccessResponse> deleteStudent(UUID userId) {
+        Optional<Student> studentOptional = studentRepository.findById(userId);
+
+        if (studentOptional.isEmpty()) {
+            throw new ResourceNotFoundException("Estudiante no encontrado");
+        }
+
+        Student student = studentOptional.get();
 
         // Registrar auditoría antes de eliminar
         auditService.createAudit(userId, "DELETE", null);
         studentRepository.delete(student);
-        // La eliminación en cascada se encarga de borrar el User asociado
+        userRepository.deleteById(userId);
+
+        // Crear y devolver la respuesta de éxito con estado 200 OK
+        SuccessResponse response = new SuccessResponse("Estudiante eliminado correctamente", userId);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     public StudentDTO getStudentById(UUID userId) {

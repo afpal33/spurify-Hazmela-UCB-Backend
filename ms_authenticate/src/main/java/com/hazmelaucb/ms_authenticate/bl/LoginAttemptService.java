@@ -6,6 +6,8 @@ import com.hazmelaucb.ms_authenticate.dto.LoginAttemptResponse;
 import com.hazmelaucb.ms_authenticate.entity.LoginAttemptEntity;
 import com.hazmelaucb.ms_authenticate.entity.UserEntity;
 import com.hazmelaucb.ms_authenticate.utils.exceptions.UserNotFoundException;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -24,6 +26,7 @@ public class LoginAttemptService {
         this.userRepository = userRepository;
     }
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void registerLoginAttempt(UserEntity user, boolean success, String ip, String userAgent) {
         if (user == null) {
             throw new IllegalArgumentException("El usuario no puede ser nulo");
@@ -43,6 +46,7 @@ public class LoginAttemptService {
         attempt.setUserAgent(userAgent);
 
         loginAttemptRepository.save(attempt);
+        System.out.println("✅ Intento de login registrado: " + attempt);
     }
 
     public List<LoginAttemptResponse> getLoginAttempts(UUID userId) {

@@ -9,6 +9,7 @@ import com.hazmelaucb.ms_authenticate.utils.exceptions.InvalidTokenException;
 import com.hazmelaucb.ms_authenticate.utils.exceptions.SessionNotFoundException;
 import com.hazmelaucb.ms_authenticate.utils.exceptions.UserNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -83,6 +84,7 @@ public class SessionService {
     }
 
 
+    @Transactional
     public void logoutAll(UUID userId) {
 
         if (userId == null) {

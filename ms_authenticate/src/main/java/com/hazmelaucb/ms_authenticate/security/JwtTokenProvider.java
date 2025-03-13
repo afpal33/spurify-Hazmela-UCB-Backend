@@ -44,9 +44,15 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    public String generateRefreshToken(String email) {
+    public String generateRefreshToken(UserEntity user) {
+        String role = user.getRoles().stream()
+                .map(RoleEntity::getName)
+                .findFirst()
+                .orElse("ESTUDIANTE"); // Si no tiene rol, asigna uno por defecto
+
         return Jwts.builder()
-                .setSubject(email)
+                .setSubject(user.getEmail())
+                .claim("role", role) // 🔥 Agregamos el rol al refresh token
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + 604800000)) // 7 días
                 .signWith(secretKey, SignatureAlgorithm.HS256)
@@ -98,6 +104,11 @@ public class JwtTokenProvider {
                 .getBody();
 
         String role = claims.get("role", String.class);
+
+        // Si el rol es null, evitar que cause error
+        if (role == null || role.isBlank()) {
+            throw new IllegalArgumentException("El token no contiene roles válidos.");
+        }
         List<SimpleGrantedAuthority> authorities = Collections.singletonList(new SimpleGrantedAuthority(role));
 
         return new UsernamePasswordAuthenticationToken(claims.getSubject(), null, authorities);

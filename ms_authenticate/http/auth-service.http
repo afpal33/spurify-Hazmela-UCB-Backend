@@ -3,7 +3,7 @@ POST http://localhost:7001/auth/register
 Content-Type: application/json
 
 {
-  "email": "test@email5.com",
+  "email": "test@email2.com",
   "password": "123456"
 }
 
@@ -24,7 +24,12 @@ Content-Type: application/json
 
 
 
-### 1. Registrar un usuario (será ESTUDIANTE por defecto)
+
+
+
+
+
+### Registrar un usuario (será ESTUDIANTE por defecto)
 POST http://localhost:7001/auth/register
 Content-Type: application/json
 
@@ -33,7 +38,7 @@ Content-Type: application/json
   "password": "123456"
 }
 
-### 1. Registrar un usuario (será ESTUDIANTE por defecto)
+### Registrar un usuario (será ESTUDIANTE por defecto)
 POST http://localhost:7001/auth/register
 Content-Type: application/json
 
