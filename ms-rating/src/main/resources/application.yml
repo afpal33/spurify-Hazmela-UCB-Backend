@@ -1,0 +1,15 @@
+spring.application.name: ms-rating
+server:
+  port: 7001
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/ms_rarting_db
+    username: postgres
+    password: 123fuser1442
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect

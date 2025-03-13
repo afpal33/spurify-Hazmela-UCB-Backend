@@ -1,8 +1,8 @@
-package com.hazmelaucb.ms_rating.controller;
+package com.hazmelaucb.ms_rating.api;
 
 import com.hazmelaucb.ms_rating.model.dto.RatingRequestDTO;
 import com.hazmelaucb.ms_rating.model.dto.RatingResponseDTO;
-import com.hazmelaucb.ms_rating.service.RatingService;
+import com.hazmelaucb.ms_rating.bl.RatingService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;

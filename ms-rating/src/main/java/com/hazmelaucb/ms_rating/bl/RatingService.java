@@ -1,4 +1,4 @@
-package com.hazmelaucb.ms_rating.service;
+package com.hazmelaucb.ms_rating.bl;
 
 import com.hazmelaucb.ms_rating.model.dto.RatingRequestDTO;
 import com.hazmelaucb.ms_rating.model.dto.RatingResponseDTO;
