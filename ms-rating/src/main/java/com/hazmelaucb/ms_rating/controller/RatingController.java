@@ -20,7 +20,7 @@ public class RatingController {
     private RatingRepository ratingRepository;
 
     // Obtener todos los ratings
-    @GetMapping
+    @GetMapping("/all")
     public List<RatingResponseDTO> getAllRatings() {
         return ratingRepository.findAll().stream()
                 .map(RatingResponseDTO::new)
