@@ -27,19 +27,20 @@ public class TagController {
         this.tagService = tagService;
     }
     
-    @Operation(summary = "Obtener todos los tags", description = "Retorna una lista con todos los tags registrados")
+    @Operation(summary = "Obtener todos los tags", description = "${api.tag.getAll.description}")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Operación exitosa")
+            @ApiResponse(responseCode = "200", description = "${api.responseCodes.ok.description}"),
+            @ApiResponse(responseCode = "500", description = "${api.responseCodes.serverError.description}")
     })
     @GetMapping
     public ResponseEntity<List<TagDTO>> obtenerTodos() {
         return ResponseEntity.ok(tagService.buscarTodos());
     }
     
-    @Operation(summary = "Obtener tag por ID", description = "Retorna un tag según el ID proporcionado")
+    @Operation(summary = "Obtener tag por ID", description = "${api.tag.getById.description}")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Operación exitosa"),
-            @ApiResponse(responseCode = "404", description = "Tag no encontrado")
+            @ApiResponse(responseCode = "200", description = "${api.responseCodes.ok.description}"),
+            @ApiResponse(responseCode = "404", description = "${api.responseCodes.notFound.description}")
     })
     @GetMapping("/{id}")
     public ResponseEntity<TagDTO> obtenerPorId(
@@ -48,10 +49,10 @@ public class TagController {
         return ResponseEntity.ok(tagService.buscarPorId(id));
     }
     
-    @Operation(summary = "Buscar tag por nombre exacto", description = "Retorna un tag con el nombre exacto proporcionado")
+    @Operation(summary = "Buscar tag por nombre exacto", description = "${api.tag.getByName.description}")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Operación exitosa"),
-            @ApiResponse(responseCode = "404", description = "Tag no encontrado")
+            @ApiResponse(responseCode = "200", description = "${api.responseCodes.ok.description}"),
+            @ApiResponse(responseCode = "404", description = "${api.responseCodes.notFound.description}")
     })
     @GetMapping("/nombre/{nombre}")
     public ResponseEntity<TagDTO> obtenerPorNombre(
@@ -60,9 +61,9 @@ public class TagController {
         return ResponseEntity.ok(tagService.buscarPorNombre(nombre));
     }
     
-    @Operation(summary = "Buscar tags por coincidencia de nombre", description = "Retorna una lista de tags que contienen el texto proporcionado")
+    @Operation(summary = "Buscar tags por coincidencia de nombre", description = "${api.tag.searchByText.description}")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Operación exitosa")
+            @ApiResponse(responseCode = "200", description = "${api.responseCodes.ok.description}")
     })
     @GetMapping("/buscar")
     public ResponseEntity<List<TagDTO>> buscarPorCoincidencia(
@@ -71,10 +72,10 @@ public class TagController {
         return ResponseEntity.ok(tagService.buscarPorCoincidencia(texto));
     }
     
-    @Operation(summary = "Crear nuevo tag", description = "Crea un nuevo tag en el sistema")
+    @Operation(summary = "Crear nuevo tag", description = "${api.tag.create.description}")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Tag creado exitosamente"),
-            @ApiResponse(responseCode = "400", description = "Datos de entrada inválidos o nombre duplicado")
+            @ApiResponse(responseCode = "201", description = "${api.responseCodes.created.description}"),
+            @ApiResponse(responseCode = "400", description = "${api.responseCodes.badRequest.description}")
     })
     @PostMapping
     public ResponseEntity<TagDTO> crear(@Valid @RequestBody TagDTO tagDTO) {
@@ -82,11 +83,11 @@ public class TagController {
         return new ResponseEntity<>(nuevoTag, HttpStatus.CREATED);
     }
     
-    @Operation(summary = "Actualizar tag", description = "Actualiza la información de un tag existente")
+    @Operation(summary = "Actualizar tag", description = "${api.tag.update.description}")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Tag actualizado exitosamente"),
-            @ApiResponse(responseCode = "400", description = "Datos de entrada inválidos o nombre duplicado"),
-            @ApiResponse(responseCode = "404", description = "Tag no encontrado")
+            @ApiResponse(responseCode = "200", description = "${api.responseCodes.ok.description}"),
+            @ApiResponse(responseCode = "400", description = "${api.responseCodes.badRequest.description}"),
+            @ApiResponse(responseCode = "404", description = "${api.responseCodes.notFound.description}")
     })
     @PutMapping("/{id}")
     public ResponseEntity<TagDTO> actualizar(
@@ -96,10 +97,10 @@ public class TagController {
         return ResponseEntity.ok(tagService.actualizar(id, tagDTO));
     }
     
-    @Operation(summary = "Eliminar tag", description = "Elimina un tag existente del sistema")
+    @Operation(summary = "Eliminar tag", description = "${api.tag.delete.description}")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "204", description = "Tag eliminado exitosamente"),
-            @ApiResponse(responseCode = "404", description = "Tag no encontrado")
+            @ApiResponse(responseCode = "204", description = "${api.responseCodes.noContent.description}"),
+            @ApiResponse(responseCode = "404", description = "${api.responseCodes.notFound.description}")
     })
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminar(
@@ -109,9 +110,9 @@ public class TagController {
         return ResponseEntity.noContent().build();
     }
     
-    @Operation(summary = "Verificar existencia de tag por nombre", description = "Verifica si ya existe un tag con el nombre proporcionado")
+    @Operation(summary = "Verificar existencia de tag por nombre", description = "${api.tag.exists.description}")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Respuesta exitosa")
+            @ApiResponse(responseCode = "200", description = "${api.responseCodes.ok.description}")
     })
     @GetMapping("/existe")
     public ResponseEntity<Boolean> existePorNombre(

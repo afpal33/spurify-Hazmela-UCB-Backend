@@ -1,5 +1,6 @@
 package com.hazmelaucb.ms_anuncios.controller;
 
+import com.hazmelaucb.ms_anuncios.exception.GlobalExceptionHandler.ErrorResponse;
 import com.hazmelaucb.ms_anuncios.model.dto.AnuncioCrearDTO;
 import com.hazmelaucb.ms_anuncios.model.dto.AnuncioDTO;
 import com.hazmelaucb.ms_anuncios.model.dto.TagDTO;
@@ -16,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -30,20 +32,20 @@ public class AnuncioController {
         this.anuncioService = anuncioService;
     }
     
-    @Operation(summary = "Obtener todos los anuncios", description = "Retorna una lista con todos los anuncios registrados")
+    @Operation(summary = "Obtener todos los anuncios", description = "${api.anuncio.getAll.description}")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Operación exitosa"),
-            @ApiResponse(responseCode = "500", description = "Error en el servidor")
+            @ApiResponse(responseCode = "200", description = "${api.responseCodes.ok.description}"),
+            @ApiResponse(responseCode = "500", description = "${api.responseCodes.serverError.description}")
     })
     @GetMapping
     public ResponseEntity<List<AnuncioDTO>> obtenerTodos() {
         return ResponseEntity.ok(anuncioService.buscarTodos());
     }
     
-    @Operation(summary = "Obtener anuncio por ID", description = "Retorna un anuncio según el ID proporcionado")
+    @Operation(summary = "Obtener anuncio por ID", description = "${api.anuncio.getById.description}")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Operación exitosa"),
-            @ApiResponse(responseCode = "404", description = "Anuncio no encontrado")
+            @ApiResponse(responseCode = "200", description = "${api.responseCodes.ok.description}"),
+            @ApiResponse(responseCode = "404", description = "${api.responseCodes.notFound.description}")
     })
     @GetMapping("/{id}")
     public ResponseEntity<AnuncioDTO> obtenerPorId(
@@ -52,10 +54,10 @@ public class AnuncioController {
         return ResponseEntity.ok(anuncioService.buscarPorId(id));
     }
     
-    @Operation(summary = "Obtener anuncios por usuario", description = "Retorna una lista de anuncios asociados a un usuario específico")
+    @Operation(summary = "Obtener anuncios por usuario", description = "${api.anuncio.getByUser.description}")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Operación exitosa"),
-            @ApiResponse(responseCode = "404", description = "Anuncios no encontrados para este usuario")
+            @ApiResponse(responseCode = "200", description = "${api.responseCodes.ok.description}"),
+            @ApiResponse(responseCode = "404", description = "${api.responseCodes.notFound.description}")
     })
     @GetMapping("/usuario/{userId}")
     public ResponseEntity<List<AnuncioDTO>> obtenerPorUsuario(
@@ -64,10 +66,10 @@ public class AnuncioController {
         return ResponseEntity.ok(anuncioService.buscarPorUsuario(userId));
     }
     
-    @Operation(summary = "Obtener anuncios por área", description = "Retorna una lista de anuncios filtrados por área de especialización")
+    @Operation(summary = "Obtener anuncios por área", description = "${api.anuncio.getByArea.description}")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Operación exitosa"),
-            @ApiResponse(responseCode = "404", description = "Anuncios no encontrados para esta área")
+            @ApiResponse(responseCode = "200", description = "${api.responseCodes.ok.description}"),
+            @ApiResponse(responseCode = "404", description = "${api.responseCodes.notFound.description}")
     })
     @GetMapping("/area/{area}")
     public ResponseEntity<List<AnuncioDTO>> obtenerPorArea(
@@ -76,10 +78,10 @@ public class AnuncioController {
         return ResponseEntity.ok(anuncioService.buscarPorAreaEspecializacion(area));
     }
     
-    @Operation(summary = "Obtener anuncios por estado", description = "Retorna una lista de anuncios filtrados por estado")
+    @Operation(summary = "Obtener anuncios por estado", description = "${api.anuncio.getByStatus.description}")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Operación exitosa"),
-            @ApiResponse(responseCode = "404", description = "Anuncios no encontrados para este estado")
+            @ApiResponse(responseCode = "200", description = "${api.responseCodes.ok.description}"),
+            @ApiResponse(responseCode = "404", description = "${api.responseCodes.notFound.description}")
     })
     @GetMapping("/estado/{estado}")
     public ResponseEntity<List<AnuncioDTO>> obtenerPorEstado(
@@ -88,10 +90,10 @@ public class AnuncioController {
         return ResponseEntity.ok(anuncioService.buscarPorEstado(estado));
     }
     
-    @Operation(summary = "Obtener anuncios por rango de precio", description = "Retorna una lista de anuncios dentro de un rango de precios específico")
+    @Operation(summary = "Obtener anuncios por rango de precio", description = "${api.anuncio.getByPriceRange.description}")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Operación exitosa"),
-            @ApiResponse(responseCode = "404", description = "No hay anuncios en este rango de precios")
+            @ApiResponse(responseCode = "200", description = "${api.responseCodes.ok.description}"),
+            @ApiResponse(responseCode = "404", description = "${api.responseCodes.notFound.description}")
     })
     @GetMapping("/precio")
     public ResponseEntity<List<AnuncioDTO>> obtenerPorRangoPrecio(
@@ -102,10 +104,10 @@ public class AnuncioController {
         return ResponseEntity.ok(anuncioService.buscarPorRangoPrecio(min, max));
     }
     
-    @Operation(summary = "Crear nuevo anuncio", description = "Crea un nuevo anuncio en el sistema")
+    @Operation(summary = "Crear nuevo anuncio", description = "${api.anuncio.create.description}")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Anuncio creado exitosamente"),
-            @ApiResponse(responseCode = "400", description = "Datos de entrada inválidos")
+            @ApiResponse(responseCode = "201", description = "${api.responseCodes.created.description}"),
+            @ApiResponse(responseCode = "400", description = "${api.responseCodes.badRequest.description}")
     })
     @PostMapping
     public ResponseEntity<AnuncioDTO> crear(@Valid @RequestBody AnuncioCrearDTO anuncioDTO) {
@@ -113,11 +115,11 @@ public class AnuncioController {
         return new ResponseEntity<>(nuevoAnuncio, HttpStatus.CREATED);
     }
     
-    @Operation(summary = "Actualizar anuncio", description = "Actualiza la información de un anuncio existente")
+    @Operation(summary = "Actualizar anuncio", description = "${api.anuncio.update.description}")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Anuncio actualizado exitosamente"),
-            @ApiResponse(responseCode = "400", description = "Datos de entrada inválidos"),
-            @ApiResponse(responseCode = "404", description = "Anuncio no encontrado")
+            @ApiResponse(responseCode = "200", description = "${api.responseCodes.ok.description}"),
+            @ApiResponse(responseCode = "400", description = "${api.responseCodes.badRequest.description}"),
+            @ApiResponse(responseCode = "404", description = "${api.responseCodes.notFound.description}")
     })
     @PutMapping("/{id}")
     public ResponseEntity<AnuncioDTO> actualizar(
@@ -127,10 +129,10 @@ public class AnuncioController {
         return ResponseEntity.ok(anuncioService.actualizar(id, anuncioDTO));
     }
     
-    @Operation(summary = "Eliminar anuncio", description = "Elimina un anuncio existente del sistema")
+    @Operation(summary = "Eliminar anuncio", description = "${api.anuncio.delete.description}")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "204", description = "Anuncio eliminado exitosamente"),
-            @ApiResponse(responseCode = "404", description = "Anuncio no encontrado")
+            @ApiResponse(responseCode = "204", description = "${api.responseCodes.noContent.description}"),
+            @ApiResponse(responseCode = "404", description = "${api.responseCodes.notFound.description}")
     })
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminar(
@@ -140,10 +142,10 @@ public class AnuncioController {
         return ResponseEntity.noContent().build();
     }
     
-    @Operation(summary = "Cambiar estado de anuncio", description = "Actualiza el estado de un anuncio existente")
+    @Operation(summary = "Cambiar estado de anuncio", description = "${api.anuncio.changeStatus.description}")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Estado actualizado exitosamente"),
-            @ApiResponse(responseCode = "404", description = "Anuncio no encontrado")
+            @ApiResponse(responseCode = "200", description = "${api.responseCodes.stateUpdated.description}"),
+            @ApiResponse(responseCode = "404", description = "${api.responseCodes.notFound.description}")
     })
     @PatchMapping("/{id}/estado")
     public ResponseEntity<AnuncioDTO> cambiarEstado(
@@ -154,10 +156,10 @@ public class AnuncioController {
         return ResponseEntity.ok(anuncioService.cambiarEstado(id, estado));
     }
     
-    @Operation(summary = "Agregar tag a un anuncio", description = "Asocia una etiqueta existente a un anuncio")
+    @Operation(summary = "Agregar tag a un anuncio", description = "${api.anuncio.addTagToAnuncio.description}")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Operación exitosa"),
-            @ApiResponse(responseCode = "404", description = "Anuncio o tag no encontrado")
+            @ApiResponse(responseCode = "200", description = "${api.responseCodes.ok.description}"),
+            @ApiResponse(responseCode = "404", description = "${api.responseCodes.notFound.description}")
     })
     @PostMapping("/{anuncioId}/tags/{tagId}")
     public ResponseEntity<AnuncioDTO> agregarTagAAnuncio(
@@ -167,10 +169,10 @@ public class AnuncioController {
         return ResponseEntity.ok(anuncioActualizado);
     }
     
-    @Operation(summary = "Obtener tags de un anuncio", description = "Retorna todas las etiquetas asociadas a un anuncio")
+    @Operation(summary = "Obtener tags de un anuncio", description = "${api.anuncio.getTagsByAnuncioId.description}")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Operación exitosa"),
-            @ApiResponse(responseCode = "404", description = "Anuncio no encontrado")
+            @ApiResponse(responseCode = "200", description = "${api.responseCodes.ok.description}"),
+            @ApiResponse(responseCode = "404", description = "${api.responseCodes.notFound.description}")
     })
     @GetMapping("/{anuncioId}/tags")
     public ResponseEntity<List<TagDTO>> obtenerTagsDeAnuncio(
@@ -179,11 +181,11 @@ public class AnuncioController {
         return ResponseEntity.ok(tags);
     }
     
-    @Operation(summary = "Eliminar tag de un anuncio", description = "Elimina la asociación entre una etiqueta y un anuncio")
+    @Operation(summary = "Eliminar tag de un anuncio", description = "${api.anuncio.removeTagFromAnuncio.description}")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Operación exitosa"),
-            @ApiResponse(responseCode = "404", description = "Anuncio o tag no encontrado"),
-            @ApiResponse(responseCode = "400", description = "Etiqueta no asociada al anuncio")
+            @ApiResponse(responseCode = "200", description = "${api.responseCodes.ok.description}"),
+            @ApiResponse(responseCode = "404", description = "${api.responseCodes.notFound.description}"),
+            @ApiResponse(responseCode = "400", description = "${api.responseCodes.badRequest.description}")
     })
     @DeleteMapping("/{anuncioId}/tags/{tagId}")
     public ResponseEntity<AnuncioDTO> eliminarTagDeAnuncio(
