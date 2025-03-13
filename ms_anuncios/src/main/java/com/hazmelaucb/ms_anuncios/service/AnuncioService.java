@@ -45,28 +45,44 @@ public class AnuncioService {
     
     @Transactional(readOnly = true)
     public List<AnuncioDTO> buscarPorUsuario(Integer userId) {
-        return anuncioRepository.findByUserId(userId).stream()
+        List<Anuncio> anuncios = anuncioRepository.findByUserId(userId);
+        if (anuncios.isEmpty()) {
+            throw new NoSuchElementException("No se encontraron anuncios para el usuario con ID: " + userId);
+        }
+        return anuncios.stream()
                 .map(this::convertirADTO)
                 .collect(Collectors.toList());
     }
     
     @Transactional(readOnly = true)
     public List<AnuncioDTO> buscarPorAreaEspecializacion(String areaEspecializacion) {
-        return anuncioRepository.findByAreaEspecializacion(areaEspecializacion).stream()
+        List<Anuncio> anuncios = anuncioRepository.findByAreaEspecializacion(areaEspecializacion);
+        if (anuncios.isEmpty()) {
+            throw new NoSuchElementException("No se encontraron anuncios para el área: " + areaEspecializacion);
+        }
+        return anuncios.stream()
                 .map(this::convertirADTO)
                 .collect(Collectors.toList());
     }
     
     @Transactional(readOnly = true)
     public List<AnuncioDTO> buscarPorEstado(String estado) {
-        return anuncioRepository.findByEstado(estado).stream()
+        List<Anuncio> anuncios = anuncioRepository.findByEstado(estado);
+        if (anuncios.isEmpty()) {
+            throw new NoSuchElementException("No se encontraron anuncios con el estado: " + estado);
+        }
+        return anuncios.stream()
                 .map(this::convertirADTO)
                 .collect(Collectors.toList());
     }
     
     @Transactional(readOnly = true)
     public List<AnuncioDTO> buscarPorRangoPrecio(BigDecimal precioMin, BigDecimal precioMax) {
-        return anuncioRepository.findByPrecioBetween(precioMin, precioMax).stream()
+        List<Anuncio> anuncios = anuncioRepository.findByPrecioBetween(precioMin, precioMax);
+        if (anuncios.isEmpty()) {
+            throw new NoSuchElementException("No se encontraron anuncios en el rango de precio: " + precioMin + " - " + precioMax);
+        }
+        return anuncios.stream()
                 .map(this::convertirADTO)
                 .collect(Collectors.toList());
     }

@@ -1,5 +1,6 @@
 package com.hazmelaucb.ms_anuncios.service.impl;
 
+import com.hazmelaucb.ms_anuncios.exception.BadRequestException;
 import com.hazmelaucb.ms_anuncios.exception.ResourceNotFoundException;
 import com.hazmelaucb.ms_anuncios.model.dto.TagDTO;
 import com.hazmelaucb.ms_anuncios.model.entity.Tag;
@@ -45,7 +46,8 @@ public class TagServiceImpl implements TagService {
     
     @Override
     public List<TagDTO> buscarPorCoincidencia(String nombreParcial) {
-        return tagRepository.findByNombreContainingIgnoreCase(nombreParcial).stream()
+        List<Tag> tags = tagRepository.findByNombreContainingIgnoreCase(nombreParcial);
+        return tags.stream()
                 .map(this::convertirADTO)
                 .collect(Collectors.toList());
     }
@@ -54,28 +56,38 @@ public class TagServiceImpl implements TagService {
     @Transactional
     public TagDTO crear(TagDTO tagDTO) {
         if (tagRepository.existsByNombre(tagDTO.getNombre())) {
-            throw new IllegalArgumentException("Ya existe un tag con el nombre: " + tagDTO.getNombre());
+            throw new BadRequestException("Ya existe un tag con el nombre: " + tagDTO.getNombre());
         }
-        Tag tag = convertirAEntidad(tagDTO);
-        Tag tagGuardado = tagRepository.save(tag);
-        return convertirADTO(tagGuardado);
+        
+        try {
+            Tag tag = convertirAEntidad(tagDTO);
+            Tag tagGuardado = tagRepository.save(tag);
+            return convertirADTO(tagGuardado);
+        } catch (Exception e) {
+            throw new BadRequestException("Error al crear el tag: " + e.getMessage(), e);
+        }
     }
     
     @Override
     @Transactional
     public TagDTO actualizar(Long id, TagDTO tagDTO) {
+        // Verificar si existe el tag
         Tag tagExistente = tagRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Tag no encontrado con id: " + id));
                 
         // Verificar si existe otro tag con el mismo nombre
         if (!tagExistente.getNombre().equals(tagDTO.getNombre()) && 
             tagRepository.existsByNombre(tagDTO.getNombre())) {
-            throw new IllegalArgumentException("Ya existe otro tag con el nombre: " + tagDTO.getNombre());
+            throw new BadRequestException("Ya existe otro tag con el nombre: " + tagDTO.getNombre());
         }
         
-        tagExistente.setNombre(tagDTO.getNombre());
-        Tag tagActualizado = tagRepository.save(tagExistente);
-        return convertirADTO(tagActualizado);
+        try {
+            tagExistente.setNombre(tagDTO.getNombre());
+            Tag tagActualizado = tagRepository.save(tagExistente);
+            return convertirADTO(tagActualizado);
+        } catch (Exception e) {
+            throw new BadRequestException("Error al actualizar el tag: " + e.getMessage(), e);
+        }
     }
     
     @Override
@@ -84,7 +96,12 @@ public class TagServiceImpl implements TagService {
         if (!tagRepository.existsById(id)) {
             throw new ResourceNotFoundException("Tag no encontrado con id: " + id);
         }
-        tagRepository.deleteById(id);
+        
+        try {
+            tagRepository.deleteById(id);
+        } catch (Exception e) {
+            throw new BadRequestException("Error al eliminar el tag: " + e.getMessage(), e);
+        }
     }
     
     @Override
