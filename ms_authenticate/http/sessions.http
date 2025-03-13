@@ -60,7 +60,7 @@ Content-Type: application/json
 
 ### 2. Verificar si el accessToken es válido
 GET http://localhost:7001/auth/validate-token
-Authorization: Bearer {{accessToken}}
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0QGVtYWlsNS5jb20iLCJyb2xlIjoiRVNUVURJQU5URSIsImlhdCI6MTc0MTgxNzU0NSwiZXhwIjoxNzQxOTAzOTQ1fQ.4IYStKaTLMAHlTpZnKT3bRatR5jCas8Yw2QUYqUfmLU
 
 ### 3. Cerrar sesión y revocar el refreshToken
 DELETE http://localhost:7001/sessions/logout

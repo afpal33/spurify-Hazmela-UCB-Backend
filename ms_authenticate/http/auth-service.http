@@ -3,7 +3,7 @@ POST http://localhost:7001/auth/register
 Content-Type: application/json
 
 {
-  "email": "test@email3.com",
+  "email": "test@email5.com",
   "password": "123456"
 }
 
@@ -12,7 +12,7 @@ POST http://localhost:7001/auth/login
 Content-Type: application/json
 
 {
-  "email": "test@email.com",
+  "email": "test@email5.com",
   "password": "123456"
 }
 
@@ -63,7 +63,7 @@ Content-Type: application/json
 
 ### 3. Intentar acceder a endpoint de ADMIN (Debe fallar)
 GET http://localhost:7001/admin/unlock-user/estudiante@example.com
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJlc3R1ZGlhbnRlQGV4YW1wbGUuY29tIiwicm9sZSI6IkVTVFVESUFOVEUiLCJpYXQiOjE3NDEwMjA4NTIsImV4cCI6MTc0MTEwNzI1Mn0.M_RArEoxiiKtvnXIFTdGfZKR_IEzk9NQUavdlxWz9V0
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0QGVtYWlsNS5jb20iLCJyb2xlIjoiRVNUVURJQU5URSIsImlhdCI6MTc0MTgxNzU0NSwiZXhwIjoxNzQxOTAzOTQ1fQ.4IYStKaTLMAHlTpZnKT3bRatR5jCas8Yw2QUYqUfmLU
 
 ### 4. Asignar rol ADMIN a un usuario
 PUT http://localhost:7001/admin/assign-admin/ADMIN@example.com
