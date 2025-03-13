@@ -73,10 +73,26 @@ public class AuthService {
         }
 
         if (!passwordEncoder.matches(request.getPassword(), user.getHashedPassword())) {
-            user.registerFailedAttempt();
-            userRepository.save(user);
+            System.out.println("❌ Usuario " + user.getEmail() + " falló al iniciar sesión.");
+
+            // 🔥 Incrementamos el contador
+            int newFailedAttempts = user.getFailedAttempts() + 1;
+            boolean shouldLock = newFailedAttempts >= 3;
+
+            System.out.println("🔍 Intentos previos: " + user.getFailedAttempts());
+            System.out.println("🔄 Nuevo intento fallido: " + newFailedAttempts);
+            System.out.println("🔒 ¿Cuenta bloqueada?: " + shouldLock);
+
+            // 🔥 Ejecutar actualización en la base de datos
+            System.out.println(user.getId());
+            userRepository.updateFailedAttempts(user.getId(), newFailedAttempts, shouldLock);
+
+            // 🔍 Verificar si la base de datos realmente cambió
+            UserEntity updatedUser = userRepository.findById(user.getId()).orElseThrow();
+            System.out.println("✅ Intentos fallidos después de la actualización: " + updatedUser.getFailedAttempts());
+
             loginAttemptService.registerLoginAttempt(user, false, ip, userAgent);
-            throw new InvalidCredentialsException("Contraseña incorrecta. Intentos fallidos: " + user.getFailedAttempts());
+            throw new InvalidCredentialsException("Contraseña incorrecta. Intentos fallidos: " + newFailedAttempts);
         }
 
         // Restablecer intentos fallidos y desbloquear usuario si es necesario
@@ -90,7 +106,7 @@ public class AuthService {
         auditLogService.registerAuditLog(user, "LOGIN", ip, userAgent);
 
         String accessToken = jwtTokenProvider.generateToken(user);
-        String refreshToken = jwtTokenProvider.generateRefreshToken(user.getEmail());
+        String refreshToken = jwtTokenProvider.generateRefreshToken(user);
 
         // Eliminar sesiones activas previas y registrar nueva sesión
         activeSessionRepository.deleteByUser(user);

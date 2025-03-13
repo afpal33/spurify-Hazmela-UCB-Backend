@@ -3,15 +3,19 @@ package com.hazmelaucb.ms_user.bl;
 import com.hazmelaucb.ms_user.dao.AdministratorRepository;
 import com.hazmelaucb.ms_user.dao.UserRepository;
 import com.hazmelaucb.ms_user.dto.AdministratorDTO;
+import com.hazmelaucb.ms_user.dto.SuccessResponse;
 import com.hazmelaucb.ms_user.entity.Administrator;
 import com.hazmelaucb.ms_user.entity.User;
 import com.hazmelaucb.ms_user.utils.exceptions.BadRequestException;
 import com.hazmelaucb.ms_user.utils.exceptions.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -29,6 +33,7 @@ public class AdministratorBL {
 
     @Transactional
     public AdministratorDTO createAdministrator(AdministratorDTO adminDTO) {
+        // Verificar que el email no exista
         if (userRepository.findByEmail(adminDTO.getEmail()).isPresent()) {
             throw new BadRequestException("El email ya existe");
         }
@@ -81,12 +86,27 @@ public class AdministratorBL {
     }
 
     @Transactional
-    public void deleteAdministrator(UUID userId) {
-        Administrator admin = administratorRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("Administrador no encontrado"));
+    public SuccessResponse deleteAdministrator(UUID userId) {
+        Optional<Administrator> adminOptional = administratorRepository.findById(userId);
+
+        if (adminOptional.isEmpty()) {
+            throw new ResourceNotFoundException("Administrador no encontrado");
+        }
+
+        Administrator admin = adminOptional.get();
+
+        // Registrar auditoría antes de eliminar
         auditService.createAudit(userId, "DELETE", null);
+
         administratorRepository.delete(admin);
+        userRepository.deleteById(userId);
+
+        // Crear y devolver la respuesta de éxito
+        // Crear y devolver la respuesta de éxito con estado 200 OK
+        SuccessResponse response = new SuccessResponse("Administrador eliminado correctamente", userId);
+        return ResponseEntity.status(HttpStatus.OK).body(response).getBody();
     }
+
 
     public AdministratorDTO getAdministratorById(UUID userId) {
         Administrator admin = administratorRepository.findById(userId)

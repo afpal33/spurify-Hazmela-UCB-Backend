@@ -1,6 +1,7 @@
 package com.hazmelaucb.ms_authenticate.security;
 
 
+import com.hazmelaucb.ms_authenticate.utils.exceptions.CustomAccessDeniedHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -21,9 +22,11 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 public class SecurityConfig {
 
     private final JwtTokenProvider jwtTokenProvider;
+    private final CustomAccessDeniedHandler accessDeniedHandler;
 
-    public SecurityConfig(JwtTokenProvider jwtTokenProvider) {
+    public SecurityConfig(JwtTokenProvider jwtTokenProvider, CustomAccessDeniedHandler accessDeniedHandler) {
         this.jwtTokenProvider = jwtTokenProvider;
+        this.accessDeniedHandler = accessDeniedHandler;
     }
 
     @Bean
@@ -45,6 +48,9 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .exceptionHandling(exception -> exception
+                        .accessDeniedHandler(accessDeniedHandler) // 🔹 Manejador de error 403
+                )
                 .addFilterBefore(new JwtAuthFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

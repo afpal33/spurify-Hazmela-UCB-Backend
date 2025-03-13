@@ -67,11 +67,14 @@ public class AuthController {
     })
     @PostMapping("/refresh-token")
     public ResponseEntity<AuthResponse> refreshToken(@RequestHeader("Authorization") String authHeader) {
+        System.out.println("SDASDFASDF");
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+
             return ResponseEntity.badRequest().body(null);
         }
-
+        System.out.println("SDASDFASDF");
         String refreshToken = authHeader.substring(7); // Remueve "Bearer "
+        System.out.println("Refresh token: " + refreshToken);
         AuthResponse newTokens = authService.refreshAccessToken(refreshToken);
 
         return ResponseEntity.ok(newTokens);
@@ -109,11 +112,31 @@ public class AuthController {
         UserEntity user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
+        System.out.println("Todos los datos de usuario");
+        System.out.println(user.getEmail());
+        System.out.println(user.getRoles());
+        for (RoleEntity role : user.getRoles()) {
+            System.out.println(role.getName());
+            System.out.println(role.getId());
+        }
+        System.out.println(user.getId());
+
         RoleEntity adminRole = roleRepository.findByName("ADMIN")
                 .orElseThrow(() -> new RuntimeException("Rol 'ADMIN' no encontrado"));
 
+        if (user.getRoles().contains(adminRole)) {
+            return ResponseEntity.ok("⚠️ El usuario ya tiene el rol de ADMIN.");
+        }
+
+
+        System.out.println(adminRole.getName());
+        System.out.println(adminRole.getId());
         user.getRoles().add(adminRole);
         userRepository.save(user);
+        userRepository.flush(); // 🔥 Asegurar persistencia inmediata
+
+// 🔥 Insertar manualmente en la tabla intermedia si no se ha actualizado
+        roleRepository.assignRoleToUser(user.getId(), adminRole.getId());
 
         return ResponseEntity.ok("✅ Usuario ahora es ADMIN.");
     }

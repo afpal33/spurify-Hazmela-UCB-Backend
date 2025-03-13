@@ -2,6 +2,7 @@ package com.hazmelaucb.ms_user.api;
 
 import com.hazmelaucb.ms_user.bl.StudentBL;
 import com.hazmelaucb.ms_user.dto.StudentDTO;
+import com.hazmelaucb.ms_user.dto.SuccessResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -56,11 +57,12 @@ public class StudentController {
             @ApiResponse(responseCode = "422", description = "${api.responseCodes.unprocessableEntity.description}")
     })
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteStudent(
+    public ResponseEntity<SuccessResponse> deleteStudent(
             @Parameter(description = "ID del estudiante a eliminar", required = true)
             @PathVariable("id") UUID userId) {
-        studentBL.deleteStudent(userId);
-        return ResponseEntity.noContent().build();
+        SuccessResponse response = studentBL.deleteStudent(userId).getBody();
+
+        return ResponseEntity.ok(response);
     }
 
     @Operation(summary = "${api.student.getById.description}", description = "${api.student.getById.notes}")

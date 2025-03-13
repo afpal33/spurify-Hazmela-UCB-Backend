@@ -1,6 +1,7 @@
 package com.hazmelaucb.ms_user.api;
 
 import com.hazmelaucb.ms_user.bl.UserCommonBL;
+import com.hazmelaucb.ms_user.dto.SuccessResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -27,10 +28,11 @@ public class UserCommonController {
             @ApiResponse(responseCode = "422", description = "${api.responseCodes.unprocessableEntity.description}")
     })
     @PatchMapping("/{id}/disable")
-    public ResponseEntity<Void> disableUser(
+    public ResponseEntity<SuccessResponse> disableUser(
             @Parameter(description = "ID del usuario a deshabilitar", required = true)
             @PathVariable("id") UUID userId) {
-        userCommonBL.disableUser(userId);
-        return ResponseEntity.noContent().build();
+        SuccessResponse response = userCommonBL.disableUser(userId).getBody();
+
+        return ResponseEntity.ok(response);
     }
 }
