@@ -3,6 +3,7 @@ package com.hazmelaucb.ms_rating.model.entity;
 import jakarta.persistence.*;
 
 import java.io.Serial;
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 
 @Entity
@@ -10,57 +11,70 @@ import java.time.ZonedDateTime;
 public class RatingEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id_rating;
+    @Column(name = "id_rating")
+    private Long idRating;
 
-    @Column(nullable = false)
-    private Long rating;
+    @Column(name = "id_anuncio", nullable = false)
+    private Long idAnuncio;
+
+    @Column(name = "rating", nullable = false)
+    private Integer rating;
 
     @Column(name = "rated_at", nullable = false)
-    private ZonedDateTime ratedAt;
+    private LocalDateTime ratedAt;
 
     @Column(name = "updated_at", nullable = false)
-    private ZonedDateTime updatedAt;
+    private LocalDateTime updatedAt;
 
-    public RatingEntity(Long id_rating, Long rating, ZonedDateTime updatedAt, ZonedDateTime ratedAt) {
-        this.id_rating = id_rating;
+    public RatingEntity(Long idRating, Long idAnuncio, Integer rating, LocalDateTime ratedAt, LocalDateTime updatedAt) {
+        this.idRating = idRating;
+        this.idAnuncio = idAnuncio;
         this.rating = rating;
-        this.updatedAt = updatedAt;
         this.ratedAt = ratedAt;
+        this.updatedAt = updatedAt;
     }
 
     public RatingEntity() {
 
     }
 
-    public Long getId_rating() {
-        return id_rating;
+    public Long getIdRating() {
+        return idRating;
     }
 
-    public void setId_rating(Long id_rating) {
-        this.id_rating = id_rating;
+    public void setIdRating(Long idRating) {
+        this.idRating = idRating;
     }
 
-    public Long getRating() {
+    public Long getIdAnuncio() {
+        return idAnuncio;
+    }
+
+    public void setIdAnuncio(Long idAnuncio) {
+        this.idAnuncio = idAnuncio;
+    }
+
+    public Integer getRating() {
         return rating;
     }
 
-    public void setRating(Long rating) {
+    public void setRating(Integer rating) {
         this.rating = rating;
     }
 
-    public ZonedDateTime getRatedAt() {
+    public LocalDateTime getRatedAt() {
         return ratedAt;
     }
 
-    public void setRatedAt(ZonedDateTime ratedAt) {
+    public void setRatedAt(LocalDateTime ratedAt) {
         this.ratedAt = ratedAt;
     }
 
-    public ZonedDateTime getUpdatedAt() {
+    public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
 
-    public void setUpdatedAt(ZonedDateTime updatedAt) {
+    public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
 }

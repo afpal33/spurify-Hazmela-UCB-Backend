@@ -2,6 +2,7 @@ package com.hazmelaucb.ms_rating.model.entity;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 
 public class RatingAuditoriaEntity {
@@ -14,25 +15,25 @@ public class RatingAuditoriaEntity {
     @JoinColumn(name = "rating_id", nullable = false)
     private RatingEntity rating;
 
-    @ManyToOne
-    @JoinColumn(name = "anuncio_id", nullable = false)
-    private AnuncioEntity anuncio;
+    @Column(name = "anuncio_id", nullable = false)
+    private Long anuncioId;
 
-    @Column(name = "user_id")
-    private Integer userId;
+    @Column(name = "user_id", nullable = false)
+    private Long userId;
 
+    @Column(name = "cambio", length = 500)
     private String cambio;
 
     @Column(name = "fecha_cambio", nullable = false)
-    private ZonedDateTime fechaCambio;
+    private LocalDateTime fechaCambio;
 
-    public RatingAuditoriaEntity(Integer id, RatingEntity rating, AnuncioEntity anuncio, Integer userId, String cambio, ZonedDateTime fechaCambio) {
-        this.id = id;
-        this.rating = rating;
-        this.anuncio = anuncio;
-        this.userId = userId;
-        this.cambio = cambio;
+    public RatingAuditoriaEntity(LocalDateTime fechaCambio, String cambio, Long userId, Long anuncioId, RatingEntity rating, Integer id) {
         this.fechaCambio = fechaCambio;
+        this.cambio = cambio;
+        this.userId = userId;
+        this.anuncioId = anuncioId;
+        this.rating = rating;
+        this.id = id;
     }
 
     public Integer getId() {
@@ -51,19 +52,19 @@ public class RatingAuditoriaEntity {
         this.rating = rating;
     }
 
-    public AnuncioEntity getAnuncio() {
-        return anuncio;
+    public Long getAnuncioId() {
+        return anuncioId;
     }
 
-    public void setAnuncio(AnuncioEntity anuncio) {
-        this.anuncio = anuncio;
+    public void setAnuncioId(Long anuncioId) {
+        this.anuncioId = anuncioId;
     }
 
-    public Integer getUserId() {
+    public Long getUserId() {
         return userId;
     }
 
-    public void setUserId(Integer userId) {
+    public void setUserId(Long userId) {
         this.userId = userId;
     }
 
@@ -75,11 +76,11 @@ public class RatingAuditoriaEntity {
         this.cambio = cambio;
     }
 
-    public ZonedDateTime getFechaCambio() {
+    public LocalDateTime getFechaCambio() {
         return fechaCambio;
     }
 
-    public void setFechaCambio(ZonedDateTime fechaCambio) {
+    public void setFechaCambio(LocalDateTime fechaCambio) {
         this.fechaCambio = fechaCambio;
     }
 }

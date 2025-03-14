@@ -2,9 +2,23 @@ spring.application.name: ms-rating
 server:
   port: 7001
 
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+  show-actuator: true
+
+logging:
+  level:
+    org.springdoc: DEBUG
+api:
+  common:
+    version=1.0.0
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/ms_rarting_db
+    url: jdbc:postgresql://localhost:5432/ms-rarting-db
     username: postgres
     password: 123fuser1442
   jpa:

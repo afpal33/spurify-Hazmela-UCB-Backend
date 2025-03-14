@@ -1,7 +1,6 @@
 package com.hazmelaucb.ms_rating.api;
 
 import com.hazmelaucb.ms_rating.model.dto.RatingRequestDTO;
-import com.hazmelaucb.ms_rating.model.dto.RatingResponseDTO;
 import com.hazmelaucb.ms_rating.bl.RatingService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -33,8 +32,8 @@ public class RatingController {
             @ApiResponse(responseCode = "500", description = "Server error")
     })
     @GetMapping
-    public ResponseEntity<List<RatingResponseDTO>> getAllRatings() {
-        List<RatingResponseDTO> ratings = ratingService.getAllRatings();
+    public ResponseEntity<List<RatingRequestDTO>> getAllRatings() {
+        List<RatingRequestDTO> ratings = ratingService.getAllRatings();
         return ResponseEntity.ok(ratings);
     }
 
@@ -44,10 +43,10 @@ public class RatingController {
             @ApiResponse(responseCode = "404", description = "Rating not found")
     })
     @GetMapping("/{id}")
-    public ResponseEntity<RatingResponseDTO> getRatingById(
+    public ResponseEntity<RatingRequestDTO> getRatingById(
             @Parameter(description = "ID of the rating to retrieve", required = true)
             @PathVariable Long id) {
-        RatingResponseDTO rating = ratingService.getRatingById(id);
+        RatingRequestDTO rating = ratingService.getRatingById(id);
         if (rating != null) {
             return ResponseEntity.ok(rating);
         } else {
@@ -61,10 +60,10 @@ public class RatingController {
             @ApiResponse(responseCode = "400", description = "Invalid input data")
     })
     @PostMapping
-    public ResponseEntity<RatingResponseDTO> createRating(
+    public ResponseEntity<RatingRequestDTO> createRating(
             @Parameter(description = "Rating data to be created", required = true)
             @RequestBody RatingRequestDTO ratingRequestDTO) {
-        RatingResponseDTO createdRating = ratingService.createRating(ratingRequestDTO);
+        RatingRequestDTO createdRating = ratingService.createRating(ratingRequestDTO);
         return new ResponseEntity<>(createdRating, HttpStatus.CREATED);
     }
 
@@ -75,12 +74,12 @@ public class RatingController {
             @ApiResponse(responseCode = "404", description = "Rating not found")
     })
     @PutMapping("/{id}")
-    public ResponseEntity<RatingResponseDTO> updateRating(
+    public ResponseEntity<RatingRequestDTO> updateRating(
             @Parameter(description = "ID of the rating to update", required = true)
             @PathVariable Long id,
             @Parameter(description = "Updated rating data", required = true)
             @RequestBody RatingRequestDTO ratingRequestDTO) {
-        RatingResponseDTO updatedRating = ratingService.updateRating(id, ratingRequestDTO);
+        RatingRequestDTO updatedRating = ratingService.updateRating(id, ratingRequestDTO);
         if (updatedRating != null) {
             return ResponseEntity.ok(updatedRating);
         } else {
