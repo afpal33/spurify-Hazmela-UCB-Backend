@@ -3,5 +3,5 @@ springdoc:
     path: /swagger-ui.html
   api-docs:
     path: /v3/api-docs
-  packages-to-scan: "com.hazmelaucb.ms_authenticate"
+  packages-to-scan: "com.hazmelaucb.ms-rating"
   paths-to-match: "/**"
