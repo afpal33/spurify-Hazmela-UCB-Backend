@@ -6,7 +6,6 @@ spring:
     user:
       name: user
       password: password
-
   application:
     name: ms-rating
   datasource:
@@ -16,7 +15,7 @@ spring:
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
     show-sql: true
     properties:
       hibernate:
@@ -43,10 +42,9 @@ springdoc:
   group-configs:
     - group: rating
       paths-to-match: /api/rating/**
-      packages-to-scan: com.hazmelaucb.ms_rating.controller
+      packages-to-scan: com.hazmelaucb.ms_rating.api
 
 logging:
   level:
     org.hibernate.SQL: DEBUG
     org.hibernate.type.descriptor.sql.BasicBinder: TRACE
-    org.springdoc: DEBUG
