@@ -8,7 +8,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.4.3</version>  <!-- ✅ Versión estable que existe en Maven Central -->
+		<version>3.2.1</version>  <!-- ✅ Versión estable que existe en Maven Central -->
 		<relativePath/>
 	</parent>
 
@@ -24,13 +24,6 @@
 	</properties>
 
 	<dependencies>
-		<dependency>
-			<groupId>jakarta.servlet</groupId>
-			<artifactId>jakarta.servlet-api</artifactId>
-			<version>5.0.0</version>
-			<scope>provided</scope>
-		</dependency>
-
 		<!-- 🔥 Springdoc OpenAPI / Swagger -->
 		<dependency>
 			<groupId>org.springdoc</groupId>
@@ -96,12 +89,6 @@
 			<artifactId>spring-security-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-starter-openfeign</artifactId>
-			<version>4.2.0</version>
-		</dependency>
-
 	</dependencies>
 
 	<build>

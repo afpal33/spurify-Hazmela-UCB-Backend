@@ -6,23 +6,28 @@ springdoc:
     enabled: true
   swagger-ui:
     enabled: true
-    path: /openapi/swagger-ui.html
+    path: /swagger-ui.html
   show-actuator: true
 
 logging:
   level:
     org.springdoc: DEBUG
 
+
+
 spring:
-  security:
-    user:
-      name: user
-      password: password
   datasource:
     url: jdbc:postgresql://localhost:5432/ms-rarting-db
     username: postgres
     password: 123fuser1442
     driver-class-name: org.postgresql.Driver
+
+  security:
+    user:
+      name: user
+      password: password
+    enabled: false  # 🔥 Desactiva la autenticación en toda la app
+
   config:
     import:
       - "classpath:application-openapi-rating.yml"
