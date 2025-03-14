@@ -2,9 +2,7 @@ package com.hazmelaucb.ms_rating.model.entity;
 
 import jakarta.persistence.*;
 
-import java.io.Serial;
 import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
 
 @Entity
 @Table(name = "rating")
@@ -17,8 +15,11 @@ public class RatingEntity {
     @Column(name = "id_anuncio", nullable = false)
     private Long idAnuncio;
 
+    @Column(name = "user_id", nullable = false)
+    private Long idUsuario;
+
     @Column(name = "rating", nullable = false)
-    private Integer rating;
+    private Long rating;
 
     @Column(name = "rated_at", nullable = false)
     private LocalDateTime ratedAt;
@@ -26,9 +27,10 @@ public class RatingEntity {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
-    public RatingEntity(Long idRating, Long idAnuncio, Integer rating, LocalDateTime ratedAt, LocalDateTime updatedAt) {
+    public RatingEntity(Long idRating, Long idAnuncio, Long idUsuario, Long rating, LocalDateTime ratedAt, LocalDateTime updatedAt) {
         this.idRating = idRating;
         this.idAnuncio = idAnuncio;
+        this.idUsuario = idUsuario;
         this.rating = rating;
         this.ratedAt = ratedAt;
         this.updatedAt = updatedAt;
@@ -54,11 +56,19 @@ public class RatingEntity {
         this.idAnuncio = idAnuncio;
     }
 
-    public Integer getRating() {
-        return rating;
+    public Long getIdUsuario() {
+        return idUsuario;
     }
 
-    public void setRating(Integer rating) {
+    public void setIdUsuario(Long idUsuario) {
+        this.idUsuario = idUsuario;
+    }
+
+    public Integer getRating() {
+        return Math.toIntExact(rating);
+    }
+
+    public void setRating(Long rating) {
         this.rating = rating;
     }
 

@@ -8,7 +8,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.2.1</version>  <!-- ✅ Versión estable que existe en Maven Central -->
+		<version>3.4.3</version>  <!-- ✅ Versión estable que existe en Maven Central -->
 		<relativePath/>
 	</parent>
 
@@ -24,6 +24,13 @@
 	</properties>
 
 	<dependencies>
+		<dependency>
+			<groupId>jakarta.servlet</groupId>
+			<artifactId>jakarta.servlet-api</artifactId>
+			<version>5.0.0</version>
+			<scope>provided</scope>
+		</dependency>
+
 		<!-- 🔥 Springdoc OpenAPI / Swagger -->
 		<dependency>
 			<groupId>org.springdoc</groupId>

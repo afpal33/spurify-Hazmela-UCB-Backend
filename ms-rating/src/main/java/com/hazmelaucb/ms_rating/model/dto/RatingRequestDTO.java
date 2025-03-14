@@ -7,15 +7,20 @@ public class RatingRequestDTO {
     private Long id;
     private Long rating;
     private Long idAnuncio;
+    private Long idUsuario;
     private ZonedDateTime ratedAt;
     private ZonedDateTime updatedAt;
 
-    public RatingRequestDTO(Long id, Integer rating, Long idAnuncio, LocalDateTime ratedAt, LocalDateTime updatedAt) {
+    public RatingRequestDTO(Long id, Long rating, Long idAnuncio, Long idUsuario, ZonedDateTime ratedAt, ZonedDateTime updatedAt) {
         this.id = id;
-        this.rating = Long.valueOf(rating);
+        this.rating = rating;
         this.idAnuncio = idAnuncio;
-        this.ratedAt = ZonedDateTime.from(ratedAt);
-        this.updatedAt = ZonedDateTime.from(updatedAt);
+        this.idUsuario = idUsuario;
+        this.ratedAt = ratedAt;
+        this.updatedAt = updatedAt;
+    }
+
+    public RatingRequestDTO(Long idRating, Integer rating, Long idAnuncio, Long idUsuario, LocalDateTime ratedAt, LocalDateTime updatedAt) {
     }
 
     public Long getId() {
@@ -26,8 +31,8 @@ public class RatingRequestDTO {
         this.id = id;
     }
 
-    public Integer getRating() {
-        return Math.toIntExact(rating);
+    public Long getRating() {
+        return rating;
     }
 
     public void setRating(Long rating) {
@@ -40,6 +45,14 @@ public class RatingRequestDTO {
 
     public void setIdAnuncio(Long idAnuncio) {
         this.idAnuncio = idAnuncio;
+    }
+
+    public Long getIdUsuario() {
+        return idUsuario;
+    }
+
+    public void setIdUsuario(Long idUsuario) {
+        this.idUsuario = idUsuario;
     }
 
     public ZonedDateTime getRatedAt() {

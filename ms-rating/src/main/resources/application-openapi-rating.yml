@@ -1,0 +1,158 @@
+springdoc:
+  swagger-ui.path: /openapi/swagger-ui.html
+  api-docs.path: /openapi/v3/api-docs
+  packagesToScan: com.hazmelaucb.ms_rating.controller
+  pathsToMatch: /**
+
+api:
+  common:
+    version: 1.0.0
+    title: API de Rating
+    description: Servicio para la gestión de calificación de anuncios de HazmelaUCB
+    termsOfService: https://www.hazmelaucb.com/terminos
+    license: Licencia MIT
+    licenseUrl: https://opensource.org/licenses/MIT
+    externalDocDesc: Documentación en Wiki
+    externalDocUrl: https://www.hazmelaucb.com/wiki
+    contact:
+      name: Soporte HazmeLaUCB
+      url: https://www.hazmelaucb.com/contacto
+      email: soporte@hazmelaucb.com
+
+responseCodes:
+  ok.description: Operación exitosa
+  created.description: Calificación creada exitosamente
+  noContent.description: Calificación eliminada exitosamente
+  badRequest.description: Datos de entrada inválidos para calificación
+  notFound.description: Calificación no encontrada
+  serverError.description: Error en el servidor relacionado con la calificación
+  stateUpdated.description: Estado de la calificación actualizado exitosamente
+
+
+  # Documentación de los Endpoints
+  paths:
+    get /api/rating:
+      get:
+        summary: Obtener todas las calificaciones de anuncios
+        description: Obtiene una lista de todas las calificaciones de anuncios.
+        responses:
+          '200':
+            description: Lista de calificaciones obtenida exitosamente
+            content:
+              application/json:
+                schema:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Rating'
+          '500':
+            $ref: '#/components/responses/serverError'
+
+    get /api/rating/{id}:
+      get:
+        summary: Obtener la calificación de un anuncio por ID
+        description: Obtiene la calificación de un anuncio específico por su ID.
+        parameters:
+          - in: path
+            name: id
+            required: true
+            description: ID de la calificación del anuncio
+            schema:
+              type: integer
+        responses:
+          '200':
+            description: Calificación del anuncio obtenida exitosamente
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/Rating'
+          '404':
+            $ref: '#/components/responses/notFound'
+
+    /api/rating:
+      post:
+        summary: Crear una nueva calificación de anuncio
+        description: Crea una nueva calificación para un anuncio.
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Rating'
+        responses:
+          '201':
+            description: Calificación creada exitosamente
+          '400':
+            $ref: '#/components/responses/badRequest'
+
+    put /api/rating/{id}:
+      put:
+        summary: Actualizar una calificación de anuncio
+        description: Actualiza la calificación de un anuncio existente.
+        parameters:
+          - in: path
+            name: id
+            required: true
+            description: ID de la calificación del anuncio
+            schema:
+              type: integer
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Rating'
+        responses:
+          '200':
+            description: Calificación actualizada exitosamente
+          '400':
+            $ref: '#/components/responses/badRequest'
+          '404':
+            $ref: '#/components/responses/notFound'
+
+    /api/rating/{id}:
+      delete:
+        summary: Eliminar una calificación de anuncio
+        description: Elimina una calificación de anuncio por su ID.
+        parameters:
+          - in: path
+            name: id
+            required: true
+            description: ID de la calificación del anuncio
+            schema:
+              type: integer
+        responses:
+          '204':
+            description: Calificación eliminada exitosamente
+          '404':
+            $ref: '#/components/responses/notFound'
+
+components:
+  schemas:
+    Rating:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: ID de la calificación
+        anuncioId:
+          type: integer
+          description: ID del anuncio
+        score:
+          type: number
+          format: float
+          description: Puntuación de la calificación
+        comentario:
+          type: string
+          description: Comentario opcional sobre el anuncio
+        fechaCalificacion:
+          type: string
+          format: date-time
+          description: Fecha en que se realizó la calificación
+
+  responses:
+    badRequest:
+      description: Datos de entrada inválidos
+    notFound:
+      description: Recurso no encontrado
+    serverError:
+      description: Error en el servidor

@@ -1,29 +1,52 @@
-spring.application.name: ms-rating
 server:
   port: 7001
 
-springdoc:
-  api-docs:
-    enabled: true
-  swagger-ui:
-    enabled: true
-    path: /swagger-ui.html
-  show-actuator: true
-
-logging:
-  level:
-    org.springdoc: DEBUG
-api:
-  common:
-    version=1.0.0
 spring:
+  security:
+    user:
+      name: user
+      password: password
+
+  application:
+    name: ms-rating
   datasource:
     url: jdbc:postgresql://localhost:5432/ms-rarting-db
     username: postgres
     password: 123fuser1442
+    driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
       ddl-auto: update
+    show-sql: true
     properties:
       hibernate:
+        format_sql: true
         dialect: org.hibernate.dialect.PostgreSQLDialect
+  config:
+    import:
+      - "classpath:application-openapi-rating.yml"
+  profiles:
+    include:
+      - openapi-rating
+
+springdoc:
+  api-docs:
+    groups:
+      enabled: true
+  swagger-ui:
+    path: /swagger-ui.html
+    display-request-duration: true
+    groups-order: DESC
+    operationsSorter: method
+    disable-swagger-default-url: true
+
+  group-configs:
+    - group: rating
+      paths-to-match: /api/rating/**
+      packages-to-scan: com.hazmelaucb.ms_rating.controller
+
+logging:
+  level:
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    org.springdoc: DEBUG

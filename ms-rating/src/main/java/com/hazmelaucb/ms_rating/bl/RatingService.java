@@ -3,7 +3,6 @@ package com.hazmelaucb.ms_rating.bl;
 import com.hazmelaucb.ms_rating.model.dto.RatingRequestDTO;
 import com.hazmelaucb.ms_rating.model.entity.RatingEntity;
 import com.hazmelaucb.ms_rating.repository.RatingRepository;
-import com.hazmelaucb.ms_rating.bl.AdClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,12 +16,10 @@ import java.util.stream.Collectors;
 public class RatingService {
 
     private final RatingRepository ratingRepository;
-    private final AdClient adClient;
 
     @Autowired
-    public RatingService(RatingRepository ratingRepository, AdClient adClient) {
+    public RatingService(RatingRepository ratingRepository) {
         this.ratingRepository = ratingRepository;
-        this.adClient = adClient;
     }
 
     @Transactional(readOnly = true)
@@ -39,15 +36,25 @@ public class RatingService {
         return convertToDTO(rating);
     }
 
+    @Transactional(readOnly = true)
+    public List<RatingRequestDTO> getRatingsByAdId(Long idAnuncio) {
+        return ratingRepository.findByIdAnuncio(idAnuncio).stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<RatingRequestDTO> getRatingsByUserId(Long userId) {
+        return ratingRepository.findByIdUsuario(userId).stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
     @Transactional
     public RatingRequestDTO createRating(RatingRequestDTO ratingRequestDTO) {
-        // Validate if the Ad exists using Feign Client
-        if (!adClient.adExists(ratingRequestDTO.getIdAnuncio())) {
-            throw new IllegalArgumentException("Ad not found with ID: " + ratingRequestDTO.getIdAnuncio());
-        }
-
         RatingEntity ratingEntity = new RatingEntity();
         ratingEntity.setIdAnuncio(ratingRequestDTO.getIdAnuncio());
+        ratingEntity.setIdUsuario(ratingRequestDTO.getIdUsuario());
         ratingEntity.setRating(ratingRequestDTO.getRating());
         ratingEntity.setRatedAt(ZonedDateTime.now().toLocalDateTime());
         ratingEntity.setUpdatedAt(ZonedDateTime.now().toLocalDateTime());
@@ -77,12 +84,12 @@ public class RatingService {
         return true;
     }
 
-    // Helper method to convert RatingEntity to RatingRequestDTO
     private RatingRequestDTO convertToDTO(RatingEntity ratingEntity) {
         return new RatingRequestDTO(
                 ratingEntity.getIdRating(),
                 ratingEntity.getRating(),
                 ratingEntity.getIdAnuncio(),
+                ratingEntity.getIdUsuario(),
                 ratingEntity.getRatedAt(),
                 ratingEntity.getUpdatedAt()
         );

@@ -6,6 +6,7 @@ BEGIN;
 CREATE TABLE IF NOT EXISTS public.rating
 (
     id_rating serial NOT NULL,
+    user_id integer,
     id_anuncio integer,
     rating integer,
     rated_at timestamp with time zone NOT NULL,
@@ -31,4 +32,3 @@ ALTER TABLE IF EXISTS public.rating_auditoria
     ON DELETE NO ACTION;
 
 END;
-
