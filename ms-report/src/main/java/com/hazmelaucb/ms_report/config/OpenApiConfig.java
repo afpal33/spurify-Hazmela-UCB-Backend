@@ -1,14 +1,32 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
-
 package com.hazmelaucb.ms_report.config;
 
-/**
- *
- * @author Marco
- */
+import java.util.List;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Contact;
+import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.info.License;
+import io.swagger.v3.oas.models.servers.Server;
+
+@Configuration
 public class OpenApiConfig {
 
+    @Bean
+    public OpenAPI msReportOpenAPI() {
+        return new OpenAPI()
+                .info(new Info()
+                        .title("Microservicio Reportes API")
+                        .description("API para la gestión de reportes de anuncios y perfiles inadecuados")
+                        .version("v1.0.0")
+                        .contact(new Contact()
+                                .name("Sistema Spurify La Paz")
+                                .url("https://github.com/afpal33/spurify-Hazmela-UCB-Backend"))
+                        .license(new License()
+                                .name("Apache 2.0")
+                                .url("http://www.apache.org/licenses/LICENSE-2.0")))
+                .servers(List.of(new Server().url("/").description("Default Server URL")));
+    }
 }
