@@ -1,0 +1,28 @@
+server:
+  port: 7001
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+    path: /openapi/swagger-ui.html
+  show-actuator: true
+
+logging:
+  level:
+    org.springdoc: DEBUG
+
+spring:
+  security:
+    user:
+      name: user
+      password: password
+  datasource:
+    url: jdbc:postgresql://localhost:5432/ms-rarting-db
+    username: postgres
+    password: 123fuser1442
+    driver-class-name: org.postgresql.Driver
+  config:
+    import:
+      - "classpath:application-openapi-rating.yml"
