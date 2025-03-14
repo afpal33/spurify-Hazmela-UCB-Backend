@@ -7,152 +7,75 @@ springdoc:
 api:
   common:
     version: 1.0.0
-    title: API de Rating
-    description: Servicio para la gestión de calificación de anuncios de HazmelaUCB
-    termsOfService: https://www.hazmelaucb.com/terminos
+    title: API Rating
+    description: Servicio de gestión de calificaciones
+    termsOfService: https://www.miempresa.com/terminos
     license: Licencia MIT
     licenseUrl: https://opensource.org/licenses/MIT
     externalDocDesc: Documentación en Wiki
-    externalDocUrl: https://www.hazmelaucb.com/wiki
+    externalDocUrl: https://www.miempresa.com/wiki
     contact:
-      name: Soporte HazmeLaUCB
-      url: https://www.hazmelaucb.com/contacto
-      email: soporte@hazmelaucb.com
+      name: Soporte Mi Empresa
+      url: https://www.miempresa.com/contacto
+      email: soporte@miempresa.com
 
-responseCodes:
-  ok.description: Operación exitosa
-  created.description: Calificación creada exitosamente
-  noContent.description: Calificación eliminada exitosamente
-  badRequest.description: Datos de entrada inválidos para calificación
-  notFound.description: Calificación no encontrada
-  serverError.description: Error en el servidor relacionado con la calificación
-  stateUpdated.description: Estado de la calificación actualizado exitosamente
+  responseCodes:
+    ok.description: OK
+    notFound.description: Not found, la calificación solicitada no existe.
+    badRequest.description: Bad Request, los parámetros no son válidos o están incompletos.
+    unprocessableEntity.description: Unprocessable entity, no se puede procesar los parámetros de entrada.
 
+  rating:
+    get-all:
+      description: Obtiene todas las calificaciones disponibles.
+      notes: |
+        # Respuesta exitosa
+        Devuelve una lista de todas las calificaciones existentes.
 
-  # Documentación de los Endpoints
-  paths:
-    get /api/rating:
-      get:
-        summary: Obtener todas las calificaciones de anuncios
-        description: Obtiene una lista de todas las calificaciones de anuncios.
-        responses:
-          '200':
-            description: Lista de calificaciones obtenida exitosamente
-            content:
-              application/json:
-                schema:
-                  type: array
-                  items:
-                    $ref: '#/components/schemas/Rating'
-          '500':
-            $ref: '#/components/responses/serverError'
+    get-rating-by-id:
+      description: Retorna una calificación por el id proporcionado.
+      notes: |
+        # Respuesta exitosa
+        Si se encuentra la calificación con el id proporcionado, se devuelve la información.
+        # Respuesta de error
+        Si no se encuentra la calificación, se devuelve un error **404 - Not Found**
+      parameters:
+        id: ID de la calificación a buscar.
 
-    get /api/rating/{id}:
-      get:
-        summary: Obtener la calificación de un anuncio por ID
-        description: Obtiene la calificación de un anuncio específico por su ID.
-        parameters:
-          - in: path
-            name: id
-            required: true
-            description: ID de la calificación del anuncio
-            schema:
-              type: integer
-        responses:
-          '200':
-            description: Calificación del anuncio obtenida exitosamente
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/Rating'
-          '404':
-            $ref: '#/components/responses/notFound'
+    get-ratings-by-user-id:
+      description: Retorna todas las calificaciones realizadas por un usuario específico.
+      notes: |
+        # Respuesta exitosa
+        Si el usuario tiene calificaciones, se devuelven todas las calificaciones.
+        # Respuesta de error
+        Si el usuario no tiene calificaciones, se devuelve un error **204 - No Content**.
 
-    /api/rating:
-      post:
-        summary: Crear una nueva calificación de anuncio
-        description: Crea una nueva calificación para un anuncio.
-        requestBody:
-          required: true
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Rating'
-        responses:
-          '201':
-            description: Calificación creada exitosamente
-          '400':
-            $ref: '#/components/responses/badRequest'
+    get-ratings-by-ad-id:
+      description: Retorna todas las calificaciones asociadas a un anuncio específico.
+      notes: |
+        # Respuesta exitosa
+        Si el anuncio tiene calificaciones, se devuelven todas las calificaciones.
+        # Respuesta de error
+        Si el anuncio no tiene calificaciones, se devuelve un error **204 - No Content**.
 
-    put /api/rating/{id}:
-      put:
-        summary: Actualizar una calificación de anuncio
-        description: Actualiza la calificación de un anuncio existente.
-        parameters:
-          - in: path
-            name: id
-            required: true
-            description: ID de la calificación del anuncio
-            schema:
-              type: integer
-        requestBody:
-          required: true
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Rating'
-        responses:
-          '200':
-            description: Calificación actualizada exitosamente
-          '400':
-            $ref: '#/components/responses/badRequest'
-          '404':
-            $ref: '#/components/responses/notFound'
+    create-rating:
+      description: Crea una nueva calificación.
+      notes: |
+        # Respuesta exitosa
+        Si la calificación es creada exitosamente, se devuelve la calificación con el código de estado **201 - Created**.
 
-    /api/rating/{id}:
-      delete:
-        summary: Eliminar una calificación de anuncio
-        description: Elimina una calificación de anuncio por su ID.
-        parameters:
-          - in: path
-            name: id
-            required: true
-            description: ID de la calificación del anuncio
-            schema:
-              type: integer
-        responses:
-          '204':
-            description: Calificación eliminada exitosamente
-          '404':
-            $ref: '#/components/responses/notFound'
+    update-rating:
+      description: Actualiza una calificación existente.
+      notes: |
+        # Respuesta exitosa
+        Si la calificación es actualizada exitosamente, se devuelve la calificación con el código de estado **200 - OK**.
+        # Respuesta de error
+        Si la calificación no existe, se devuelve un error **404 - Not Found**.
 
-components:
-  schemas:
-    Rating:
-      type: object
-      properties:
-        id:
-          type: integer
-          description: ID de la calificación
-        anuncioId:
-          type: integer
-          description: ID del anuncio
-        score:
-          type: number
-          format: float
-          description: Puntuación de la calificación
-        comentario:
-          type: string
-          description: Comentario opcional sobre el anuncio
-        fechaCalificacion:
-          type: string
-          format: date-time
-          description: Fecha en que se realizó la calificación
-
-  responses:
-    badRequest:
-      description: Datos de entrada inválidos
-    notFound:
-      description: Recurso no encontrado
-    serverError:
-      description: Error en el servidor
+    delete-rating:
+      description: Elimina una calificación por su ID.
+      notes: |
+        # Respuesta exitosa
+        Si la calificación es eliminada exitosamente, se devuelve **204 - No Content**.
+        # Respuesta de error
+        Si la calificación no existe, se devuelve un error **404 - Not Found**.
