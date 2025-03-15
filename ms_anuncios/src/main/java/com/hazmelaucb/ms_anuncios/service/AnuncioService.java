@@ -1,5 +1,7 @@
 package com.hazmelaucb.ms_anuncios.service;
 
+import com.hazmelaucb.ms_anuncios.exception.AnuncioValidationException;
+import com.hazmelaucb.ms_anuncios.exception.ResourceNotFoundException;
 import com.hazmelaucb.ms_anuncios.model.dto.AnuncioCrearDTO;
 import com.hazmelaucb.ms_anuncios.model.dto.AnuncioDTO;
 import com.hazmelaucb.ms_anuncios.model.dto.TagDTO;
@@ -13,8 +15,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
+import java.util.Arrays;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Service
@@ -39,7 +41,7 @@ public class AnuncioService {
     @Transactional(readOnly = true)
     public AnuncioDTO buscarPorId(Long id) {
         Anuncio anuncio = anuncioRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("Anuncio no encontrado con ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Anuncio no encontrado con ID: " + id));
         return convertirADTO(anuncio);
     }
     
@@ -47,7 +49,7 @@ public class AnuncioService {
     public List<AnuncioDTO> buscarPorUsuario(Integer userId) {
         List<Anuncio> anuncios = anuncioRepository.findByUserId(userId);
         if (anuncios.isEmpty()) {
-            throw new NoSuchElementException("No se encontraron anuncios para el usuario con ID: " + userId);
+            throw new ResourceNotFoundException("No se encontraron anuncios para el usuario con ID: " + userId);
         }
         return anuncios.stream()
                 .map(this::convertirADTO)
@@ -58,7 +60,7 @@ public class AnuncioService {
     public List<AnuncioDTO> buscarPorAreaEspecializacion(String areaEspecializacion) {
         List<Anuncio> anuncios = anuncioRepository.findByAreaEspecializacion(areaEspecializacion);
         if (anuncios.isEmpty()) {
-            throw new NoSuchElementException("No se encontraron anuncios para el área: " + areaEspecializacion);
+            throw new ResourceNotFoundException("No se encontraron anuncios para el área: " + areaEspecializacion);
         }
         return anuncios.stream()
                 .map(this::convertirADTO)
@@ -67,9 +69,12 @@ public class AnuncioService {
     
     @Transactional(readOnly = true)
     public List<AnuncioDTO> buscarPorEstado(String estado) {
+        // Validar que el estado proporcionado sea válido
+        validarEstadoAnuncio(estado);
+        
         List<Anuncio> anuncios = anuncioRepository.findByEstado(estado);
         if (anuncios.isEmpty()) {
-            throw new NoSuchElementException("No se encontraron anuncios con el estado: " + estado);
+            throw new ResourceNotFoundException("No se encontraron anuncios con el estado: " + estado);
         }
         return anuncios.stream()
                 .map(this::convertirADTO)
@@ -78,9 +83,14 @@ public class AnuncioService {
     
     @Transactional(readOnly = true)
     public List<AnuncioDTO> buscarPorRangoPrecio(BigDecimal precioMin, BigDecimal precioMax) {
+        // Validar que el precio mínimo no sea mayor que el precio máximo
+        if (precioMin.compareTo(precioMax) > 0) {
+            throw new AnuncioValidationException("El precio mínimo no puede ser mayor que el precio máximo");
+        }
+        
         List<Anuncio> anuncios = anuncioRepository.findByPrecioBetween(precioMin, precioMax);
         if (anuncios.isEmpty()) {
-            throw new NoSuchElementException("No se encontraron anuncios en el rango de precio: " + precioMin + " - " + precioMax);
+            throw new ResourceNotFoundException("No se encontraron anuncios en el rango de precio: " + precioMin + " - " + precioMax);
         }
         return anuncios.stream()
                 .map(this::convertirADTO)
@@ -89,6 +99,9 @@ public class AnuncioService {
     
     @Transactional
     public AnuncioDTO crear(AnuncioCrearDTO anuncioCrearDTO) {
+        // Validar datos antes de crear
+        validarAnuncioCrear(anuncioCrearDTO);
+        
         Anuncio anuncio = new Anuncio();
         anuncio.setUserId(anuncioCrearDTO.getUserId());
         anuncio.setTitulo(anuncioCrearDTO.getTitulo());
@@ -100,6 +113,8 @@ public class AnuncioService {
         String estado = anuncioCrearDTO.getEstado();
         if (estado == null || estado.isEmpty()) {
             estado = EstadoAnuncio.DRAFT.toString();
+        } else {
+            validarEstadoAnuncio(estado);
         }
         anuncio.setEstado(estado);
         
@@ -113,8 +128,11 @@ public class AnuncioService {
     
     @Transactional
     public AnuncioDTO actualizar(Long id, AnuncioCrearDTO anuncioCrearDTO) {
+        // Validar datos antes de actualizar
+        validarAnuncioCrear(anuncioCrearDTO);
+        
         Anuncio anuncioExistente = anuncioRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("Anuncio no encontrado con ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Anuncio no encontrado con ID: " + id));
         
         anuncioExistente.setTitulo(anuncioCrearDTO.getTitulo());
         anuncioExistente.setDescripcion(anuncioCrearDTO.getDescripcion());
@@ -122,6 +140,7 @@ public class AnuncioService {
         anuncioExistente.setPrecio(anuncioCrearDTO.getPrecio());
         
         if (anuncioCrearDTO.getEstado() != null && !anuncioCrearDTO.getEstado().isEmpty()) {
+            validarEstadoAnuncio(anuncioCrearDTO.getEstado());
             anuncioExistente.setEstado(anuncioCrearDTO.getEstado());
         }
         
@@ -133,21 +152,17 @@ public class AnuncioService {
     @Transactional
     public void eliminar(Long id) {
         if (!anuncioRepository.existsById(id)) {
-            throw new NoSuchElementException("Anuncio no encontrado con ID: " + id);
+            throw new ResourceNotFoundException("Anuncio no encontrado con ID: " + id);
         }
         anuncioRepository.deleteById(id);
     }
     
     @Transactional
     public AnuncioDTO cambiarEstado(Long id, String nuevoEstado) {
-        Anuncio anuncio = anuncioRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("Anuncio no encontrado con ID: " + id));
+        validarEstadoAnuncio(nuevoEstado);
         
-        try {
-            EstadoAnuncio.valueOf(nuevoEstado);
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Estado no válido: " + nuevoEstado);
-        }
+        Anuncio anuncio = anuncioRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Anuncio no encontrado con ID: " + id));
         
         anuncio.setEstado(nuevoEstado);
         return convertirADTO(anuncioRepository.save(anuncio));
@@ -156,10 +171,15 @@ public class AnuncioService {
     @Transactional
     public AnuncioDTO agregarTagAAnuncio(Integer anuncioId, Integer tagId) {
         Anuncio anuncio = anuncioRepository.findById(anuncioId.longValue())
-                .orElseThrow(() -> new NoSuchElementException("Anuncio no encontrado con ID: " + anuncioId));
+                .orElseThrow(() -> new ResourceNotFoundException("Anuncio no encontrado con ID: " + anuncioId));
             
         com.hazmelaucb.ms_anuncios.model.entity.Tag tag = tagRepository.findById(tagId.longValue())
-                .orElseThrow(() -> new NoSuchElementException("Tag no encontrado con ID: " + tagId));
+                .orElseThrow(() -> new ResourceNotFoundException("Tag no encontrado con ID: " + tagId));
+        
+        // Validar que el tag no esté ya asociado al anuncio
+        if (anuncio.getTags().contains(tag)) {
+            throw new AnuncioValidationException("El tag con ID " + tagId + " ya está asociado al anuncio con ID " + anuncioId);
+        }
         
         anuncio.agregarTag(tag);
         anuncio = anuncioRepository.save(anuncio);
@@ -170,7 +190,7 @@ public class AnuncioService {
     @Transactional(readOnly = true)
     public List<TagDTO> obtenerTagsDeAnuncio(Integer anuncioId) {
         Anuncio anuncio = anuncioRepository.findById(anuncioId.longValue())
-                .orElseThrow(() -> new NoSuchElementException("Anuncio no encontrado con ID: " + anuncioId));
+                .orElseThrow(() -> new ResourceNotFoundException("Anuncio no encontrado con ID: " + anuncioId));
             
         return anuncio.getTags().stream()
                 .map(this::convertirTagADTO)
@@ -180,19 +200,43 @@ public class AnuncioService {
     @Transactional
     public AnuncioDTO eliminarTagDeAnuncio(Integer anuncioId, Integer tagId) {
         Anuncio anuncio = anuncioRepository.findById(anuncioId.longValue())
-                .orElseThrow(() -> new NoSuchElementException("Anuncio no encontrado con ID: " + anuncioId));
+                .orElseThrow(() -> new ResourceNotFoundException("Anuncio no encontrado con ID: " + anuncioId));
             
         com.hazmelaucb.ms_anuncios.model.entity.Tag tag = tagRepository.findById(tagId.longValue())
-                .orElseThrow(() -> new NoSuchElementException("Tag no encontrado con ID: " + tagId));
+                .orElseThrow(() -> new ResourceNotFoundException("Tag no encontrado con ID: " + tagId));
         
         if (!anuncio.getTags().contains(tag)) {
-            throw new IllegalArgumentException("La etiqueta con ID: " + tagId + " no está asociada al anuncio con ID: " + anuncioId);
+            throw new AnuncioValidationException("La etiqueta con ID: " + tagId + " no está asociada al anuncio con ID: " + anuncioId);
         }
         
         anuncio.removerTag(tag);
         anuncio = anuncioRepository.save(anuncio);
         
         return convertirADTO(anuncio);
+    }
+    
+    // Método para validar el estado del anuncio
+    private void validarEstadoAnuncio(String estado) {
+        try {
+            EstadoAnuncio.valueOf(estado);
+        } catch (IllegalArgumentException e) {
+            List<String> estadosValidos = Arrays.stream(EstadoAnuncio.values())
+                    .map(EstadoAnuncio::name)
+                    .collect(Collectors.toList());
+            
+            throw new AnuncioValidationException("Estado no válido: " + estado + ". Los estados permitidos son: " + estadosValidos);
+        }
+    }
+    
+    // Método para validar los datos de un anuncio al crear o actualizar
+    private void validarAnuncioCrear(AnuncioCrearDTO anuncioDTO) {
+        if (anuncioDTO.getPrecio() != null && anuncioDTO.getPrecio().compareTo(BigDecimal.ZERO) < 0) {
+            throw new AnuncioValidationException("El precio no puede ser negativo");
+        }
+        
+        if (anuncioDTO.getEstado() != null && !anuncioDTO.getEstado().isEmpty()) {
+            validarEstadoAnuncio(anuncioDTO.getEstado());
+        }
     }
     
     // Método auxiliar para convertir Tag a TagDTO
