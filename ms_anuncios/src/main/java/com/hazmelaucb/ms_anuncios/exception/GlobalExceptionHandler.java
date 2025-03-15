@@ -44,16 +44,44 @@ public class GlobalExceptionHandler {
         );
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
+    
+    @ExceptionHandler(AnuncioValidationException.class)
+    public ResponseEntity<ErrorResponse> handleAnuncioValidationException(AnuncioValidationException ex) {
+        ErrorResponse errorResponse = new ErrorResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                ex.getMessage(),
+                LocalDateTime.now()
+        );
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<ErrorResponse> handleBadRequestException(BadRequestException ex) {
+        ErrorResponse errorResponse = new ErrorResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                ex.getMessage(),
+                LocalDateTime.now()
+        );
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException ex) {
+    public ResponseEntity<ValidationErrorResponse> handleValidationExceptions(MethodArgumentNotValidException ex) {
         Map<String, String> errors = new HashMap<>();
         ex.getBindingResult().getAllErrors().forEach(error -> {
             String fieldName = ((FieldError) error).getField();
             String errorMessage = error.getDefaultMessage();
             errors.put(fieldName, errorMessage);
         });
-        return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+        
+        ValidationErrorResponse validationErrorResponse = new ValidationErrorResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                "Error de validación en los campos del formulario",
+                LocalDateTime.now(),
+                errors
+        );
+        
+        return new ResponseEntity<>(validationErrorResponse, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(Exception.class)
@@ -88,6 +116,20 @@ public class GlobalExceptionHandler {
 
         public LocalDateTime getTimestamp() {
             return timestamp;
+        }
+    }
+    
+    // Clase para errores de validación con detalles por campo
+    public static class ValidationErrorResponse extends ErrorResponse {
+        private Map<String, String> fieldErrors;
+        
+        public ValidationErrorResponse(int status, String message, LocalDateTime timestamp, Map<String, String> fieldErrors) {
+            super(status, message, timestamp);
+            this.fieldErrors = fieldErrors;
+        }
+        
+        public Map<String, String> getFieldErrors() {
+            return fieldErrors;
         }
     }
 }
