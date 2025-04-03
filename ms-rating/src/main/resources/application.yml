@@ -17,9 +17,9 @@ logging:
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/ms-rarting-db
-    username: postgres
-    password: 123fuser1442
+    url: jdbc:postgresql://database:5432/msratingdb
+    username: msrating_user
+    password: msrating_password
     driver-class-name: org.postgresql.Driver
 
   security:
@@ -31,3 +31,7 @@ spring:
   config:
     import:
       - "classpath:application-openapi-rating.yml"
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true

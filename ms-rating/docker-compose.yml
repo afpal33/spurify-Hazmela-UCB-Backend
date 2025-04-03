@@ -1,0 +1,38 @@
+version: "3.8"
+
+services:
+  msrating:
+    build: .
+    container_name: msrating-service
+    ports:
+      - "8080:8080"
+    depends_on:
+      - database
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://database:5432/msratingdb
+      - SPRING_DATASOURCE_USERNAME=msrating_user
+      - SPRING_DATASOURCE_PASSWORD=msrating_password
+    networks:
+      - msrating_network
+
+  database:
+    image: postgres:15
+    container_name: msrating-db
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=msratingdb
+      - POSTGRES_USER=msrating_user
+      - POSTGRES_PASSWORD=msrating_password
+    networks:
+      - msrating_network
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+networks:
+  msrating_network:
+
+volumes:
+  pgdata:
+
