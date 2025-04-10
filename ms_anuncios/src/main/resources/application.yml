@@ -1,13 +1,13 @@
 server:
-  port: 8081
+  port: ${SERVER_PORT:8081}
 
 spring:
   application:
     name: ms-anuncios
   datasource:
-    url: jdbc:postgresql://localhost:5432/anuncios_db
-    username: postgres
-    password: yourpassword
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/anuncios_db}
+    username: ${SPRING_DATASOURCE_USERNAME:postgres}
+    password: ${SPRING_DATASOURCE_PASSWORD:yourpassword}
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
@@ -25,6 +25,18 @@ spring:
     include:
       - openapi-anuncio
       - openapi-tag
+
+app.eureka-server: ${EUREKA_SERVER:eureka-server}
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://${app.eureka-server}:8761/eureka/
+    initialInstanceInfoReplicationIntervalSeconds: 5
+    registryFetchIntervalSeconds: 5
+  instance:
+    leaseRenewalIntervalInSeconds: 5
+    leaseExpirationDurationInSeconds: 5
 
 # Aquí podemos incluir configuración adicional para unificar ambas APIs
 springdoc:

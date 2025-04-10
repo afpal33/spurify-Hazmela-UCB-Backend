@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  db-anuncios:
+    image: postgres:15
+    container_name: db-anuncios
+    environment:
+      POSTGRES_DB: anuncios_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: yourpassword
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata_anuncios:/var/lib/postgresql/data
+    networks:
+      - anuncios-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  ms-anuncios:
+    build: .
+    container_name: ms-anuncios
+    depends_on:
+      - db-anuncios
+      - eureka-server
+    environment:
+      SERVER_PORT: 8081
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db-anuncios:5432/anuncios_db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: yourpassword
+      EUREKA_SERVER: eureka-server
+    ports:
+      - "8081:8081"
+    networks:
+      - anuncios-net
+
+  eureka-server:
+    image: eureka-server:latest
+    container_name: eureka-server
+    ports:
+      - "8761:8761"
+    networks:
+      - anuncios-net
+
+volumes:
+  pgdata_anuncios:
+
+networks:
+  anuncios-net:
+    driver: bridge
