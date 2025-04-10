@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  eureka-server:
+    build: ./eureka-server
+    container_name: eureka-server
+    ports:
+      - "8761:8761"
+    networks:
+      - hazmela-net
+
+  db-user:
+    image: postgres:15
+    container_name: db-user
+    environment:
+      POSTGRES_DB: ms_user_hazmelaucb_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1590PPL
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - hazmela-net
+
+  ms-user:
+    build: ./ms-user
+    container_name: ms-user
+    depends_on:
+      - db-user
+      - eureka-server
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db-user:5432/ms_user_hazmelaucb_db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: 1590PPL
+    ports:
+      - "7002:7002"
+    networks:
+      - hazmela-net
+
+volumes:
+  pgdata:
+
+networks:
+  hazmela-net:
+    driver: bridge
