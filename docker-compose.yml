@@ -38,8 +38,40 @@ services:
     networks:
       - hazmela-net
 
+  # Servicios del microservicio de anuncios
+  db-anuncios:
+    image: postgres:15
+    container_name: db-anuncios
+    environment:
+      POSTGRES_DB: anuncios_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1590PPL
+    ports:
+      - "5433:5432"  # Cambiado a puerto 5433 externo para evitar conflicto
+    volumes:
+      - pgdata_anuncios:/var/lib/postgresql/data
+      - ./ms_anuncios/dbAnuncios.sql:/docker-entrypoint-initdb.d/dbAnuncios.sql
+    networks:
+      - hazmela-net
+
+  ms-anuncios:
+    build: ./ms_anuncios
+    container_name: ms-anuncios
+    depends_on:
+      - db-anuncios
+      - eureka-server
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db-anuncios:5432/anuncios_db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: 1590PPL
+    ports:
+      - "7005:7005"
+    networks:
+      - hazmela-net
+
 volumes:
   pgdata:
+  pgdata_anuncios:
 
 networks:
   hazmela-net:
