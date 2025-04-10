@@ -1,0 +1,82 @@
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+  api-docs:
+    path: /v3/api-docs
+  packages-to-scan: "com.hazmelaucb.ms_rating"
+  paths-to-match: "/**"
+api:
+  common:
+    version: 1.0.0
+    title: API Rating
+    description: Servicio de gestión de calificaciones
+    termsOfService: https://www.miempresa.com/terminos
+    license: Licencia MIT
+    licenseUrl: https://opensource.org/licenses/MIT
+    externalDocDesc: Documentación en Wiki
+    externalDocUrl: https://www.miempresa.com/wiki
+    contact:
+      name: Soporte Mi Empresa
+      url: https://www.miempresa.com/contacto
+      email: soporte@miempresa.com
+
+  responseCodes:
+    ok.description: OK
+    notFound.description: Not found, la calificación solicitada no existe.
+    badRequest.description: Bad Request, los parámetros no son válidos o están incompletos.
+    unprocessableEntity.description: Unprocessable entity, no se puede procesar los parámetros de entrada.
+
+  rating:
+    get-all:
+      description: Obtiene todas las calificaciones disponibles.
+      notes: |
+        # Respuesta exitosa
+        Devuelve una lista de todas las calificaciones existentes.
+
+    get-rating-by-id:
+      description: Retorna una calificación por el id proporcionado.
+      notes: |
+        # Respuesta exitosa
+        Si se encuentra la calificación con el id proporcionado, se devuelve la información.
+        # Respuesta de error
+        Si no se encuentra la calificación, se devuelve un error **404 - Not Found**
+      parameters:
+        id: ID de la calificación a buscar.
+
+    get-ratings-by-user-id:
+      description: Retorna todas las calificaciones realizadas por un usuario específico.
+      notes: |
+        # Respuesta exitosa
+        Si el usuario tiene calificaciones, se devuelven todas las calificaciones.
+        # Respuesta de error
+        Si el usuario no tiene calificaciones, se devuelve un error **204 - No Content**.
+
+    get-ratings-by-ad-id:
+      description: Retorna todas las calificaciones asociadas a un anuncio específico.
+      notes: |
+        # Respuesta exitosa
+        Si el anuncio tiene calificaciones, se devuelven todas las calificaciones.
+        # Respuesta de error
+        Si el anuncio no tiene calificaciones, se devuelve un error **204 - No Content**.
+
+    create-rating:
+      description: Crea una nueva calificación.
+      notes: |
+        # Respuesta exitosa
+        Si la calificación es creada exitosamente, se devuelve la calificación con el código de estado **201 - Created**.
+
+    update-rating:
+      description: Actualiza una calificación existente.
+      notes: |
+        # Respuesta exitosa
+        Si la calificación es actualizada exitosamente, se devuelve la calificación con el código de estado **200 - OK**.
+        # Respuesta de error
+        Si la calificación no existe, se devuelve un error **404 - Not Found**.
+
+    delete-rating:
+      description: Elimina una calificación por su ID.
+      notes: |
+        # Respuesta exitosa
+        Si la calificación es eliminada exitosamente, se devuelve **204 - No Content**.
+        # Respuesta de error
+        Si la calificación no existe, se devuelve un error **404 - Not Found**.

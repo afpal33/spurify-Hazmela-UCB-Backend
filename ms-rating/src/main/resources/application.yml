@@ -1,0 +1,34 @@
+
+server:
+  port: 7001
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+  show-actuator: true
+
+logging:
+  level:
+    org.springdoc: DEBUG
+
+
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/ms_auth_hazmelaucb_db
+    username: postgres
+    password: 1590PPL
+    driver-class-name: org.postgresql.Driver
+
+  security:
+    user:
+      name: user
+      password: password
+    enabled: false  # 🔥 Desactiva la autenticación en toda la app
+
+  config:
+    import:
+        - "classpath:application-openapi-rating.yml"
