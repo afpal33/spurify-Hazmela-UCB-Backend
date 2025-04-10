@@ -1,19 +1,19 @@
 version: '3.8'
 
 services:
-  postgres:
+  db-anuncios:
     image: postgres:15
-    container_name: postgres_anuncios
-    ports:
-      - "5432:5432"
+    container_name: db-anuncios
     environment:
       POSTGRES_DB: anuncios_db
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: yourpassword
+    ports:
+      - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - pgdata_anuncios:/var/lib/postgresql/data
     networks:
-      - anuncios_network
+      - anuncios-net
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
@@ -21,25 +21,33 @@ services:
       retries: 5
 
   ms-anuncios:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: ms_anuncios
-    ports:
-      - "8081:8081"
+    build: .
+    container_name: ms-anuncios
+    depends_on:
+      - db-anuncios
+      - eureka-server
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/anuncios_db
+      SERVER_PORT: 8081
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db-anuncios:5432/anuncios_db
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: yourpassword
-    depends_on:
-      postgres:
-        condition: service_healthy
+      EUREKA_SERVER: eureka-server
+    ports:
+      - "8081:8081"
     networks:
-      - anuncios_network
+      - anuncios-net
 
-networks:
-  anuncios_network:
-    driver: bridge
+  eureka-server:
+    image: eureka-server:latest
+    container_name: eureka-server
+    ports:
+      - "8761:8761"
+    networks:
+      - anuncios-net
 
 volumes:
-  postgres_data:
+  pgdata_anuncios:
+
+networks:
+  anuncios-net:
+    driver: bridge
