@@ -17,10 +17,18 @@ logging:
 
 
 spring:
+  application:
+    name: ms-auth
+  jpa:
+    hibernate:
+      ddl-auto: update
   datasource:
-    url: jdbc:postgresql://localhost:5432/ms_auth_hazmelaucb_db
-    username: postgres
-    password: 1590PPL
+    #url: jdbc:postgresql://localhost:5432/ms_auth_hazmelaucb_db
+    #username: postgres
+    #password: 1590PPL
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
     driver-class-name: org.postgresql.Driver
   config:
     import:
@@ -29,3 +37,15 @@ spring:
       - "classpath:application-openapi-audit.yml"
       - "classpath:application-openapi-admin.yml"
       - "classpath:application-openapi-session.yml"
+
+app.eureka-server: eureka-server
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://${app.eureka-server}:8761/eureka/
+    initialInstanceInfoReplicationIntervalSeconds: 5
+    registryFetchIntervalSeconds: 5
+  instance:
+    leaseRenewalIntervalInSeconds: 5
+    leaseExpirationDurationInSeconds: 5

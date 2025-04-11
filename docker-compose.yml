@@ -1,6 +1,7 @@
 version: '3.8'
 
 services:
+
   eureka-server:
     build: ./eureka-server
     container_name: eureka-server
@@ -9,6 +10,7 @@ services:
     networks:
       - hazmela-net
 
+  # Servicios del microservicio de usuarios
   db-user:
     image: postgres:15
     container_name: db-user
@@ -35,6 +37,36 @@ services:
       SPRING_DATASOURCE_PASSWORD: 1590PPL
     ports:
       - "7002:7002"
+    networks:
+      - hazmela-net
+
+  # Servicios del microservicio de autenticación
+  db-auth:
+    image: postgres:15
+    container_name: db-auth
+    environment:
+      POSTGRES_DB: ms_auth_hazmelaucb_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1590PPL
+    ports:
+      - "5434:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - hazmela-net
+
+  ms-auth:
+    build: ./ms_authenticate
+    container_name: ms-auth
+    depends_on:
+      - db-auth
+      - eureka-server
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db-auth:5432/ms_user_hazmelaucb_db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: 1590PPL
+    ports:
+      - "7010:7010"
     networks:
       - hazmela-net
 
