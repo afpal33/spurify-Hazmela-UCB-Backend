@@ -10,6 +10,17 @@ services:
     networks:
       - hazmela-net
 
+  edge-server:
+    build: ./edge-server
+    container_name: edge-server
+    depends_on:
+      - eureka-server
+    ports:
+      - "8080:8080"
+    networks:
+      - hazmela-net
+
+
   # Servicios del microservicio de usuarios
   db-user:
     image: postgres:15
@@ -21,7 +32,8 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - pgdata_user:/var/lib/postgresql/data
+      - ./ms-user/dbUser.sql:/docker-entrypoint-initdb.d/dbUser.sql
     networks:
       - hazmela-net
 
@@ -51,7 +63,8 @@ services:
     ports:
       - "5434:5432"
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - pgdata_auth:/var/lib/postgresql/data
+      - ./ms_authenticate/dbAuth.sql:/docker-entrypoint-initdb.d/dbAuth.sql
     networks:
       - hazmela-net
 
@@ -62,11 +75,11 @@ services:
       - db-auth
       - eureka-server
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://db-auth:5432/ms_user_hazmelaucb_db
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db-auth:5432/ms_auth_hazmelaucb_db
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: 1590PPL
     ports:
-      - "7010:7010"
+      - "7001:7001"
     networks:
       - hazmela-net
 
@@ -102,8 +115,9 @@ services:
       - hazmela-net
 
 volumes:
-  pgdata:
+  pgdata_user:
   pgdata_anuncios:
+  pgdata_auth:
 
 networks:
   hazmela-net:

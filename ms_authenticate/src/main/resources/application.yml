@@ -1,6 +1,6 @@
 
 server:
-  port: 7001
+  port: ${SERVER_PORT:7001}
 
 springdoc:
   api-docs:
@@ -19,9 +19,6 @@ logging:
 spring:
   application:
     name: ms-auth
-  jpa:
-    hibernate:
-      ddl-auto: update
   datasource:
     #url: jdbc:postgresql://localhost:5432/ms_auth_hazmelaucb_db
     #username: postgres

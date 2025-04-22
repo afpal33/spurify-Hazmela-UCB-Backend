@@ -4,9 +4,6 @@ server:
 spring:
   application:
     name: ms-user
-  jpa:
-    hibernate:
-      ddl-auto: update
   datasource:
     #url: jdbc:postgresql://localhost:5432/ms_user_hazmelaucb_db
     #username: postgres

@@ -1,6 +1,6 @@
-CREATE DATABASE ms_auth_hazmelaucb_db;
 
 
+-- Tabla de Usuarios de Autenticación
 -- Tabla de Usuarios de Autenticación
 CREATE TABLE auth_users (
                             id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -11,6 +11,9 @@ CREATE TABLE auth_users (
                             is_locked BOOLEAN DEFAULT FALSE,
                             failed_attempts INT DEFAULT 0,
                             last_login TIMESTAMP DEFAULT NULL,
+                            last_login_ip TEXT,  -- NUEVO: dirección IP del último login
+                            last_login_user_agent TEXT,  -- NUEVO: user agent del último login
+                            google_id TEXT,  -- opcional para OAuth con Google
                             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -78,3 +81,8 @@ CREATE TABLE audit_logs (
     user_agent TEXT NOT NULL,
     timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+
+-- Inserción de roles por defecto
+INSERT INTO roles(name) VALUES ('ESTUDIANTE');
+INSERT INTO roles(name) VALUES ('ADMIN');
