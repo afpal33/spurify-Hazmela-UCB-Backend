@@ -1,0 +1,94 @@
+spring.application.name: edge-server
+
+server.port: 8080
+
+app.eureka-server: eureka-server
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://${app.eureka-server}:8761/eureka/
+    initialInstanceInfoReplicationIntervalSeconds: 5
+    registryFetchIntervalSeconds: 5
+  instance:
+    leaseRenewalIntervalInSeconds: 5
+    leaseExpirationDurationInSeconds: 5
+
+
+
+spring.cloud.gateway.routes:
+
+  - id: ms-user
+    uri: lb://ms-user
+    predicates:
+      - Path=/ms-user/**
+    filters:
+      - StripPrefix=1
+
+  - id: ms-user-swagger-ui
+    uri: lb://ms-user
+    predicates:
+      - Path=/swagger-user/swagger-ui/**
+    filters:
+      - StripPrefix=1
+
+  - id: ms-user-swagger-config
+    uri: lb://ms-user
+    predicates:
+      - Path=/v3/api-docs/swagger-config
+    filters:
+      - StripPrefix=0
+
+  - id: ms-user-swagger-api-docs-fix
+    uri: lb://ms-user
+    predicates:
+      - Path=/v3/api-docs
+    filters:
+      - SetPath=/v3/api-docs
+
+
+
+  - id: ms-auth
+    uri: lb://ms-auth
+    predicates:
+      - Path=/ms-auth/**
+    filters:
+      - StripPrefix=1
+
+
+
+  - id: ms-anuncios
+    uri: lb://ms-anuncios
+    predicates:
+      - Path=/ms-anuncios/**
+    filters:
+      - StripPrefix=1
+
+
+
+
+  - id: eureka-web-start
+    uri: http://${app.eureka-server}:8761
+    predicates:
+      - Path=/eureka/web
+    filters:
+      - SetPath=/
+
+  - id: eureka-web-other
+    uri: http://${app.eureka-server}:8761
+    predicates:
+      - Path=/eureka/**
+
+
+management.endpoint.gateway.enabled: true
+management.endpoint.health.show-details: "ALWAYS"
+management.endpoints.web.exposure.include: "*"
+
+logging:
+  level:
+    root: INFO
+    org.springframework.cloud.gateway.route.RouteDefinitionRouteLocator: INFO
+    org.springframework.cloud.gateway: TRACE
+
+---
+spring.config.activate.on-profile: docker
