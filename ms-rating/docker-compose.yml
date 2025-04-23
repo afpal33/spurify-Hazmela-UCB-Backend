@@ -9,22 +9,22 @@ services:
     depends_on:
       - database
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://database:5432/msratingdb
-      - SPRING_DATASOURCE_USERNAME=msrating_user
-      - SPRING_DATASOURCE_PASSWORD=msrating_password
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://database:5432/ms-rarting-db
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=123fuser1442
     networks:
       - msrating_network
 
   database:
     image: postgres:15
-    container_name: msrating-db
+    container_name: database
     restart: always
     ports:
       - "5432:5432"
     environment:
-      - POSTGRES_DB=msratingdb
-      - POSTGRES_USER=msrating_user
-      - POSTGRES_PASSWORD=msrating_password
+      - POSTGRES_DB=ms-rarting-db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=123fuser1442
     networks:
       - msrating_network
     volumes:
@@ -35,4 +35,3 @@ networks:
 
 volumes:
   pgdata:
-

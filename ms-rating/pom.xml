@@ -13,7 +13,7 @@
 	</parent>
 
 	<groupId>com.hazmelaucb</groupId>
-	<artifactId>ms_authenticate</artifactId>
+	<artifactId>ms_rating</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>ms_authenticate</name>
 	<description>Microservice authenticate Hazmela UCB</description>
