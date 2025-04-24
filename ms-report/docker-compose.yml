@@ -32,6 +32,7 @@ services:
       - "5432:5432"
     volumes:
       - pgdata_report:/var/lib/postgresql/data
+      - ./dbReport.sql:/docker-entrypoint-initdb.d/dbReport.sql
     networks:
       - hazmela-net
 
