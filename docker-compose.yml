@@ -1,7 +1,6 @@
-version: '3.8'
+version: "3.8"
 
 services:
-
   eureka-server:
     build: ./eureka-server
     container_name: eureka-server
@@ -19,7 +18,6 @@ services:
       - "8080:8080"
     networks:
       - hazmela-net
-
 
   # Servicios del microservicio de usuarios
   db-user:
@@ -92,7 +90,7 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 1590PPL
     ports:
-      - "5433:5432"  # Cambiado a puerto 5433 externo para evitar conflicto
+      - "5433:5432" # Cambiado a puerto 5433 externo para evitar conflicto
     volumes:
       - pgdata_anuncios:/var/lib/postgresql/data
       - ./ms_anuncios/dbAnuncios.sql:/docker-entrypoint-initdb.d/dbAnuncios.sql
@@ -113,7 +111,7 @@ services:
       - "7005:7005"
     networks:
       - hazmela-net
-  
+
   # Microservicio de rating
   db-rating:
     image: postgres:15
@@ -151,6 +149,7 @@ volumes:
   pgdata_user:
   pgdata_anuncios:
   pgdata_auth:
+  pgdata_rating:
 
 networks:
   hazmela-net:
