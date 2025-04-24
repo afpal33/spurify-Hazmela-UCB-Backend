@@ -1,10 +1,9 @@
 springdoc:
-  swagger-ui:
-    path: /swagger-ui.html
-  api-docs:
-    path: /v3/api-docs
-  packages-to-scan: "com.hazmelaucb.ms_rating"
-  paths-to-match: "/**"
+  swagger-ui.path: /openapi/swagger-ui.html
+  api-docs.path: /openapi/v3/api-docs
+  packagesToScan: com.hazmelaucb.ms_rating.api
+  pathsToMatch: /**
+
 api:
   common:
     version: 1.0.0

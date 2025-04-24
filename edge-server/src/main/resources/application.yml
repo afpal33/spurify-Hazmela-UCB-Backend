@@ -22,6 +22,7 @@ eureka:
 
 
 
+
 spring:
   cloud:
     gateway:
@@ -50,6 +51,7 @@ spring:
           filters:
             - StripPrefix=0
 
+
         - id: ms-user-swagger-api-docs-fix
           uri: lb://ms-user
           predicates:
@@ -75,7 +77,13 @@ spring:
           filters:
             - StripPrefix=1
 
-
+        # Rutas para ms rating
+        - id: ms-rating
+          uri: lb://ms-rating
+          predicates:
+            - Path=/ms-rating/**
+          filters:
+            - StripPrefix=1
 
 
         - id: eureka-web-start
@@ -84,6 +92,7 @@ spring:
             - Path=/eureka/web
           filters:
             - SetPath=/
+
 
         - id: eureka-web-other
           uri: http://${app.eureka-server}:8761
@@ -95,16 +104,21 @@ spring:
         jwt:
           issuer-uri: http://keycloak:8080/realms/hazmelaucb
 
+
+# Configuración para exponer endpoints de administración
 management.endpoint.gateway.enabled: true
 management.endpoint.health.show-details: "ALWAYS"
 management.endpoints.web.exposure.include: "*"
 
+# Configuración de logging para ayudar en la depuración
 logging:
   level:
     root: INFO
+
     '[org.springframework.cloud.gateway.route.RouteDefinitionRouteLocator]': INFO
     '[org.springframework.cloud.gateway]': TRACE
     '[org.springframework.security]': DEBUG
+
 
 ---
 spring.config.activate.on-profile: docker

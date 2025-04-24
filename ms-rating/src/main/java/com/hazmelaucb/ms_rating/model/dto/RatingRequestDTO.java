@@ -1,17 +1,21 @@
 package com.hazmelaucb.ms_rating.model.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
 
 public class RatingRequestDTO {
     private Long id;
     private Long rating;
     private Long idAnuncio;
     private Long idUsuario;
-    private ZonedDateTime ratedAt;
-    private ZonedDateTime updatedAt;
 
-    public RatingRequestDTO(Long id, Long rating, Long idAnuncio, Long idUsuario, ZonedDateTime ratedAt, ZonedDateTime updatedAt) {
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    private LocalDateTime ratedAt;
+
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    private LocalDateTime updatedAt;
+
+    public RatingRequestDTO(Long id, Long rating, Long idAnuncio, Long idUsuario, LocalDateTime ratedAt, LocalDateTime updatedAt) {
         this.id = id;
         this.rating = rating;
         this.idAnuncio = idAnuncio;
@@ -20,8 +24,7 @@ public class RatingRequestDTO {
         this.updatedAt = updatedAt;
     }
 
-    public RatingRequestDTO(Long idRating, Integer rating, Long idAnuncio, Long idUsuario, LocalDateTime ratedAt, LocalDateTime updatedAt) {
-    }
+    // Getters and setters
 
     public Long getId() {
         return id;
@@ -55,19 +58,19 @@ public class RatingRequestDTO {
         this.idUsuario = idUsuario;
     }
 
-    public ZonedDateTime getRatedAt() {
+    public LocalDateTime getRatedAt() {
         return ratedAt;
     }
 
-    public void setRatedAt(ZonedDateTime ratedAt) {
+    public void setRatedAt(LocalDateTime ratedAt) {
         this.ratedAt = ratedAt;
     }
 
-    public ZonedDateTime getUpdatedAt() {
+    public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
 
-    public void setUpdatedAt(ZonedDateTime updatedAt) {
+    public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
 }

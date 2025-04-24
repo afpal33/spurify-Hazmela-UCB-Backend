@@ -25,7 +25,7 @@ public class RatingService {
     @Transactional(readOnly = true)
     public List<RatingRequestDTO> getAllRatings() {
         return ratingRepository.findAll().stream()
-                .map(this::convertToDTO)
+                .map(this::convertToDTO)  // Convierte las entidades a DTOs
                 .collect(Collectors.toList());
     }
 
@@ -33,20 +33,20 @@ public class RatingService {
     public RatingRequestDTO getRatingById(Long id) {
         RatingEntity rating = ratingRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Rating not found with ID: " + id));
-        return convertToDTO(rating);
+        return convertToDTO(rating);  // Convierte la entidad a DTO
     }
 
     @Transactional(readOnly = true)
     public List<RatingRequestDTO> getRatingsByAdId(Long idAnuncio) {
         return ratingRepository.findByIdAnuncio(idAnuncio).stream()
-                .map(this::convertToDTO)
+                .map(this::convertToDTO)  // Convierte las entidades a DTOs
                 .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
     public List<RatingRequestDTO> getRatingsByUserId(Long userId) {
         return ratingRepository.findByIdUsuario(userId).stream()
-                .map(this::convertToDTO)
+                .map(this::convertToDTO)  // Convierte las entidades a DTOs
                 .collect(Collectors.toList());
     }
 
@@ -55,12 +55,12 @@ public class RatingService {
         RatingEntity ratingEntity = new RatingEntity();
         ratingEntity.setIdAnuncio(ratingRequestDTO.getIdAnuncio());
         ratingEntity.setIdUsuario(ratingRequestDTO.getIdUsuario());
-        ratingEntity.setRating(ratingRequestDTO.getRating());
+        ratingEntity.setRating(ratingRequestDTO.getRating().longValue());
         ratingEntity.setRatedAt(ZonedDateTime.now().toLocalDateTime());
         ratingEntity.setUpdatedAt(ZonedDateTime.now().toLocalDateTime());
 
-        RatingEntity savedRating = ratingRepository.save(ratingEntity);
-        return convertToDTO(savedRating);
+        RatingEntity savedRating = ratingRepository.save(ratingEntity);  // Guarda la entidad en la base de datos
+        return convertToDTO(savedRating);  // Convierte la entidad guardada a DTO
     }
 
     @Transactional
@@ -71,8 +71,8 @@ public class RatingService {
         existingRating.setRating(ratingRequestDTO.getRating());
         existingRating.setUpdatedAt(ZonedDateTime.now().toLocalDateTime());
 
-        RatingEntity updatedRating = ratingRepository.save(existingRating);
-        return convertToDTO(updatedRating);
+        RatingEntity updatedRating = ratingRepository.save(existingRating);  // Actualiza la entidad en la base de datos
+        return convertToDTO(updatedRating);  // Convierte la entidad actualizada a DTO
     }
 
     @Transactional
@@ -80,14 +80,15 @@ public class RatingService {
         if (!ratingRepository.existsById(id)) {
             throw new NoSuchElementException("Rating not found with ID: " + id);
         }
-        ratingRepository.deleteById(id);
+        ratingRepository.deleteById(id);  // Elimina la entidad de la base de datos
         return true;
     }
 
+    // Método de conversión de entidad a DTO
     private RatingRequestDTO convertToDTO(RatingEntity ratingEntity) {
         return new RatingRequestDTO(
                 ratingEntity.getIdRating(),
-                ratingEntity.getRating(),
+                ratingEntity.getRating().longValue(),
                 ratingEntity.getIdAnuncio(),
                 ratingEntity.getIdUsuario(),
                 ratingEntity.getRatedAt(),
