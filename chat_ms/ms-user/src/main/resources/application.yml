@@ -1,0 +1,14 @@
+server:
+  port: 7002
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/ms_user_hazmelaucb_db
+    username: postgres
+    password: 1590PPL
+    driver-class-name: org.postgresql.Driver
+  config:
+    import:
+      - "classpath:application-openapi-admin.yml"
+      - "classpath:application-openapi-student.yml"
+      - "classpath:application-openapi-user.yml"

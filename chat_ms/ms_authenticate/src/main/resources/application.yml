@@ -1,0 +1,31 @@
+
+server:
+  port: 7001
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+  show-actuator: true
+
+logging:
+  level:
+    org.springdoc: DEBUG
+
+
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/ms_auth_hazmelaucb_db
+    username: postgres
+    password: 1590PPL
+    driver-class-name: org.postgresql.Driver
+  config:
+    import:
+      - "classpath:application-openapi-login-attempt.yml"
+      - "classpath:application-openapi-auth.yml"
+      - "classpath:application-openapi-audit.yml"
+      - "classpath:application-openapi-admin.yml"
+      - "classpath:application-openapi-session.yml"

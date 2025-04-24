@@ -1,0 +1,110 @@
+springdoc:
+  swagger-ui.path: /openapi/swagger-ui.html
+  api-docs.path: /openapi/v3/api-docs
+  packagesToScan: com.hazmelaucb.ms_anuncios.controller
+  pathsToMatch: /**
+
+api:
+  common:
+    version: 1.0.0
+    title: API de Anuncios
+    description: Servicio para la gestión de anuncios de HazmelaUCB
+    termsOfService: https://www.hazmelaucb.com/terminos
+    license: Licencia MIT
+    licenseUrl: https://opensource.org/licenses/MIT
+    externalDocDesc: Documentación en Wiki
+    externalDocUrl: https://www.hazmelaucb.com/wiki
+    contact:
+      name: Soporte HazmeLaUCB
+      url: https://www.hazmelaucb.com/contacto
+      email: soporte@hazmelaucb.com
+
+  responseCodes:
+    ok.description: Operación exitosa
+    created.description: Anuncio creado exitosamente
+    noContent.description: Anuncio eliminado exitosamente
+    badRequest.description: Datos de entrada inválidos
+    notFound.description: Anuncio no encontrado
+    serverError.description: Error en el servidor
+    stateUpdated.description: Estado actualizado exitosamente
+
+  anuncio:
+    getAll:
+      description: Retorna una lista con todos los anuncios registrados
+      notes: |
+        # Respuesta exitosa
+        - Devuelve una lista de anuncios.
+
+        # Respuestas con error
+        1. Si hay un problema en el servidor, retorna **500 - Error en el servidor**.
+    getById:
+      description: Retorna un anuncio según el ID proporcionado
+      notes: |
+        # Respuesta exitosa
+        - Devuelve la información del anuncio.
+
+        # Respuestas con error
+        1. Si el ID no existe, retorna **404 - Anuncio no encontrado**.
+    getByUser:
+      description: Retorna una lista de anuncios asociados a un usuario específico
+      notes: |
+        # Respuesta exitosa
+        - Devuelve una lista de anuncios del usuario.
+    getByArea:
+      description: Retorna una lista de anuncios filtrados por área de especialización
+      notes: |
+        # Respuesta exitosa
+        - Devuelve una lista de anuncios filtrados por área.
+    getByStatus:
+      description: Retorna una lista de anuncios filtrados por estado
+      notes: |
+        # Respuesta exitosa
+        - Devuelve una lista de anuncios filtrados por estado.
+    getByPriceRange:
+      description: Retorna una lista de anuncios dentro de un rango de precios específico
+      notes: |
+        # Respuesta exitosa
+        - Devuelve una lista de anuncios dentro del rango de precios.
+    create:
+      description: Crea un nuevo anuncio en el sistema
+      notes: |
+        # Respuesta exitosa
+        - Devuelve el anuncio creado.
+
+        # Respuestas con error
+        1. Si los datos son inválidos, retorna **400 - Datos de entrada inválidos**.
+    update:
+      description: Actualiza la información de un anuncio existente
+      notes: |
+        # Respuesta exitosa
+        - Devuelve el anuncio actualizado.
+
+        # Respuestas con error
+        1. Si el ID no existe, retorna **404 - Anuncio no encontrado**.
+        2. Si los datos proporcionados son inválidos, retorna **400 - Datos de entrada inválidos**.
+    delete:
+      description: Elimina un anuncio existente del sistema
+      notes: |
+        # Respuesta exitosa
+        - No retorna contenido.
+
+        # Respuestas con error
+        1. Si el ID no existe, retorna **404 - Anuncio no encontrado**.
+    changeStatus:
+      description: Actualiza el estado de un anuncio existente
+      notes: |
+        # Respuesta exitosa
+        - Devuelve el anuncio con el estado actualizado.
+
+        # Respuestas con error
+        1. Si el ID no existe, retorna **404 - Anuncio no encontrado**.
+
+  tag:
+    getAnunciosByTagId:
+      description: Retorna todos los anuncios asociados a una etiqueta específica
+      notes: |
+        # Respuesta exitosa
+        - Devuelve una lista de anuncios que tienen esta etiqueta.
+
+        # Respuestas con error
+        1. Si el ID no existe, retorna **404 - Tag no encontrado**.
