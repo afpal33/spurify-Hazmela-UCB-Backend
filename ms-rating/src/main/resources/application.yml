@@ -13,9 +13,10 @@ logging:
   level:
     org.springdoc: DEBUG
 
-
-
 spring:
+  application:
+    name: ms-rating
+
   datasource:
     url: jdbc:postgresql://localhost:5432/ms-rarting-db
     username: postgres
@@ -26,12 +27,20 @@ spring:
     user:
       name: user
       password: password
-    enabled: false  # Desactiva la autenticación en toda la app
+    enabled: false
 
   config:
     import:
       - "classpath:application-openapi-rating.yml"
+
   jpa:
     hibernate:
       ddl-auto: update
     show-sql: true
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+    register-with-eureka: true
+    fetch-registry: true

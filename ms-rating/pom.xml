@@ -20,7 +20,7 @@
 
 	<properties>
 		<java.version>21</java.version>
-		<springdoc.version>2.3.0</springdoc.version> <!-- ✅ Compatible con Spring Boot 3.2.x -->
+		<springdoc.version>2.3.0</springdoc.version> <!-- Compatible con Spring Boot 3.2.x -->
 	</properties>
 
 	<dependencies>
