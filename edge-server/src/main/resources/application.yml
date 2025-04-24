@@ -14,10 +14,7 @@ eureka:
     leaseRenewalIntervalInSeconds: 5
     leaseExpirationDurationInSeconds: 5
 
-
-
 spring.cloud.gateway.routes:
-
   - id: ms-user
     uri: lb://ms-user
     predicates:
@@ -46,16 +43,12 @@ spring.cloud.gateway.routes:
     filters:
       - SetPath=/v3/api-docs
 
-
-
   - id: ms-auth
     uri: lb://ms-auth
     predicates:
       - Path=/ms-auth/**
     filters:
       - StripPrefix=1
-
-
 
   - id: ms-anuncios
     uri: lb://ms-anuncios
@@ -64,8 +57,12 @@ spring.cloud.gateway.routes:
     filters:
       - StripPrefix=1
 
-
-
+  - id: ms-rating
+    uri: lb://ms-rating
+    predicates:
+      - Path=/ms-rating/**
+    filters:
+      - StripPrefix=1
 
   - id: eureka-web-start
     uri: http://${app.eureka-server}:8761
@@ -78,7 +75,6 @@ spring.cloud.gateway.routes:
     uri: http://${app.eureka-server}:8761
     predicates:
       - Path=/eureka/**
-
 
 management.endpoint.gateway.enabled: true
 management.endpoint.health.show-details: "ALWAYS"

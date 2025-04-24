@@ -1,7 +1,6 @@
-version: '3.8'
+version: "3.8"
 
 services:
-
   eureka-server:
     build: ./eureka-server
     container_name: eureka-server
@@ -20,8 +19,7 @@ services:
     networks:
       - hazmela-net
 
-
-  # Servicios del microservicio de usuarios
+  # Microservicio de usuarios
   db-user:
     image: postgres:15
     container_name: db-user
@@ -52,7 +50,7 @@ services:
     networks:
       - hazmela-net
 
-  # Servicios del microservicio de autenticación
+  # Microservicio de autenticación
   db-auth:
     image: postgres:15
     container_name: db-auth
@@ -83,7 +81,7 @@ services:
     networks:
       - hazmela-net
 
-  # Servicios del microservicio de anuncios
+  # Microservicio de anuncios
   db-anuncios:
     image: postgres:15
     container_name: db-anuncios
@@ -92,7 +90,7 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 1590PPL
     ports:
-      - "5433:5432"  # Cambiado a puerto 5433 externo para evitar conflicto
+      - "5433:5432"
     volumes:
       - pgdata_anuncios:/var/lib/postgresql/data
       - ./ms_anuncios/dbAnuncios.sql:/docker-entrypoint-initdb.d/dbAnuncios.sql
@@ -114,10 +112,44 @@ services:
     networks:
       - hazmela-net
 
+  # Microservicio de rating
+  db-rating:
+    image: postgres:15
+    container_name: db-rating
+    environment:
+      POSTGRES_DB: ms-rarting-db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123fuser1442
+    ports:
+      - "5435:5432"
+    volumes:
+      - pgdata_rating:/var/lib/postgresql/data
+    networks:
+      - hazmela-net
+
+  ms-rating:
+    build: ./ms-rating
+    container_name: ms-rating
+    depends_on:
+      - db-rating
+      - eureka-server
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db-rating:5432/ms-rarting-db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: 123fuser1442
+      SERVER_PORT: 5008
+      APP_EUREKA-SERVER: eureka-server
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+    ports:
+      - "5008:5008"
+    networks:
+      - hazmela-net
+
 volumes:
   pgdata_user:
   pgdata_anuncios:
   pgdata_auth:
+  pgdata_rating:
 
 networks:
   hazmela-net:

@@ -1,49 +1,46 @@
-version: "3.8"
+  version: "3.8"
 
-services:
-  msrating:
-    build: .
-    container_name: msrating-service
-    ports:
-      - "7001:7001"
-    depends_on:
-      - database
-      - eurekaserver
-    environment:
-      - SERVER_PORT=7001
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://database:5432/ms-rarting-db
-      - SPRING_DATASOURCE_USERNAME=postgres
-      - SPRING_DATASOURCE_PASSWORD=123fuser1442
-      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eurekaserver:8761/eureka/
-      - APP_EUREKA-SERVER=eurekaserver
-    networks:
-      - msrating_network
+  services:
+    msrating:
+      build: .
+      container_name: msrating-service
+      ports:
+        - "5008:5008"
+      depends_on:
+        - database
+        - eurekaserver
+      environment:
+        - SERVER_PORT=5008
+        - SPRING_DATASOURCE_URL=jdbc:postgresql://database:5432/ms-rarting-db
+        - SPRING_DATASOURCE_USERNAME=postgres
+        - SPRING_DATASOURCE_PASSWORD=123fuser1442
+        - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eurekaserver:8761/eureka/
+        - APP_EUREKA-SERVER=eurekaserver
+      networks:
+        - hazmela-net
 
-  database:
-    image: postgres:15
-    container_name: database
-    restart: always
-    ports:
-      - "5432:5432"
-    environment:
-      - POSTGRES_DB=ms-rarting-db
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=123fuser1442
-    networks:
-      - msrating_network
-    volumes:
-      - pgdata:/var/lib/postgresql/data
+    database:
+      image: postgres:15
+      container_name: database
+      restart: always
+      ports:
+        - "5432:5432"
+      environment:
+        - POSTGRES_DB=ms-rarting-db
+        - POSTGRES_USER=postgres
+        - POSTGRES_PASSWORD=123fuser1442
+      networks:
+        - hazmela-net
+      volumes:
+        - pgdata:/var/lib/postgresql/data
 
-  eurekaserver:
-    image: eurekaserver:latest # Asegúrate de tener esta imagen o cámbiala si necesitas construirla
-    container_name: eurekaserver
-    ports:
-      - "8761:8761"
-    networks:
-      - msrating_network
+    eurekaserver:
+      image: hazmela-backend-eureka-server:latest
+      container_name: eureka-server
+      ports:
+        - "8761:8761"
+      networks:
+        - hazmela-net
 
-networks:
-  msrating_network:
-
-volumes:
-  pgdata:
+  volumes:
+    pgdata:

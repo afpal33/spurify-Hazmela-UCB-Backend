@@ -11,5 +11,5 @@ COPY target/ms_rating-0.0.1-SNAPSHOT.jar ms_rating-0.0.1-SNAPSHOT.jar
 EXPOSE 8080
 
 # Run the application
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-jar", "ms_rating-0.0.1-SNAPSHOT.jar"]
 
