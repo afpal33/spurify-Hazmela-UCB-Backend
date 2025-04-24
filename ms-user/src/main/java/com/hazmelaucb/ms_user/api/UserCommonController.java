@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -28,11 +29,11 @@ public class UserCommonController {
             @ApiResponse(responseCode = "422", description = "${api.responseCodes.unprocessableEntity.description}")
     })
     @PatchMapping("/{id}/disable")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<SuccessResponse> disableUser(
             @Parameter(description = "ID del usuario a deshabilitar", required = true)
             @PathVariable("id") UUID userId) {
         SuccessResponse response = userCommonBL.disableUser(userId).getBody();
-
         return ResponseEntity.ok(response);
     }
 }

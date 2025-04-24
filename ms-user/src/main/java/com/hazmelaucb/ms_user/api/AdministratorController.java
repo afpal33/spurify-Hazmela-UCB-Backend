@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -30,6 +31,7 @@ public class AdministratorController {
             @ApiResponse(responseCode = "409", description = "${api.responseCodes.conflict.description}")
     })
     @PostMapping
+    //@PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<AdministratorDTO> createAdministrator(@RequestBody AdministratorDTO adminDTO) {
         AdministratorDTO created = administratorBL.createAdministrator(adminDTO);
         return ResponseEntity.status(201).body(created);
@@ -42,6 +44,7 @@ public class AdministratorController {
             @ApiResponse(responseCode = "404", description = "${api.responseCodes.notFound.description}")
     })
     @PutMapping("/{id}")
+    //@PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<AdministratorDTO> updateAdministrator(
             @Parameter(description = "ID del administrador a actualizar", required = true)
             @PathVariable("id") UUID userId,
@@ -57,12 +60,11 @@ public class AdministratorController {
             @ApiResponse(responseCode = "422", description = "${api.responseCodes.unprocessableEntity.description}")
     })
     @DeleteMapping("/{id}")
+    //@PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<SuccessResponse> deleteAdministrator(
             @Parameter(description = "ID del administrador a eliminar", required = true)
             @PathVariable("id") UUID userId) {
-
         SuccessResponse response = administratorBL.deleteAdministrator(userId);
-
         return ResponseEntity.ok(response);
     }
 
@@ -73,6 +75,7 @@ public class AdministratorController {
             @ApiResponse(responseCode = "404", description = "${api.responseCodes.notFound.description}")
     })
     @GetMapping("/{id}")
+    //@PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<AdministratorDTO> getAdministratorById(
             @Parameter(description = "ID del administrador a obtener", required = true)
             @PathVariable("id") UUID userId) {
@@ -86,6 +89,7 @@ public class AdministratorController {
             @ApiResponse(responseCode = "500", description = "Error en el servidor")
     })
     @GetMapping
+    //@PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<List<AdministratorDTO>> getAllAdministrators() {
         List<AdministratorDTO> dtos = administratorBL.getAllAdministrators();
         return ResponseEntity.ok(dtos);

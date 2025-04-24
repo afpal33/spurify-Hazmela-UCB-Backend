@@ -1,6 +1,12 @@
 spring.application.name: edge-server
 
-server.port: 8080
+server.port: 8081
+
+server.ssl:
+  key-store-type: PKCS12
+  key-store: classpath:keystore/edge.p12
+  key-store-password: password
+  key-alias: localhost
 
 app.eureka-server: eureka-server
 
@@ -14,82 +20,90 @@ eureka:
     leaseRenewalIntervalInSeconds: 5
     leaseExpirationDurationInSeconds: 5
 
-# Configuración para rutas de Gateway
-spring.cloud.gateway.routes:
 
-  # Rutas para ms-user y su documentación
-  - id: ms-user
-    uri: lb://ms-user
-    predicates:
-      - Path=/ms-user/**
-    filters:
-      - StripPrefix=1
 
-  - id: ms-user-swagger-ui
-    uri: lb://ms-user
-    predicates:
-      - Path=/swagger-user/swagger-ui/**
-    filters:
-      - StripPrefix=1
 
-  - id: ms-user-swagger-config
-    uri: lb://ms-user
-    predicates:
-      - Path=/v3/api-docs/swagger-config
-    filters:
-      - StripPrefix=0
+spring:
+  cloud:
+    gateway:
+      default-filters:
+        - TokenRelay
+      routes:
 
-  - id: ms-user-swagger-api-docs-fix
-    uri: lb://ms-user
-    predicates:
-      - Path=/v3/api-docs
-    filters:
-      - SetPath=/v3/api-docs
+        - id: ms-user
+          uri: lb://ms-user
+          predicates:
+            - Path=/ms-user/**
+          filters:
+            - StripPrefix=1
 
-  # Rutas para ms-auth
-  - id: ms-auth
-    uri: lb://ms-auth
-    predicates:
-      - Path=/ms-auth/**
-    filters:
-      - StripPrefix=1
+        - id: ms-user-swagger-ui
+          uri: lb://ms-user
+          predicates:
+            - Path=/swagger-user/swagger-ui/**
+          filters:
+            - StripPrefix=1
 
-  # Rutas para ms-anuncios y su documentación
-  - id: ms-anuncios
-    uri: lb://ms-anuncios
-    predicates:
-      - Path=/ms-anuncios/**
-    filters:
-      - StripPrefix=1
-  
-  # Rutas para ms rating
-  - id: ms-rating
-    uri: lb://ms-rating
-    predicates:
-      - Path=/ms-rating/**
-    filters:
-      - StripPrefix=1
-  
-  # Ruta simplificada para los endpoints API de ms-anuncios
-  - id: ms-anuncios-api
-    uri: lb://ms-anuncios
-    predicates:
-      - Path=/api/anuncios/**
-    filters:
-      - PrefixPath=/
+        - id: ms-user-swagger-config
+          uri: lb://ms-user
+          predicates:
+            - Path=/v3/api-docs/swagger-config
+          filters:
+            - StripPrefix=0
 
-  # Rutas para Eureka
-  - id: eureka-web-start
-    uri: http://${app.eureka-server}:8761
-    predicates:
-      - Path=/eureka/web
-    filters:
-      - SetPath=/
 
-  - id: eureka-web-other
-    uri: http://${app.eureka-server}:8761
-    predicates:
-      - Path=/eureka/**
+        - id: ms-user-swagger-api-docs-fix
+          uri: lb://ms-user
+          predicates:
+            - Path=/v3/api-docs
+          filters:
+            - SetPath=/v3/api-docs
+
+
+
+        - id: ms-auth
+          uri: lb://ms-auth
+          predicates:
+            - Path=/ms-auth/**
+          filters:
+            - StripPrefix=1
+
+
+
+        - id: ms-anuncios
+          uri: lb://ms-anuncios
+          predicates:
+            - Path=/ms-anuncios/**
+          filters:
+            - StripPrefix=1
+
+        # Rutas para ms rating
+        - id: ms-rating
+          uri: lb://ms-rating
+          predicates:
+            - Path=/ms-rating/**
+          filters:
+            - StripPrefix=1
+
+
+        - id: eureka-web-start
+          uri: http://${app.eureka-server}:8761
+          predicates:
+            - Path=/eureka/web
+          filters:
+            - SetPath=/
+
+
+        - id: eureka-web-other
+          uri: http://${app.eureka-server}:8761
+          predicates:
+            - Path=/eureka/**
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://keycloak:8080/realms/hazmelaucb
+
 
 # Configuración para exponer endpoints de administración
 management.endpoint.gateway.enabled: true
@@ -100,9 +114,11 @@ management.endpoints.web.exposure.include: "*"
 logging:
   level:
     root: INFO
-    org.springframework.cloud.gateway.route.RouteDefinitionRouteLocator: INFO
-    org.springframework.cloud.gateway: TRACE
-    org.springframework.web.reactive.function.client: TRACE
+
+    '[org.springframework.cloud.gateway.route.RouteDefinitionRouteLocator]': INFO
+    '[org.springframework.cloud.gateway]': TRACE
+    '[org.springframework.security]': DEBUG
+
 
 ---
 spring.config.activate.on-profile: docker
