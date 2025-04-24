@@ -61,7 +61,15 @@ spring.cloud.gateway.routes:
       - Path=/ms-anuncios/**
     filters:
       - StripPrefix=1
-
+  
+  # Rutas para ms rating
+  - id: ms-rating
+    uri: lb://ms-rating
+    predicates:
+      - Path=/ms-rating/**
+    filters:
+      - StripPrefix=1
+  
   # Ruta simplificada para los endpoints API de ms-anuncios
   - id: ms-anuncios-api
     uri: lb://ms-anuncios
