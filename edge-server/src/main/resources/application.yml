@@ -14,10 +14,10 @@ eureka:
     leaseRenewalIntervalInSeconds: 5
     leaseExpirationDurationInSeconds: 5
 
-
-
+# Configuración para rutas de Gateway
 spring.cloud.gateway.routes:
 
+  # Rutas para ms-user y su documentación
   - id: ms-user
     uri: lb://ms-user
     predicates:
@@ -46,8 +46,7 @@ spring.cloud.gateway.routes:
     filters:
       - SetPath=/v3/api-docs
 
-
-
+  # Rutas para ms-auth
   - id: ms-auth
     uri: lb://ms-auth
     predicates:
@@ -55,8 +54,7 @@ spring.cloud.gateway.routes:
     filters:
       - StripPrefix=1
 
-
-
+  # Rutas para ms-anuncios y su documentación
   - id: ms-anuncios
     uri: lb://ms-anuncios
     predicates:
@@ -64,9 +62,15 @@ spring.cloud.gateway.routes:
     filters:
       - StripPrefix=1
 
+  # Ruta simplificada para los endpoints API de ms-anuncios
+  - id: ms-anuncios-api
+    uri: lb://ms-anuncios
+    predicates:
+      - Path=/api/anuncios/**
+    filters:
+      - PrefixPath=/
 
-
-
+  # Rutas para Eureka
   - id: eureka-web-start
     uri: http://${app.eureka-server}:8761
     predicates:
@@ -79,16 +83,18 @@ spring.cloud.gateway.routes:
     predicates:
       - Path=/eureka/**
 
-
+# Configuración para exponer endpoints de administración
 management.endpoint.gateway.enabled: true
 management.endpoint.health.show-details: "ALWAYS"
 management.endpoints.web.exposure.include: "*"
 
+# Configuración de logging para ayudar en la depuración
 logging:
   level:
     root: INFO
     org.springframework.cloud.gateway.route.RouteDefinitionRouteLocator: INFO
     org.springframework.cloud.gateway: TRACE
+    org.springframework.web.reactive.function.client: TRACE
 
 ---
 spring.config.activate.on-profile: docker

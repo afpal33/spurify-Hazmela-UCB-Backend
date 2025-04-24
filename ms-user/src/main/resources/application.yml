@@ -7,7 +7,7 @@ spring:
   datasource:
     #url: jdbc:postgresql://localhost:5432/ms_user_hazmelaucb_db
     #username: postgres
-    #password: 1590PPL
+    #password: pass123
     url: ${SPRING_DATASOURCE_URL}
     username: ${SPRING_DATASOURCE_USERNAME}
     password: ${SPRING_DATASOURCE_PASSWORD}
