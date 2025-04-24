@@ -4,6 +4,13 @@ server:
 spring:
   application:
     name: ms-user
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://keycloak:8080/realms/hazmelaucb
+
   datasource:
     #url: jdbc:postgresql://localhost:5432/ms_user_hazmelaucb_db
     #username: postgres

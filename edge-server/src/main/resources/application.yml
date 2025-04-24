@@ -1,6 +1,12 @@
 spring.application.name: edge-server
 
-server.port: 8080
+server.port: 8081
+
+server.ssl:
+  key-store-type: PKCS12
+  key-store: classpath:keystore/edge.p12
+  key-store-password: password
+  key-alias: localhost
 
 app.eureka-server: eureka-server
 
@@ -16,69 +22,78 @@ eureka:
 
 
 
-spring.cloud.gateway.routes:
+spring:
+  cloud:
+    gateway:
+      default-filters:
+        - TokenRelay
+      routes:
 
-  - id: ms-user
-    uri: lb://ms-user
-    predicates:
-      - Path=/ms-user/**
-    filters:
-      - StripPrefix=1
+        - id: ms-user
+          uri: lb://ms-user
+          predicates:
+            - Path=/ms-user/**
+          filters:
+            - StripPrefix=1
 
-  - id: ms-user-swagger-ui
-    uri: lb://ms-user
-    predicates:
-      - Path=/swagger-user/swagger-ui/**
-    filters:
-      - StripPrefix=1
+        - id: ms-user-swagger-ui
+          uri: lb://ms-user
+          predicates:
+            - Path=/swagger-user/swagger-ui/**
+          filters:
+            - StripPrefix=1
 
-  - id: ms-user-swagger-config
-    uri: lb://ms-user
-    predicates:
-      - Path=/v3/api-docs/swagger-config
-    filters:
-      - StripPrefix=0
+        - id: ms-user-swagger-config
+          uri: lb://ms-user
+          predicates:
+            - Path=/v3/api-docs/swagger-config
+          filters:
+            - StripPrefix=0
 
-  - id: ms-user-swagger-api-docs-fix
-    uri: lb://ms-user
-    predicates:
-      - Path=/v3/api-docs
-    filters:
-      - SetPath=/v3/api-docs
-
-
-
-  - id: ms-auth
-    uri: lb://ms-auth
-    predicates:
-      - Path=/ms-auth/**
-    filters:
-      - StripPrefix=1
+        - id: ms-user-swagger-api-docs-fix
+          uri: lb://ms-user
+          predicates:
+            - Path=/v3/api-docs
+          filters:
+            - SetPath=/v3/api-docs
 
 
 
-  - id: ms-anuncios
-    uri: lb://ms-anuncios
-    predicates:
-      - Path=/ms-anuncios/**
-    filters:
-      - StripPrefix=1
+        - id: ms-auth
+          uri: lb://ms-auth
+          predicates:
+            - Path=/ms-auth/**
+          filters:
+            - StripPrefix=1
+
+
+
+        - id: ms-anuncios
+          uri: lb://ms-anuncios
+          predicates:
+            - Path=/ms-anuncios/**
+          filters:
+            - StripPrefix=1
 
 
 
 
-  - id: eureka-web-start
-    uri: http://${app.eureka-server}:8761
-    predicates:
-      - Path=/eureka/web
-    filters:
-      - SetPath=/
+        - id: eureka-web-start
+          uri: http://${app.eureka-server}:8761
+          predicates:
+            - Path=/eureka/web
+          filters:
+            - SetPath=/
 
-  - id: eureka-web-other
-    uri: http://${app.eureka-server}:8761
-    predicates:
-      - Path=/eureka/**
-
+        - id: eureka-web-other
+          uri: http://${app.eureka-server}:8761
+          predicates:
+            - Path=/eureka/**
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://keycloak:8080/realms/hazmelaucb
 
 management.endpoint.gateway.enabled: true
 management.endpoint.health.show-details: "ALWAYS"
@@ -87,8 +102,9 @@ management.endpoints.web.exposure.include: "*"
 logging:
   level:
     root: INFO
-    org.springframework.cloud.gateway.route.RouteDefinitionRouteLocator: INFO
-    org.springframework.cloud.gateway: TRACE
+    '[org.springframework.cloud.gateway.route.RouteDefinitionRouteLocator]': INFO
+    '[org.springframework.cloud.gateway]': TRACE
+    '[org.springframework.security]': DEBUG
 
 ---
 spring.config.activate.on-profile: docker
