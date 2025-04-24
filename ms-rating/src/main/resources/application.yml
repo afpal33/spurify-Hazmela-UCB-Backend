@@ -1,6 +1,5 @@
-
 server:
-  port: 7001
+  port: ${SERVER_PORT:7001}
 
 springdoc:
   api-docs:
@@ -14,21 +13,44 @@ logging:
   level:
     org.springdoc: DEBUG
 
-
-
 spring:
+  application:
+    name: ms-rating
+
   datasource:
-    url: jdbc:postgresql://localhost:5432/ms_auth_hazmelaucb_db
-    username: postgres
-    password: 1590PPL
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/ms-rarting-db}
+    username: ${SPRING_DATASOURCE_USERNAME:postgres}
+    password: ${SPRING_DATASOURCE_PASSWORD:123fuser1442}
     driver-class-name: org.postgresql.Driver
 
   security:
     user:
       name: user
       password: password
-    enabled: false  # 🔥 Desactiva la autenticación en toda la app
+    enabled: false
 
   config:
     import:
-        - "classpath:application-openapi-rating.yml"
+      - "classpath:application-openapi-rating.yml"
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+
+app:
+  eureka-server: eureka-server
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://${app.eureka-server}:8761/eureka/
+    register-with-eureka: true
+    fetch-registry: true
+    initial-instance-info-replication-interval-seconds: 5
+    registry-fetch-interval-seconds: 5
+
+  instance:
+    lease-renewal-interval-in-seconds: 5
+    lease-expiration-duration-in-seconds: 5
