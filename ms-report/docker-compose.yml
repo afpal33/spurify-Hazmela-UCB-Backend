@@ -1,25 +1,23 @@
 version: '3.8'
 
 services:
+  eureka-server:
+    build: ../eureka-server
+    container_name: eureka-server
+    ports:
+      - "8761:8761"
+    networks:
+      - hazmela-net
 
-  # Eliminado eureka-server y edge-server para pruebas locales
-  # eureka-server:
-  #   build: ../eureka-server
-  #   container_name: eureka-server
-  #   ports:
-  #     - "8761:8761"
-  #   networks:
-  #     - hazmela-net
-
-  # edge-server:
-  #   build: ../edge-server
-  #   container_name: edge-server
-  #   depends_on:
-  #     - eureka-server
-  #   ports:
-  #     - "8080:8080"
-  #   networks:
-  #     - hazmela-net
+  edge-server:
+    build: ../edge-server
+    container_name: edge-server
+    depends_on:
+      - eureka-server
+    ports:
+      - "8080:8080"
+    networks:
+      - hazmela-net
 
   db-report:
     image: postgres:15

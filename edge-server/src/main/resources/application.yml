@@ -62,6 +62,14 @@ spring.cloud.gateway.routes:
     filters:
       - StripPrefix=1
 
+  #Rutas para ms-report
+  - id: ms-report
+    uri: lb://ms-report
+    predicates:
+      - Path=/ms-report/**
+    filters:
+      - StripPrefix=1
+
   # Ruta simplificada para los endpoints API de ms-anuncios
   - id: ms-anuncios-api
     uri: lb://ms-anuncios

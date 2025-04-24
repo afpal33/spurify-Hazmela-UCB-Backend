@@ -1,7 +1,6 @@
 version: '3.8'
 
 services:
-
   eureka-server:
     build: ./eureka-server
     container_name: eureka-server
@@ -20,6 +19,36 @@ services:
     networks:
       - hazmela-net
 
+  # Servicios del microservicio de reportes
+  db-report:
+    image: postgres:15
+    container_name: db-report
+    environment:
+      POSTGRES_DB: ms_report_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1590PPL
+    ports:
+      - "5435:5432"  # Cambiado para evitar conflicto con otros servicios
+    volumes:
+      - pgdata_report:/var/lib/postgresql/data
+      - ./ms-report/dbReport.sql:/docker-entrypoint-initdb.d/dbReport.sql
+    networks:
+      - hazmela-net
+
+  ms-report:
+    build: ./ms-report
+    container_name: ms-report
+    depends_on:
+      - db-report
+      - eureka-server
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db-report:5432/ms_report_db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: 1590PPL
+    ports:
+      - "7006:7006"
+    networks:
+      - hazmela-net
 
   # Servicios del microservicio de usuarios
   db-user:
@@ -92,7 +121,7 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 1590PPL
     ports:
-      - "5433:5432"  # Cambiado a puerto 5433 externo para evitar conflicto
+      - "5433:5432"
     volumes:
       - pgdata_anuncios:/var/lib/postgresql/data
       - ./ms_anuncios/dbAnuncios.sql:/docker-entrypoint-initdb.d/dbAnuncios.sql
@@ -115,6 +144,7 @@ services:
       - hazmela-net
 
 volumes:
+  pgdata_report:
   pgdata_user:
   pgdata_anuncios:
   pgdata_auth:
