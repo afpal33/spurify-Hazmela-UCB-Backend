@@ -1,14 +1,13 @@
 package com.hazmelaucb.ms_report.service;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
+import com.hazmelaucb.ms_report.model.Report;
+import com.hazmelaucb.ms_report.dto.ReportDTO;
+import com.hazmelaucb.ms_report.repository.ReportRepository;
+import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
-import org.springframework.stereotype.Service;
-
-import com.hazmelaucb.ms_report.dto.ReportDTO;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -16,37 +15,68 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @Schema(description = "Servicio para la gestión de reportes de anuncios y perfiles")
 public class MsReportService {
 
-    private final List<ReportDTO> reportes = new ArrayList<>();
+    private final ReportRepository reportRepository;
 
-    // Constructor para inicializar datos ficticios de prueba
-    public MsReportService() {
-        reportes.add(new ReportDTO(1, "anuncio", "Anuncio con contenido inapropiado", LocalDateTime.now().minusDays(1)));
-        reportes.add(new ReportDTO(2, "perfil", "Perfil que incumple normas de conducta", LocalDateTime.now()));
+    public MsReportService(ReportRepository reportRepository) {
+        this.reportRepository = reportRepository;
     }
 
+    // Método para convertir entidad a DTO
+    private ReportDTO toDTO(Report report) {
+        return new ReportDTO(
+                report.getId(),
+                report.getTipo(),
+                report.getDescripcion(),
+                report.getFecha()
+        );
+    }
+
+    // Método para convertir DTO a entidad
+    private Report toEntity(ReportDTO dto) {
+        return new Report(
+                dto.getId(),
+                dto.getTipo(),
+                dto.getDescripcion(),
+                dto.getFecha()
+        );
+    }
+
+    // Listar todos los reportes
     public List<ReportDTO> listarReportes() {
-        return reportes;
-    }
-
-    public Optional<ReportDTO> buscarPorId(int id) {
-        return reportes.stream()
-                .filter(r -> r.getId() == id)
-                .findFirst();
-    }
-
-    public List<ReportDTO> buscarPorTipo(String tipo) {
-        return reportes.stream()
-                .filter(r -> r.getTipo().equalsIgnoreCase(tipo))
+        return reportRepository.findAll()
+                .stream()
+                .map(this::toDTO)
                 .collect(Collectors.toList());
     }
 
-    public ReportDTO agregarReporte(ReportDTO nuevoReporte) {
-        nuevoReporte.setId(reportes.size() + 1);
-        reportes.add(nuevoReporte);
-        return nuevoReporte;
+    // Buscar reporte por ID
+    public Optional<ReportDTO> buscarPorId(Long id) {
+        return reportRepository.findById(id)
+                .map(this::toDTO);
     }
 
-    public boolean eliminarReporte(int id) {
-        return reportes.removeIf(r -> r.getId() == id);
+    // Buscar reportes por tipo
+    public List<ReportDTO> buscarPorTipo(String tipo) {
+        return reportRepository.findAll().stream()
+                .filter(r -> r.getTipo().equalsIgnoreCase(tipo))
+                .map(this::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    // Agregar un nuevo reporte
+    public ReportDTO agregarReporte(ReportDTO nuevoReporte) {
+        Report report = toEntity(nuevoReporte);
+        Report saved = reportRepository.save(report);
+        return toDTO(saved);
+    }
+
+    // Eliminar un reporte
+    public boolean eliminarReporte(Long id) {
+        if (reportRepository.existsById(id)) {
+            reportRepository.deleteById(id);
+            return true;
+        } else {
+            return false;
+        }
     }
 }

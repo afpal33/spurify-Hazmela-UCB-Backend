@@ -38,7 +38,7 @@ public class MsReportController {
 
     @GetMapping("/buscar")
     @Operation(summary = "Buscar un reporte por ID", description = "Busca un reporte utilizando su ID.")
-    public ResponseEntity<?> buscarReportePorId(@RequestParam int id) {
+    public ResponseEntity<?> buscarReportePorId(@RequestParam Long id) {
         Optional<ReportDTO> reporte = reportService.buscarPorId(id);
         return reporte.map(ResponseEntity::ok)
                       .orElse(ResponseEntity.notFound().build());
@@ -58,7 +58,7 @@ public class MsReportController {
 
     @DeleteMapping("/eliminar/{id}")
     @Operation(summary = "Eliminar un reporte", description = "Elimina un reporte por su ID.")
-    public ResponseEntity<String> eliminarReporte(@PathVariable int id) {
+    public ResponseEntity<String> eliminarReporte(@PathVariable Long id) {
         if (reportService.eliminarReporte(id)) {
             return ResponseEntity.ok("Reporte eliminado exitosamente.");
         }

@@ -1,29 +1,32 @@
-package com.hazmelaucb.ms_report.dto;
+package com.hazmelaucb.ms_report.model;
 
-import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 
-@Schema(description = "Objeto de transferencia de datos para reportes de anuncios y perfiles")
-public class ReportDTO {
+@Entity
+@Table(name = "reportes")
+public class Report {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(message = "El tipo de reporte es obligatorio")
-    @Schema(description = "Tipo de reporte (anuncio o perfil)", example = "anuncio")
     private String tipo;
 
-    @NotBlank(message = "La descripción es obligatoria")
-    @Schema(description = "Descripción del motivo del reporte", example = "Contenido inapropiado")
     private String descripcion;
 
-    @Schema(description = "Fecha y hora en que se realizó el reporte")
     private LocalDateTime fecha;
 
     // Constructores, getters y setters
 
-    public ReportDTO() {}
+    public Report() {
+    }
 
-    public ReportDTO(Long id, String tipo, String descripcion, LocalDateTime fecha) {
+    public Report(Long id, String tipo, String descripcion, LocalDateTime fecha) {
         this.id = id;
         this.tipo = tipo;
         this.descripcion = descripcion;

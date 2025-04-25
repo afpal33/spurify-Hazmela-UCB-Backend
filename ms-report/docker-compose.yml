@@ -9,22 +9,31 @@ services:
     ports:
       - "8080:8080"
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/reportdb
-      - SPRING_DATASOURCE_USERNAME=root
-      - SPRING_DATASOURCE_PASSWORD=root
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
     depends_on:
-      - db
+      - db-report
+      - eureka-server
 
-  db:
-    image: mysql:8.0
+  db-report:
+    image: postgres:13
     container_name: ms-report-db
     ports:
-      - "3306:3306"
+      - "5432:5432"
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: reportdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: ms-report
     volumes:
-      - db_data:/var/lib/mysql
+      - db_data:/var/lib/postgresql/data
+
+  eureka-server:
+    image: eureka-server:latest
+    container_name: eureka-server
+    ports:
+      - "8761:8761"
+    environment:
+      - EUREKA_SERVER_PORT=8761
 
 volumes:
   db_data:

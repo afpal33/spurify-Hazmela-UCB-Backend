@@ -16,7 +16,9 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.server.resource.authentication.ReactiveJwtAuthenticationConverter;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import reactor.core.publisher.Flux;
+import org.springframework.context.annotation.Profile;
 
+@Profile("!local")
 @Configuration
 @EnableWebFluxSecurity
 public class SecurityConfig {
@@ -33,7 +35,8 @@ public class SecurityConfig {
                         .pathMatchers("/error/**").permitAll()
                         .pathMatchers("/openapi/**").permitAll()
                         .pathMatchers("/webjars/**").permitAll()
-                        .anyExchange().authenticated()
+			.pathMatchers("/ms-report/**").permitAll()
+                        .anyExchange().permitAll()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwt -> jwt

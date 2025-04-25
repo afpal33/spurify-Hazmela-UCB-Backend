@@ -29,7 +29,6 @@ services:
       KC_DB_URL_DATABASE: keycloak
       KC_DB_USERNAME: keycloak
       KC_DB_PASSWORD: keycloak
-      #KEYCLOAK_FRONTEND_URL: http://keycloak:8080
     depends_on:
       - keycloak_postgres
     networks:
@@ -125,7 +124,7 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 1590PPL
     ports:
-      - "5433:5432" # Cambiado a puerto 5433 externo para evitar conflicto
+      - "5433:5432"
     volumes:
       - pgdata_anuncios:/var/lib/postgresql/data
       - ./ms_anuncios/dbAnuncios.sql:/docker-entrypoint-initdb.d/dbAnuncios.sql
@@ -152,7 +151,7 @@ services:
     image: postgres:15
     container_name: db-rating
     environment:
-      POSTGRES_DB: ms-rarting-db
+      POSTGRES_DB: ms_rating_db
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 123fuser1442
     ports:
@@ -169,7 +168,7 @@ services:
       - db-rating
       - eureka-server
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://db-rating:5432/ms-rarting-db
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db-rating:5432/ms_rating_db
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: 123fuser1442
       SERVER_PORT: 5008
@@ -180,15 +179,45 @@ services:
     networks:
       - hazmela-net
 
+  ms-report:
+    build: ./ms-report
+    container_name: ms-report
+    depends_on:
+      - eureka-server
+      - db-report
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db-report:5432/ms-report
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+    ports:
+      - "9001:9001"
+    networks:
+      - hazmela-net
+
+  db-report:
+    image: postgres:13
+    container_name: ms-report-db
+    ports:
+      - "5436:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: ms-report
+    volumes:
+      - db_report:/var/lib/postgresql/data
+    networks:
+      - hazmela-net
+
 volumes:
   pgdata_user:
   pgdata_anuncios:
   pgdata_auth:
+  db_report:
   postgres_data:
     external: true
     name: keycloak_postgres_data
   pgdata_rating:
-
 
 networks:
   hazmela-net:
