@@ -1,0 +1,31 @@
+spring:
+  application:
+    name: ms-chat
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: postgres
+    password: 1234
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: none  # No genera ni actualiza la base de datos autom�ticamente
+    show-sql: true   # Muestra las consultas SQL en la consola
+
+
+server:
+  port: 8082
+
+logging:
+  level:
+    root: INFO  # Nivel de logging por defecto
+
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operationsSorter: alpha  # Ordena los endpoints alfabéticamente
+    tagsSorter: alpha        # Ordena los tags alfabéticamente

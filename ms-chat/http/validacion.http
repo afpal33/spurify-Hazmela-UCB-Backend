@@ -1,0 +1,33 @@
+### Prueba: Obtener un mensaje que NO existe
+GET http://localhost:8082/api/mensajes/9999
+Accept: application/json
+
+### Prueba: Crear un mensaje SIN contenido
+POST http://localhost:8082/api/mensajes
+Content-Type: application/json
+
+{
+  "senderId": 2,
+  "conversacionId": 1
+}
+
+### Prueba: Crear un mensaje SIN senderId
+POST http://localhost:8082/api/mensajes
+Content-Type: application/json
+
+{
+  "contenido": "Mensaje sin senderId",
+  "conversacionId": 1
+}
+
+### Prueba: Crear una conversación con userId inválido (0)
+POST http://localhost:8082/api/conversacion
+Content-Type: application/json
+
+{
+  "user1Id": 0,
+  "user2Id": 5
+}
+
+### Prueba: Eliminar un mensaje que NO existe
+DELETE http://localhost:8082/api/mensajes/9999
