@@ -1,1 +1,0 @@
-# spurify-Hazmela-UCB-Backend
