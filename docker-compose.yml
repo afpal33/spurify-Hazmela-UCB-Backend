@@ -32,6 +32,8 @@ services:
       #KEYCLOAK_FRONTEND_URL: http://keycloak:8080
     depends_on:
       - keycloak_postgres
+      - config-server
+      
     networks:
       - hazmela-net
 
@@ -42,12 +44,15 @@ services:
       - "8761:8761"
     networks:
       - hazmela-net
+    depends_on:
+      - config-server
 
   edge-server:
     build: ./edge-server
     container_name: edge-server
     depends_on:
       - eureka-server
+      - config-server
     ports:
       - "8081:8081"
     networks:
@@ -68,6 +73,8 @@ services:
       - ./ms-user/dbUser.sql:/docker-entrypoint-initdb.d/dbUser.sql
     networks:
       - hazmela-net
+    depends_on:
+      - config-server
 
   ms-user:
     build: ./ms-user
@@ -76,6 +83,7 @@ services:
       - db-user
       - eureka-server
       - keycloak
+      - config-server
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db-user:5432/ms_user_hazmelaucb_db
       SPRING_DATASOURCE_USERNAME: postgres
@@ -107,6 +115,7 @@ services:
     depends_on:
       - db-auth
       - eureka-server
+      - config-server
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db-auth:5432/ms_auth_hazmelaucb_db
       SPRING_DATASOURCE_USERNAME: postgres
@@ -138,6 +147,7 @@ services:
     depends_on:
       - db-anuncios
       - eureka-server
+      - config-server
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db-anuncios:5432/anuncios_db
       SPRING_DATASOURCE_USERNAME: postgres
@@ -168,6 +178,7 @@ services:
     depends_on:
       - db-rating
       - eureka-server
+      - config-server
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db-rating:5432/ms-rarting-db
       SPRING_DATASOURCE_USERNAME: postgres
@@ -179,6 +190,22 @@ services:
       - "5008:5008"
     networks:
       - hazmela-net
+
+  config-server:
+    image: config:latest
+    mem_limit: 512m
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - ENCRYPT_KEY=${CONFIG_SERVER_ENCRYPT_KEY}
+      - SPRING_SECURITY_USER_NAME=${CONFIG_SERVER_USR}
+      - SPRING_SECURITY_USER_PASSWORD=${CONFIG_SERVER_PWD}
+    ports:
+      - "8888:8888"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f -u ${CONFIG_SERVER_USR}:${CONFIG_SERVER_PWD} http://localhost:8888/actuator/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
 
 volumes:
   pgdata_user:
