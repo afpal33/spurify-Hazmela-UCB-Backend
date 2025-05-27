@@ -1,38 +1,26 @@
-server:
-  port: ${SERVER_PORT:7002}
+spring.config.import: "configserver:, classpath:application-openapi-admin.yml, classpath:application-openapi-student.yml, classpath:application-openapi-user.yml"
 
 spring:
-  application:
-    name: ms-user
-
   security:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://keycloak:8080/realms/hazmelaucb
+          secret-key: mi-super-clave-jwt-muy-segura-12345678
+  application:
+    name: ms-user
+  cloud.config:
+    failFast: true
+    retry:
+      initialInterval: 3000
+      multiplier: 1.3
+      maxInterval: 10000
+      maxAttempts: 20
+    uri: http://localhost:8888
+    username: ${CONFIG_SERVER_USR}
+    password: ${CONFIG_SERVER_PWD}
 
-  datasource:
-    #url: jdbc:postgresql://localhost:5432/ms_user_hazmelaucb_db
-    #username: postgres
-    #password: pass123
-    url: ${SPRING_DATASOURCE_URL}
-    username: ${SPRING_DATASOURCE_USERNAME}
-    password: ${SPRING_DATASOURCE_PASSWORD}
-    driver-class-name: org.postgresql.Driver
-  config:
-    import:
-      - "classpath:application-openapi-admin.yml"
-      - "classpath:application-openapi-student.yml"
-      - "classpath:application-openapi-user.yml"
 
-app.eureka-server: eureka-server
+---
+spring.config.activate.on-profile: docker
 
-eureka:
-  client:
-    serviceUrl:
-      defaultZone: http://${app.eureka-server}:8761/eureka/
-    initialInstanceInfoReplicationIntervalSeconds: 5
-    registryFetchIntervalSeconds: 5
-  instance:
-    leaseRenewalIntervalInSeconds: 5
-    leaseExpirationDurationInSeconds: 5
+spring.cloud.config.uri: http://config-server:8888

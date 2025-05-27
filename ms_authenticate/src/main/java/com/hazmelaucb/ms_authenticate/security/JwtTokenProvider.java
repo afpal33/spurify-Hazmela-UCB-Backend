@@ -8,11 +8,13 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
+import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Collections;
 import java.util.Date;
@@ -24,8 +26,8 @@ public class JwtTokenProvider {
     private final Key secretKey;
     private final RevokedTokenService revokedTokenService;
 
-    public JwtTokenProvider(RevokedTokenService revokedTokenService) {
-        this.secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS256); // 🔥 Genera una clave segura automáticamente
+    public JwtTokenProvider(@Value("${jwt.secret}") String secret, RevokedTokenService revokedTokenService) {
+        this.secretKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
         this.revokedTokenService = revokedTokenService;
     }
 

@@ -10,7 +10,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -31,7 +30,6 @@ public class StudentController {
             @ApiResponse(responseCode = "409", description = "${api.responseCodes.conflict.description}")
     })
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<StudentDTO> createStudent(@RequestBody StudentDTO studentDTO) {
         StudentDTO created = studentBL.createStudent(studentDTO);
         return ResponseEntity.status(201).body(created);
@@ -44,7 +42,6 @@ public class StudentController {
             @ApiResponse(responseCode = "404", description = "${api.responseCodes.notFound.description}")
     })
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<StudentDTO> updateStudent(
             @Parameter(description = "ID del estudiante a actualizar", required = true)
             @PathVariable("id") UUID userId,
@@ -60,7 +57,6 @@ public class StudentController {
             @ApiResponse(responseCode = "422", description = "${api.responseCodes.unprocessableEntity.description}")
     })
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<SuccessResponse> deleteStudent(
             @Parameter(description = "ID del estudiante a eliminar", required = true)
             @PathVariable("id") UUID userId) {
@@ -75,7 +71,6 @@ public class StudentController {
             @ApiResponse(responseCode = "404", description = "${api.responseCodes.notFound.description}")
     })
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'ROLE_ESTUDIANTE')")
     public ResponseEntity<StudentDTO> getStudentById(
             @Parameter(description = "ID del estudiante a obtener", required = true)
             @PathVariable("id") UUID userId) {
@@ -89,7 +84,6 @@ public class StudentController {
             @ApiResponse(responseCode = "500", description = "Error en el servidor")
     })
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<StudentDTO>> getAllStudents() {
         List<StudentDTO> dtos = studentBL.getAllStudents();
         return ResponseEntity.ok(dtos);

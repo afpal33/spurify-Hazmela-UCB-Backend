@@ -2,61 +2,49 @@ version: "3.8"
 
 services:
 
-# KEYCLOAK
-  keycloak_postgres:
-    image: postgres:15
-    container_name: keycloak_postgres
-    environment:
-      POSTGRES_DB: keycloak
-      POSTGRES_USER: keycloak
-      POSTGRES_PASSWORD: keycloak
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    networks:
-      - hazmela-net
-
-  keycloak:
-    container_name: keycloak
-    image: quay.io/keycloak/keycloak:25.0.1
-    command: start-dev --hostname=keycloak
-    ports:
-      - "8080:8080"
-    environment:
-      KEYCLOAK_ADMIN: admin
-      KEYCLOAK_ADMIN_PASSWORD: admin
-      KC_DB: postgres
-      KC_DB_URL_HOST: keycloak_postgres
-      KC_DB_URL_DATABASE: keycloak
-      KC_DB_USERNAME: keycloak
-      KC_DB_PASSWORD: keycloak
-      #KEYCLOAK_FRONTEND_URL: http://keycloak:8080
-    depends_on:
-      - keycloak_postgres
-      - config-server
-      
-    networks:
-      - hazmela-net
-
   eureka-server:
     build: ./eureka-server
     container_name: eureka-server
+    depends_on:
+      config-server:
+        condition: service_healthy
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_CLOUD_CONFIG_URI=http://config-server:8888
+      - CONFIG_SERVER_USR=${CONFIG_SERVER_USR}
+      - CONFIG_SERVER_PWD=${CONFIG_SERVER_PWD}
     ports:
       - "8761:8761"
     networks:
       - hazmela-net
-    depends_on:
-      - config-server
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:8761 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
 
   edge-server:
     build: ./edge-server
     container_name: edge-server
     depends_on:
-      - eureka-server
       - config-server
+      - eureka-server
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_CLOUD_CONFIG_URI=http://config-server:8888
+      - SERVER_SSL_KEY_STORE=file:/keystore/edge.p12
+      - SERVER_SSL_KEY_STORE_PASSWORD=password
+      - CONFIG_SERVER_USR=${CONFIG_SERVER_USR}
+      - CONFIG_SERVER_PWD=${CONFIG_SERVER_PWD}
+    volumes:
+      - ./edge-server/keystore:/keystore
     ports:
       - "8081:8081"
     networks:
       - hazmela-net
+
 
   # Servicios del microservicio de usuarios
   db-user:
@@ -82,12 +70,15 @@ services:
     depends_on:
       - db-user
       - eureka-server
-      - keycloak
       - config-server
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://db-user:5432/ms_user_hazmelaucb_db
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: 1590PPL
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_CLOUD_CONFIG_URI=http://config-server:8888
+      - CONFIG_SERVER_USR=${CONFIG_SERVER_USR}
+      - CONFIG_SERVER_PWD=${CONFIG_SERVER_PWD}
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db-user:5432/ms_user_hazmelaucb_db
+      - SPRING_DATASOURCE_USERNAME=postgres
+      #- SPRING_DATASOURCE_PASSWORD=1590PP
     ports:
       - "7002:7002"
     networks:
@@ -108,6 +99,8 @@ services:
       - ./ms_authenticate/dbAuth.sql:/docker-entrypoint-initdb.d/dbAuth.sql
     networks:
       - hazmela-net
+    depends_on:
+      - config-server
 
   ms-auth:
     build: ./ms_authenticate
@@ -116,104 +109,42 @@ services:
       - db-auth
       - eureka-server
       - config-server
+    restart: always
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://db-auth:5432/ms_auth_hazmelaucb_db
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: 1590PPL
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_CLOUD_CONFIG_URI=http://config-server:8888
+      - CONFIG_SERVER_USR=${CONFIG_SERVER_USR}
+      - CONFIG_SERVER_PWD=${CONFIG_SERVER_PWD}
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db-auth:5432/ms_auth_hazmelaucb_db
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=1590PPL
     ports:
       - "7001:7001"
     networks:
       - hazmela-net
 
-  # Servicios del microservicio de anuncios
-  db-anuncios:
-    image: postgres:15
-    container_name: db-anuncios
-    environment:
-      POSTGRES_DB: anuncios_db
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 1590PPL
-    ports:
-      - "5433:5432" # Cambiado a puerto 5433 externo para evitar conflicto
-    volumes:
-      - pgdata_anuncios:/var/lib/postgresql/data
-      - ./ms_anuncios/dbAnuncios.sql:/docker-entrypoint-initdb.d/dbAnuncios.sql
-    networks:
-      - hazmela-net
-
-  ms-anuncios:
-    build: ./ms_anuncios
-    container_name: ms-anuncios
-    depends_on:
-      - db-anuncios
-      - eureka-server
-      - config-server
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://db-anuncios:5432/anuncios_db
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: 1590PPL
-    ports:
-      - "7005:7005"
-    networks:
-      - hazmela-net
-
-  # Microservicio de rating
-  db-rating:
-    image: postgres:15
-    container_name: db-rating
-    environment:
-      POSTGRES_DB: ms-rarting-db
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 123fuser1442
-    ports:
-      - "5435:5432"
-    volumes:
-      - pgdata_rating:/var/lib/postgresql/data
-    networks:
-      - hazmela-net
-
-  ms-rating:
-    build: ./ms-rating
-    container_name: ms-rating
-    depends_on:
-      - db-rating
-      - eureka-server
-      - config-server
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://db-rating:5432/ms-rarting-db
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: 123fuser1442
-      SERVER_PORT: 5008
-      APP_EUREKA-SERVER: eureka-server
-      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
-    ports:
-      - "5008:5008"
-    networks:
-      - hazmela-net
-
   config-server:
-    image: config:latest
-    mem_limit: 512m
+    build: ./config-server
+    container_name: config-server
+    ports:
+      - "8888:8888"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - ENCRYPT_KEY=${CONFIG_SERVER_ENCRYPT_KEY}
       - SPRING_SECURITY_USER_NAME=${CONFIG_SERVER_USR}
       - SPRING_SECURITY_USER_PASSWORD=${CONFIG_SERVER_PWD}
-    ports:
-      - "8888:8888"
     healthcheck:
-      test: ["CMD-SHELL", "curl -f -u ${CONFIG_SERVER_USR}:${CONFIG_SERVER_PWD} http://localhost:8888/actuator/health"]
+      test: ["CMD-SHELL", "curl -f -u ${CONFIG_SERVER_USR}:${CONFIG_SERVER_PWD} http://localhost:8888/actuator/health || exit 1"]
       interval: 15s
       timeout: 5s
       retries: 10
+    networks:
+      - hazmela-net
 
 volumes:
   pgdata_user:
   pgdata_anuncios:
   pgdata_auth:
-  postgres_data:
-    external: true
-    name: keycloak_postgres_data
   pgdata_rating:
 
 
