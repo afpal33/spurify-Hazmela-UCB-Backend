@@ -1,7 +1,6 @@
 version: "3.8"
 
 services:
-
   eureka-server:
     build: ./eureka-server
     container_name: eureka-server
@@ -24,7 +23,6 @@ services:
       timeout: 5s
       retries: 10
 
-
   edge-server:
     build: ./edge-server
     container_name: edge-server
@@ -44,7 +42,6 @@ services:
       - "8081:8081"
     networks:
       - hazmela-net
-
 
   # Servicios del microservicio de usuarios
   db-user:
@@ -123,6 +120,41 @@ services:
     networks:
       - hazmela-net
 
+  db-rating:
+    image: postgres:15
+    container_name: db-rating
+    environment:
+      POSTGRES_DB: ms-rating-db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123fuser1442
+    ports:
+      - "5435:5432"
+    volumes:
+      - pgdata_rating:/var/lib/postgresql/data
+    networks:
+      - hazmela-net
+    depends_on:
+      - config-server
+  ms-rating:
+    build: ./ms-rating
+    container_name: ms-rating
+    depends_on:
+      - db-rating
+      - eureka-server
+      - config-server
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_CLOUD_CONFIG_URI=http://config-server:8888
+      - CONFIG_SERVER_USR=${CONFIG_SERVER_USR}
+      - CONFIG_SERVER_PWD=${CONFIG_SERVER_PWD}
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db-rating:5432/ms-rating-db
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=123fuser1442
+    ports:
+      - "5008:5008"
+    networks:
+      - hazmela-net
+
   config-server:
     build: ./config-server
     container_name: config-server
@@ -134,7 +166,11 @@ services:
       - SPRING_SECURITY_USER_NAME=${CONFIG_SERVER_USR}
       - SPRING_SECURITY_USER_PASSWORD=${CONFIG_SERVER_PWD}
     healthcheck:
-      test: ["CMD-SHELL", "curl -f -u ${CONFIG_SERVER_USR}:${CONFIG_SERVER_PWD} http://localhost:8888/actuator/health || exit 1"]
+      test:
+        [
+          "CMD-SHELL",
+          "curl -f -u ${CONFIG_SERVER_USR}:${CONFIG_SERVER_PWD} http://localhost:8888/actuator/health || exit 1",
+        ]
       interval: 15s
       timeout: 5s
       retries: 10
@@ -146,7 +182,6 @@ volumes:
   pgdata_anuncios:
   pgdata_auth:
   pgdata_rating:
-
 
 networks:
   hazmela-net:

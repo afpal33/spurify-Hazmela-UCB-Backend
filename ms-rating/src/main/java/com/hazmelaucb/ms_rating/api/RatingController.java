@@ -46,8 +46,8 @@ public class RatingController {
             @ApiResponse(responseCode = "200", description = "${api.responseCodes.ok.description}"),
             @ApiResponse(responseCode = "404", description = "${api.responseCodes.notFound.description}") })
     @GetMapping(value = "/{id}", produces = "application/json")
-    public ResponseEntity<RatingRequestDTO> getRatingById(@Parameter(description = "${api.rating.get-rating-by-id.parameters.id}", required = true)
-                                                          @PathVariable("id") Long id) {
+    public ResponseEntity<RatingRequestDTO> getRatingById(
+            @Parameter(description = "${api.rating.get-rating-by-id.parameters.id}", required = true) @PathVariable("id") Long id) {
         LOGGER.info("Obteniendo calificación con id: {}", id);
 
         RatingRequestDTO rating = ratingService.getRatingById(id);
@@ -83,7 +83,8 @@ public class RatingController {
 
     @Operation(summary = "${api.rating.update-rating.description}", description = "${api.rating.update-rating.notes}")
     @PutMapping(value = "/{id}", produces = "application/json", consumes = "application/json")
-    public ResponseEntity<RatingRequestDTO> updateRating(@PathVariable Long id, @RequestBody RatingRequestDTO ratingRequestDTO) {
+    public ResponseEntity<RatingRequestDTO> updateRating(@PathVariable Long id,
+            @RequestBody RatingRequestDTO ratingRequestDTO) {
         LOGGER.info("Actualizando calificación con id: {}", id);
 
         RatingRequestDTO updatedRating = ratingService.updateRating(id, ratingRequestDTO);
