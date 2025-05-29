@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.core.env.Environment;
 
 @Component
 public class ServiceUtil {
@@ -15,9 +16,8 @@ public class ServiceUtil {
     private final String port;
     private String serviceAddress = null;
 
-    @Autowired
-    public ServiceUtil(@Value("${server.port}") String port) {
-        this.port = port;
+    public ServiceUtil(Environment env) {
+        this.port = env.getProperty("server.port", "5008"); // Valor por defecto si no está definido
     }
 
     public String getServiceAddress() {

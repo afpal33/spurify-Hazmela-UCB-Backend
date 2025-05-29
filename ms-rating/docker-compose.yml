@@ -11,11 +11,11 @@ services:
       - eurekaserver
     environment:
       - SERVER_PORT=5008
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://database:5432/ms-rating-db
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db-rating:5432/ms-rating-db
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=123fuser1442
-      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eurekaserver:8761/eureka/
-      - APP_EUREKA-SERVER=eurekaserver
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+      - APP_EUREKA-SERVER=eureka-server
     networks:
       - hazmela-net
 
@@ -29,6 +29,7 @@ services:
       - POSTGRES_DB=ms-rating-db
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=123fuser1442
+      - SPRING_PROFILES_ACTIVE=docker
     networks:
       - hazmela-net
     volumes:

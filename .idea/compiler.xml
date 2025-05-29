@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="config-server" />
+        <module name="ms-chat" />
+        <module name="ms-report" />
+        <module name="ms_rating" />
+        <module name="ms-user" />
+        <module name="edge-server" />
+        <module name="eureka-server" />
+        <module name="ms_authenticate" />
+        <module name="ms_anuncios" />
+      </profile>
+    </annotationProcessing>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="config-server" options="-parameters" />
+      <module name="edge-server" options="-parameters" />
+      <module name="eureka-server" options="-parameters" />
+      <module name="ms-chat" options="-parameters" />
+      <module name="ms-report" options="-parameters" />
+      <module name="ms-user" options="-parameters" />
+      <module name="ms_anuncios" options="-parameters" />
+      <module name="ms_authenticate" options="-parameters" />
+      <module name="ms_rating" options="-parameters" />
+    </option>
+  </component>
+</project>
