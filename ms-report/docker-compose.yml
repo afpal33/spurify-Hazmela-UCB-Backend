@@ -1,39 +1,110 @@
-version: '3.8'
+version: "3.8"
 
 services:
+
+  # Servicio de base de datos PostgreSQL para Keycloak
+  keycloak_postgres:
+    image: postgres:15
+    container_name: keycloak_postgres
+    environment:
+      POSTGRES_DB: keycloak            # Nombre de la base de datos
+      POSTGRES_USER: keycloak          # Usuario para la base de datos
+      POSTGRES_PASSWORD: keycloak      # Contraseña del usuario
+    volumes:
+      - postgres_data:/var/lib/postgresql/data  # Volumen persistente
+    networks:
+      - hazmela-net                    # Red compartida
+
+  # Servicio de Keycloak (gestión de identidad y acceso)
+  keycloak:
+    container_name: keycloak
+    image: quay.io/keycloak/keycloak:25.0.1
+    command: start-dev --hostname=keycloak       # Modo desarrollo con hostname
+    ports:
+      - "8080:8080"                    # Exposición del puerto HTTP
+    environment:
+      KEYCLOAK_ADMIN: admin            # Usuario admin por defecto
+      KEYCLOAK_ADMIN_PASSWORD: admin   # Contraseña del admin
+      KC_DB: postgres                  # Motor de base de datos
+      KC_DB_URL_HOST: keycloak_postgres  # Host de la base de datos
+      KC_DB_URL_DATABASE: keycloak     # Nombre de la base de datos
+      KC_DB_USERNAME: keycloak         # Usuario de la base de datos
+      KC_DB_PASSWORD: keycloak         # Contraseña del usuario
+    depends_on:
+      - keycloak_postgres              # Se asegura que postgres esté arriba
+    networks:
+      - hazmela-net
+
+  # Servicio de Eureka Server (registro de servicios)
+  eureka-server:
+    build:
+      context: ../eureka-server        # Contexto de construcción
+      dockerfile: Dockerfile
+    container_name: eureka-server
+    ports:
+      - "8761:8761"                    # Puerto del dashboard de Eureka
+    networks:
+      - hazmela-net
+
+  # Servicio de Edge Server (gateway)
+  edge-server:
+    build:
+      context: ../edge-server
+      dockerfile: Dockerfile
+    container_name: edge-server
+    depends_on:
+      - eureka-server                  # Espera que Eureka esté disponible
+    ports:
+      - "8081:8081"                    # Puerto para el gateway
+    networks:
+      - hazmela-net
+
+  # Microservicio de reportes
   ms-report:
     build:
-      context: .
+      context: .                       # Contexto actual
       dockerfile: Dockerfile
     container_name: ms-report
-    ports:
-      - "8080:8080"
-    environment:
-      - SPRING_DATASOURCE_USERNAME=postgres
-      - SPRING_DATASOURCE_PASSWORD=postgres
     depends_on:
-      - db-report
       - eureka-server
+      - db-report
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db-report:5432/ms-report  # Conexión a base de datos
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/  # URL de Eureka
+    ports:
+      - "9003:9003"                    # Puerto del microservicio
+    networks:
+      - hazmela-net
 
+  # Base de datos PostgreSQL para el microservicio de reportes
   db-report:
     image: postgres:13
     container_name: ms-report-db
     ports:
-      - "5432:5432"
+      - "5436:5432"                    # Puerto expuesto para PostgreSQL
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: ms-report
     volumes:
-      - db_data:/var/lib/postgresql/data
+      - db_report:/var/lib/postgresql/data
+    networks:
+      - hazmela-net
 
-  eureka-server:
-    image: eureka-server:latest
-    container_name: eureka-server
-    ports:
-      - "8761:8761"
-    environment:
-      - EUREKA_SERVER_PORT=8761
-
+# Definición de volúmenes persistentes
 volumes:
-  db_data:
+  pgdata_user:
+  pgdata_anuncios:
+  pgdata_auth:
+  db_report:
+  postgres_data:
+    external: true                     # Volumen externo previamente creado
+    name: keycloak_postgres_data
+  pgdata_rating:
+
+# Definición de red
+networks:
+  hazmela-net:
+    driver: bridge                     # Tipo de red bridge (por defecto)
