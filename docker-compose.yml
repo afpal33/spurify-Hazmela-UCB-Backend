@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
 
   eureka-server:
@@ -24,7 +22,6 @@ services:
       timeout: 5s
       retries: 10
 
-
   edge-server:
     build: ./edge-server
     container_name: edge-server
@@ -45,8 +42,6 @@ services:
     networks:
       - hazmela-net
 
-
-  # Servicios del microservicio de usuarios
   db-user:
     image: postgres:15
     container_name: db-user
@@ -84,7 +79,6 @@ services:
     networks:
       - hazmela-net
 
-  # Servicios del microservicio de autenticación
   db-auth:
     image: postgres:15
     container_name: db-auth
@@ -123,10 +117,6 @@ services:
     networks:
       - hazmela-net
 
-  # ---------------------------------------------------------
-  # Microservicio de anuncios
-  # ---------------------------------------------------------
-
   db-anuncios:
     image: postgres:15
     container_name: db-anuncios
@@ -135,13 +125,13 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 1590PPL
     ports:
-      - "5433:5432"           # 5433 externo, 5432 interno
+      - "5433:5432"
     volumes:
       - pgdata_anuncios:/var/lib/postgresql/data
       - ./ms_anuncios/dbAnuncios.sql:/docker-entrypoint-initdb.d/dbAnuncios.sql
     networks:
       - hazmela-net
-    healthcheck:              # ← Postgres listo
+    healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
       timeout: 5s
@@ -155,7 +145,7 @@ services:
         condition: service_healthy
       eureka-server:
         condition: service_healthy
-      config-server:          # ← explícito y saludable
+      config-server:
         condition: service_healthy
     environment:
       - SPRING_PROFILES_ACTIVE=docker
@@ -171,7 +161,36 @@ services:
       - hazmela-net
     restart: always
 
+  ms-report:
+    build: ./ms-report
+    container_name: ms-report
+    depends_on:
+      - ms-anuncios
+      - eureka-server
+      - config-server
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_CLOUD_CONFIG_URI=http://config-server:8888
+      - CONFIG_SERVER_USR=${CONFIG_SERVER_USR}
+      - CONFIG_SERVER_PWD=${CONFIG_SERVER_PWD}
+    ports:
+      - "7006:7006"
+    networks:
+      - hazmela-net
 
+  db-report:
+    image: postgres:13
+    container_name: ms-report-db
+    ports:
+      - "5436:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: ms-report
+    volumes:
+      - db_report:/var/lib/postgresql/data
+    networks:
+      - hazmela-net
 
   config-server:
     build: ./config-server
@@ -196,7 +215,7 @@ volumes:
   pgdata_anuncios:
   pgdata_auth:
   pgdata_rating:
-
+  db_report:
 
 networks:
   hazmela-net:
