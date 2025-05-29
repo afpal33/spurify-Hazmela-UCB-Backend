@@ -1,0 +1,53 @@
+version: "3.8"
+
+services:
+
+  # Microservicio de reportes
+  ms-report:
+    build:
+      context: .                       # Contexto actual
+      dockerfile: Dockerfile
+    container_name: ms-report
+    depends_on:
+      - eureka-server
+      - db-report
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db-report:5432/ms-report  # Conexión a base de datos
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/  # URL de Eureka
+    ports:
+      - "9003:9003"                    # Puerto del microservicio
+    networks:
+      - hazmela-net
+
+  # Base de datos PostgreSQL para el microservicio de reportes
+  db-report:
+    image: postgres:13
+    container_name: ms-report-db
+    ports:
+      - "5436:5432"                    # Puerto expuesto para PostgreSQL
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: ms-report
+    volumes:
+      - db_report:/var/lib/postgresql/data
+    networks:
+      - hazmela-net
+
+# Definición de volúmenes persistentes
+volumes:
+  pgdata_user:
+  pgdata_anuncios:
+  pgdata_auth:
+  db_report:
+  postgres_data:
+    external: true                     # Volumen externo previamente creado
+    name: keycloak_postgres_data
+  pgdata_rating:
+
+# Definición de red
+networks:
+  hazmela-net:
+    driver: bridge                     # Tipo de red bridge (por defecto)
