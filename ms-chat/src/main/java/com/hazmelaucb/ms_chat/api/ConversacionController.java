@@ -1,5 +1,7 @@
 package com.hazmelaucb.ms_chat.api;
 
+import com.hazmelaucb.ms_chat.bl.ChatService;
+import com.hazmelaucb.ms_chat.dto.ConversacionDto;
 import com.hazmelaucb.ms_chat.entidy.Conversacion;
 import com.hazmelaucb.ms_chat.entidy.ChatMensaje;
 import com.hazmelaucb.ms_chat.dao.ConversacionRepository;
@@ -30,11 +32,30 @@ import java.util.Map;
 @RequestMapping("/api/conversacion")
 public class ConversacionController {
 
+    private final ChatService chatService;
+    public ConversacionController(ChatService chatService) {
+        this.chatService = chatService;
+    }
+
+
+    @Operation(summary = "Verificar que el servicio esté activo")
+    @ApiResponse(responseCode = "200", description = "Servicio activo")
+    @GetMapping("/ping")
+    public ResponseEntity<Object> ping() {
+        return ResponseHandler.generateResponse(
+                "Microservicio de chat operativo 👌",
+                HttpStatus.OK,
+                null
+        );
+    }
+
     @Autowired
     private ConversacionRepository conversacionRepository;
 
     @Autowired
     private ChatMensajeRepository mensajeRepository;
+
+
 
     @Operation(summary = "Iniciar una conversación con un mensaje", description = "Si la conversación ya existe, envía un mensaje; si no, la crea.")
     @ApiResponses({

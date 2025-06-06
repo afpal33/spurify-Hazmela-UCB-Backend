@@ -1,0 +1,48 @@
+
+server:
+  port: ${SERVER_PORT:7001}
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+  show-actuator: true
+
+logging:
+  level:
+    org.springdoc: DEBUG
+
+
+
+spring:
+  application:
+    name: ms-auth
+  datasource:
+    #url: jdbc:postgresql://localhost:5432/ms_auth_hazmelaucb_db
+    #username: postgres
+    #password: pass123
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+  config:
+    import:
+      - "classpath:application-openapi-login-attempt.yml"
+      - "classpath:application-openapi-auth.yml"
+      - "classpath:application-openapi-audit.yml"
+      - "classpath:application-openapi-admin.yml"
+      - "classpath:application-openapi-session.yml"
+
+app.eureka-server: eureka-server
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://${app.eureka-server}:8761/eureka/
+    initialInstanceInfoReplicationIntervalSeconds: 5
+    registryFetchIntervalSeconds: 5
+  instance:
+    leaseRenewalIntervalInSeconds: 5
+    leaseExpirationDurationInSeconds: 5

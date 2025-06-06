@@ -1,0 +1,38 @@
+server:
+  port: ${SERVER_PORT:7002}
+
+spring:
+  application:
+    name: ms-user
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://keycloak:8080/realms/hazmelaucb
+
+  datasource:
+    #url: jdbc:postgresql://localhost:5432/ms_user_hazmelaucb_db
+    #username: postgres
+    #password: pass123
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+  config:
+    import:
+      - "classpath:application-openapi-admin.yml"
+      - "classpath:application-openapi-student.yml"
+      - "classpath:application-openapi-user.yml"
+
+app.eureka-server: eureka-server
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://${app.eureka-server}:8761/eureka/
+    initialInstanceInfoReplicationIntervalSeconds: 5
+    registryFetchIntervalSeconds: 5
+  instance:
+    leaseRenewalIntervalInSeconds: 5
+    leaseExpirationDurationInSeconds: 5

@@ -1,0 +1,232 @@
+
+services:
+
+  # KEYCLOAK
+  keycloak_postgres:
+    image: postgres:15
+    container_name: keycloak_postgres
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: keycloak
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - hazmela-net
+
+  keycloak:
+    container_name: keycloak
+    image: quay.io/keycloak/keycloak:25.0.1
+    command: start-dev --hostname=keycloak
+    ports:
+      - "8080:8080"
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_DB: postgres
+      KC_DB_URL_HOST: keycloak_postgres
+      KC_DB_URL_DATABASE: keycloak
+      KC_DB_USERNAME: keycloak
+      KC_DB_PASSWORD: keycloak
+      #KEYCLOAK_FRONTEND_URL: http://keycloak:8080
+    depends_on:
+      - keycloak_postgres
+    networks:
+      - hazmela-net
+
+  eureka-server:
+    build: ./eureka-server
+    container_name: eureka-server
+    ports:
+      - "8761:8761"
+    networks:
+      - hazmela-net
+
+  edge-server:
+    build: ./edge-server
+    container_name: edge-server
+    depends_on:
+      - eureka-server
+    ports:
+      - "8081:8081"
+    networks:
+      - hazmela-net
+
+  # Servicios del microservicio de usuarios
+  db-user:
+    image: postgres:15
+    container_name: db-user
+    environment:
+      POSTGRES_DB: ms_user_hazmelaucb_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1590PPL
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata_user:/var/lib/postgresql/data
+      - ./ms-user/dbUser.sql:/docker-entrypoint-initdb.d/dbUser.sql
+    networks:
+      - hazmela-net
+
+  ms-user:
+    build: ./ms-user
+    container_name: ms-user
+    depends_on:
+      - db-user
+      - eureka-server
+      - keycloak
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db-user:5432/ms_user_hazmelaucb_db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: 1590PPL
+    ports:
+      - "7002:7002"
+    networks:
+      - hazmela-net
+
+  # Servicios del microservicio de autenticación
+  db-auth:
+    image: postgres:15
+    container_name: db-auth
+    environment:
+      POSTGRES_DB: ms_auth_hazmelaucb_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1590PPL
+    ports:
+      - "5434:5432"
+    volumes:
+      - pgdata_auth:/var/lib/postgresql/data
+      - ./ms_authenticate/dbAuth.sql:/docker-entrypoint-initdb.d/dbAuth.sql
+    networks:
+      - hazmela-net
+
+  ms-auth:
+    build: ./ms_authenticate
+    container_name: ms-auth
+    depends_on:
+      - db-auth
+      - eureka-server
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db-auth:5432/ms_auth_hazmelaucb_db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: 1590PPL
+    ports:
+      - "7001:7001"
+    networks:
+      - hazmela-net
+
+  # Servicios del microservicio de anuncios
+  db-anuncios:
+    image: postgres:15
+    container_name: db-anuncios
+    environment:
+      POSTGRES_DB: anuncios_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1590PPL
+    ports:
+      - "5433:5432" # Cambiado a puerto 5433 externo para evitar conflicto
+    volumes:
+      - pgdata_anuncios:/var/lib/postgresql/data
+      - ./ms_anuncios/dbAnuncios.sql:/docker-entrypoint-initdb.d/dbAnuncios.sql
+    networks:
+      - hazmela-net
+
+  ms-anuncios:
+    build: ./ms_anuncios
+    container_name: ms-anuncios
+    depends_on:
+      - db-anuncios
+      - eureka-server
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db-anuncios:5432/anuncios_db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: 1590PPL
+    ports:
+      - "7005:7005"
+    networks:
+      - hazmela-net
+
+  # Microservicio de rating
+  db-rating:
+    image: postgres:15
+    container_name: db-rating
+    environment:
+      POSTGRES_DB: ms-rarting-db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123fuser1442
+    ports:
+      - "5435:5432"
+    volumes:
+      - pgdata_rating:/var/lib/postgresql/data
+    networks:
+      - hazmela-net
+
+  ms-rating:
+    build: ./ms-rating
+    container_name: ms-rating
+    depends_on:
+      - db-rating
+      - eureka-server
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db-rating:5432/ms-rarting-db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: 123fuser1442
+      SERVER_PORT: 5008
+      APP_EUREKA-SERVER: eureka-server
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+    ports:
+      - "5008:5008"
+    networks:
+      - hazmela-net
+
+        # ms-chat + Postgres
+
+  db-chat:
+    image: postgres:17
+    container_name: db-chat
+    environment:
+      POSTGRES_DB:    chat_db
+      POSTGRES_USER:  postgres
+      POSTGRES_PASSWORD: 1234
+    volumes:
+      - pgdata_chat:/var/lib/postgresql/data
+      - ./ms-chat/sql/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    networks:
+      - hazmela-net
+
+  ms-chat:
+    build: ./ms-chat
+    container_name: ms-chat
+    depends_on:
+      - db-chat
+      - eureka-server
+      - keycloak
+    environment:
+      SPRING_DATASOURCE_URL:               jdbc:postgresql://db-chat:5432/chat_db
+      SPRING_DATASOURCE_USERNAME:          postgres
+      SPRING_DATASOURCE_PASSWORD:          1234
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+      SPRING_APPLICATION_NAME:             ms-chat
+      SERVER_PORT: 8082
+    ports:
+    - "7003:8082"
+    networks:
+      - hazmela-net
+
+
+
+
+volumes:
+  pgdata_user:
+  pgdata_anuncios:
+  pgdata_auth:
+  postgres_data:
+  pgdata_rating:
+  pgdata_chat:
+
+
+networks:
+  hazmela-net:
+    driver: bridge
+
+

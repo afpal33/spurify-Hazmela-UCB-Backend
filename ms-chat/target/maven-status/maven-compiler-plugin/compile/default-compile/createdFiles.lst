@@ -1,3 +1,5 @@
+com\hazmelaucb\ms_chat\dto\IniciarConversacionRequest.class
+com\hazmelaucb\ms_chat\dto\ConversacionDto.class
 com\hazmelaucb\ms_chat\api\ChatMensajeController.class
 com\hazmelaucb\ms_chat\dto\ChatMessageDTO.class
 com\hazmelaucb\ms_chat\exception\GlobalExceptionHandler.class
@@ -6,7 +8,6 @@ com\hazmelaucb\ms_chat\api\ConversacionController.class
 com\hazmelaucb\ms_chat\MsChatApplication.class
 com\hazmelaucb\ms_chat\dao\ConversacionRepository.class
 com\hazmelaucb\ms_chat\entidy\Conversacion.class
-com\hazmelaucb\ms_chat\exception\ChatNotFoundException.class
 com\hazmelaucb\ms_chat\utils\ResponseHandler.class
 com\hazmelaucb\ms_chat\api\ChatWebSocketController.class
 com\hazmelaucb\ms_chat\config\WebSocketConfig.class

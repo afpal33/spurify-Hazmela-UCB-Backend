@@ -1,0 +1,94 @@
+### 1. Login
+POST http://localhost:7001/auth/login
+Content-Type: application/json
+
+{
+  "email": "test@email.com",
+  "password": "123456"
+}
+### 2. Ver sesiones activas del usuario
+GET http://localhost:8080/sessions/{{userId}}
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+### 3. Cerrar sesión específica con refreshToken en el header
+DELETE http://localhost:7001/sessions/logout
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0QGVtYWlsLmNvbSIsImlhdCI6MTc0MDI2ODQ2MiwiZXhwIjoxNzQwODczMjYyfQ.gkWFDSbD6z6L7g19wpCb_CD6xPrGaM81CGE1AAeA7Gk
+Content-Type: application/json
+
+### 4. Cerrar todas las sesiones activas del usuario
+DELETE http://localhost:8080/sessions/logout/all/{{userId}}
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+### Refrescar Access Token con el Refresh Token
+POST http://localhost:7001/auth/refresh-token
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0QGVtYWlsLmNvbSIsImlhdCI6MTc0MDI2ODQ2MiwiZXhwIjoxNzQwODczMjYyfQ.gkWFDSbD6z6L7g19wpCb_CD6xPrGaM81CGE1AAeA7Gk
+Content-Type: application/json
+
+
+
+
+### 1. Intentar login con contraseña incorrecta
+POST http://localhost:7001/auth/login
+Content-Type: application/json
+
+{
+  "email": "test@email.com",
+  "password": "123456"
+}
+
+
+###  Consultar intentos de login del usuario
+GET http://localhost:7001/login-attempts/{{userId}}
+Authorization: Bearer {{accessToken}}
+
+### 4. Consultar sesiones activas del usuario
+GET http://localhost:7001/sessions/{{userId}}
+Authorization: Bearer {{accessToken}}
+
+
+
+### 1. Iniciar sesión y obtener tokens
+POST http://localhost:7001/auth/login
+Content-Type: application/json
+
+{
+  "email": "test@email.com",
+  "password": "123456"
+}
+
+### 2. Verificar si el accessToken es válido
+GET http://localhost:7001/auth/validate-token
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0QGVtYWlsNS5jb20iLCJyb2xlIjoiRVNUVURJQU5URSIsImlhdCI6MTc0MTgxNzU0NSwiZXhwIjoxNzQxOTAzOTQ1fQ.4IYStKaTLMAHlTpZnKT3bRatR5jCas8Yw2QUYqUfmLU
+
+### 3. Cerrar sesión y revocar el refreshToken
+DELETE http://localhost:7001/sessions/logout
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0QGVtYWlsLmNvbSIsImlhdCI6MTc0MDI3NDM3NywiZXhwIjoxNzQwODc5MTc3fQ.urcOQ3frlddFG5TibWtWzqBe_jrz5ZR3TIaf-Eb5O5Y
+Content-Type: application/json
+
+### 4. Intentar usar el mismo refreshToken después del logout (Debe fallar)
+POST http://localhost:7001/auth/refresh-token
+Authorization: Bearer {{refreshToken}}
+Content-Type: application/json
+
+
+
+
+### 1. Iniciar sesión (registrará evento LOGIN en audit_logs)
+POST http://localhost:7001/auth/login
+Content-Type: application/json
+
+{
+  "email": "test@email.com",
+  "password": "123456"
+}
+
+### 2. Cerrar sesión (registrará evento LOGOUT en audit_logs)
+DELETE http://localhost:7001/sessions/logout
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0QGVtYWlsLmNvbSIsImlhdCI6MTc0MDI3NTY2MiwiZXhwIjoxNzQwODgwNDYyfQ.PeosaeBhny99ZfbqOPMllvMRpoqr8FjwfpOxMfULnVg
+Content-Type: application/json
+
+### 3. Consultar registros de auditoría del usuario
+GET http://localhost:7001/audit-logs/{{userId}}
+Authorization: Bearer {{adminToken}}

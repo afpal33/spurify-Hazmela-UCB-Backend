@@ -1,0 +1,40 @@
+services:
+  ms-chat:
+    build: .
+    container_name: ms-chat
+    depends_on:
+      - db-chat
+
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db-chat:5432/chat_db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: 1234
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+      SERVER_PORT: 8082
+    # Ya no expongas puerto si usarás el Gateway
+    ports:
+      - "7003:8082"
+    networks:
+      - hazmela-net
+
+  db-chat:
+    image: postgres:15
+    container_name: db-chat
+    environment:
+      POSTGRES_DB: chat_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1234
+    ports:
+      - "5437:5432"
+    volumes:
+      - pgdata_chat:/var/lib/postgresql/data
+      - ./sql/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    networks:
+      - hazmela-net
+
+networks:
+  hazmela-net:
+    external: true
+
+volumes:
+  pgdata_chat:
