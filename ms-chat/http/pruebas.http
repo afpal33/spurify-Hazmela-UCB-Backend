@@ -1,0 +1,20 @@
+### Obtener todos los mensajes
+GET http://localhost:8082/api/mensajes
+Accept: application/json
+
+### Obtener un mensaje por ID
+GET http://localhost:8082/api/mensajes/1
+Accept: application/json
+
+### Crear un mensaje
+POST http://localhost:8082/api/mensajes
+Content-Type: application/json
+
+{
+  "contenido": "Hola, esto es un mensaje de prueba",
+  "senderId": 2,
+  "conversacionId": 1
+}
+
+### Eliminar un mensaje
+DELETE http://localhost:8082/api/mensajes/2
