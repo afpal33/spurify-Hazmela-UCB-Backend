@@ -6,9 +6,10 @@ BEGIN;
 CREATE TABLE IF NOT EXISTS public.rating
 (
     id_rating serial NOT NULL,
-    user_id integer,
+    user_id integer,          -- Usuario que califica
     id_anuncio integer,
-    rating integer,
+    rating integer,           -- La calificación dada
+    score_assigned integer,   -- El puntaje asignado al usuario calificado
     rated_at timestamp with time zone NOT NULL,
     updated_at timestamp with time zone NOT NULL,
     CONSTRAINT rating_pkey PRIMARY KEY (id_rating)

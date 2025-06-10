@@ -21,17 +21,22 @@ public class RatingEntity {
     @Column(name = "rating", nullable = false)
     private Long rating;
 
+    @Column(name = "score_assigned", nullable = false)
+    private Integer scoreAssigned;
+
     @Column(name = "rated_at", nullable = false)
     private LocalDateTime ratedAt;
 
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
-    public RatingEntity(Long idRating, Long idAnuncio, Long idUsuario, Long rating, LocalDateTime ratedAt, LocalDateTime updatedAt) {
+    public RatingEntity(Long idRating, Long idAnuncio, Long idUsuario, Long rating, Integer scoreAssigned,
+            LocalDateTime ratedAt, LocalDateTime updatedAt) {
         this.idRating = idRating;
         this.idAnuncio = idAnuncio;
         this.idUsuario = idUsuario;
         this.rating = rating;
+        this.scoreAssigned = scoreAssigned;
         this.ratedAt = ratedAt;
         this.updatedAt = updatedAt;
     }
@@ -70,6 +75,14 @@ public class RatingEntity {
 
     public void setRating(Long rating) {
         this.rating = rating;
+    }
+
+    public Integer getScoreAssigned() {
+        return scoreAssigned;
+    }
+
+    public void setScoreAssigned(Integer scoreAssigned) {
+        this.scoreAssigned = scoreAssigned;
     }
 
     public LocalDateTime getRatedAt() {

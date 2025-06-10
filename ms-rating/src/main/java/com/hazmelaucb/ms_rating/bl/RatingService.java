@@ -25,7 +25,7 @@ public class RatingService {
     @Transactional(readOnly = true)
     public List<RatingRequestDTO> getAllRatings() {
         return ratingRepository.findAll().stream()
-                .map(this::convertToDTO)  // Convierte las entidades a DTOs
+                .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
 
@@ -33,46 +33,70 @@ public class RatingService {
     public RatingRequestDTO getRatingById(Long id) {
         RatingEntity rating = ratingRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Rating not found with ID: " + id));
-        return convertToDTO(rating);  // Convierte la entidad a DTO
+        return convertToDTO(rating);
     }
 
     @Transactional(readOnly = true)
     public List<RatingRequestDTO> getRatingsByAdId(Long idAnuncio) {
         return ratingRepository.findByIdAnuncio(idAnuncio).stream()
-                .map(this::convertToDTO)  // Convierte las entidades a DTOs
+                .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
     public List<RatingRequestDTO> getRatingsByUserId(Long userId) {
         return ratingRepository.findByIdUsuario(userId).stream()
-                .map(this::convertToDTO)  // Convierte las entidades a DTOs
+                .map(this::convertToDTO)
                 .collect(Collectors.toList());
+    }
+
+    private Integer calculateScore(Long rating) {
+        if (rating > 5) {
+            throw new IllegalArgumentException("El rating no puede ser mayor a 5");
+        }
+        return switch (rating.intValue()) {
+            case 1 -> 0;
+            case 2 -> 25;
+            case 3 -> 50;
+            case 4 -> 80;
+            case 5 -> 100;
+            default -> throw new IllegalArgumentException("El rating debe estar entre 1 y 5");
+        };
     }
 
     @Transactional
     public RatingRequestDTO createRating(RatingRequestDTO ratingRequestDTO) {
+        if (ratingRequestDTO.getRating() > 5) {
+            throw new IllegalArgumentException("El rating no puede ser mayor a 5");
+        }
+
         RatingEntity ratingEntity = new RatingEntity();
         ratingEntity.setIdAnuncio(ratingRequestDTO.getIdAnuncio());
         ratingEntity.setIdUsuario(ratingRequestDTO.getIdUsuario());
-        ratingEntity.setRating(ratingRequestDTO.getRating().longValue());
+        ratingEntity.setRating(ratingRequestDTO.getRating());
+        ratingEntity.setScoreAssigned(calculateScore(ratingRequestDTO.getRating()));
         ratingEntity.setRatedAt(ZonedDateTime.now().toLocalDateTime());
         ratingEntity.setUpdatedAt(ZonedDateTime.now().toLocalDateTime());
 
-        RatingEntity savedRating = ratingRepository.save(ratingEntity);  // Guarda la entidad en la base de datos
-        return convertToDTO(savedRating);  // Convierte la entidad guardada a DTO
+        RatingEntity savedRating = ratingRepository.save(ratingEntity);
+        return convertToDTO(savedRating);
     }
 
     @Transactional
     public RatingRequestDTO updateRating(Long id, RatingRequestDTO ratingRequestDTO) {
+        if (ratingRequestDTO.getRating() > 5) {
+            throw new IllegalArgumentException("El rating no puede ser mayor a 5");
+        }
+
         RatingEntity existingRating = ratingRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Rating not found with ID: " + id));
 
         existingRating.setRating(ratingRequestDTO.getRating());
+        existingRating.setScoreAssigned(calculateScore(ratingRequestDTO.getRating()));
         existingRating.setUpdatedAt(ZonedDateTime.now().toLocalDateTime());
 
-        RatingEntity updatedRating = ratingRepository.save(existingRating);  // Actualiza la entidad en la base de datos
-        return convertToDTO(updatedRating);  // Convierte la entidad actualizada a DTO
+        RatingEntity updatedRating = ratingRepository.save(existingRating);
+        return convertToDTO(updatedRating);
     }
 
     @Transactional
@@ -80,19 +104,18 @@ public class RatingService {
         if (!ratingRepository.existsById(id)) {
             throw new NoSuchElementException("Rating not found with ID: " + id);
         }
-        ratingRepository.deleteById(id);  // Elimina la entidad de la base de datos
+        ratingRepository.deleteById(id);
         return true;
     }
 
-    // Método de conversión de entidad a DTO
     private RatingRequestDTO convertToDTO(RatingEntity ratingEntity) {
         return new RatingRequestDTO(
                 ratingEntity.getIdRating(),
                 ratingEntity.getRating().longValue(),
                 ratingEntity.getIdAnuncio(),
                 ratingEntity.getIdUsuario(),
+                ratingEntity.getScoreAssigned(),
                 ratingEntity.getRatedAt(),
-                ratingEntity.getUpdatedAt()
-        );
+                ratingEntity.getUpdatedAt());
     }
 }

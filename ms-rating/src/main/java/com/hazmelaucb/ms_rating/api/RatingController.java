@@ -18,7 +18,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping(value = "/v1/rating")
-@Tag(name = "Rating", description = "REST API para calificaciones")
+@Tag(name = "Rating", description = "REST API para calificaciones. Cada calificación incluye un puntaje (score_assigned) calculado automáticamente: 1⭐=0pts, 2⭐=25pts, 3⭐=50pts, 4⭐=80pts, 5⭐=100pts")
 public class RatingController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RatingController.class);
@@ -29,7 +29,7 @@ public class RatingController {
         this.ratingService = ratingService;
     }
 
-    @Operation(summary = "${api.rating.get-all.description}", description = "${api.rating.get-all.notes}")
+    @Operation(summary = "${api.rating.get-all.description}", description = "Retorna todas las calificaciones incluyendo sus ratings (1-5 estrellas) y puntajes asignados (0-100 puntos)")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "${api.responseCodes.ok.description}"),
             @ApiResponse(responseCode = "404", description = "${api.responseCodes.notFound.description}") })
@@ -72,7 +72,7 @@ public class RatingController {
         return ratings.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(ratings);
     }
 
-    @Operation(summary = "${api.rating.create-rating.description}", description = "${api.rating.create-rating.notes}")
+    @Operation(summary = "${api.rating.create-rating.description}", description = "Crea una nueva calificación. El rating debe estar entre 1-5 estrellas. El score_assigned (0-100 puntos) se calcula automáticamente y se incluye en la respuesta.")
     @PostMapping(produces = "application/json", consumes = "application/json")
     public ResponseEntity<RatingRequestDTO> createRating(@RequestBody RatingRequestDTO ratingRequestDTO) {
         LOGGER.info("Creando una nueva calificación");
@@ -81,7 +81,7 @@ public class RatingController {
         return new ResponseEntity<>(createdRating, HttpStatus.CREATED);
     }
 
-    @Operation(summary = "${api.rating.update-rating.description}", description = "${api.rating.update-rating.notes}")
+    @Operation(summary = "${api.rating.update-rating.description}", description = "Actualiza una calificación existente. El rating debe estar entre 1-5 estrellas. El score_assigned (0-100 puntos) se recalculará automáticamente y se incluirá en la respuesta.")
     @PutMapping(value = "/{id}", produces = "application/json", consumes = "application/json")
     public ResponseEntity<RatingRequestDTO> updateRating(@PathVariable Long id,
             @RequestBody RatingRequestDTO ratingRequestDTO) {
