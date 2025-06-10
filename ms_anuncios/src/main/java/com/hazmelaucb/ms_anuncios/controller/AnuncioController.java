@@ -1,12 +1,12 @@
 package com.hazmelaucb.ms_anuncios.controller;
 
-import com.hazmelaucb.ms_anuncios.exception.GlobalExceptionHandler.ErrorResponse;
 import com.hazmelaucb.ms_anuncios.model.dto.AnuncioCrearDTO;
 import com.hazmelaucb.ms_anuncios.model.dto.AnuncioDTO;
 import com.hazmelaucb.ms_anuncios.model.dto.TagDTO;
 import com.hazmelaucb.ms_anuncios.service.AnuncioService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Pattern;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -14,25 +14,20 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/anuncios")
 @Tag(name = "Anuncio", description = "API para la gestión de anuncios en la plataforma")
 @Validated
-public class AnuncioController {
-
-    private final AnuncioService anuncioService;
+public class AnuncioController {    private final AnuncioService anuncioService;
     
-    @Autowired
     public AnuncioController(AnuncioService anuncioService) {
         this.anuncioService = anuncioService;
     }
@@ -66,11 +61,13 @@ public class AnuncioController {
             @ApiResponse(responseCode = "200", description = "${api.responseCodes.ok.description}"),
             @ApiResponse(responseCode = "404", description = "${api.responseCodes.notFound.description}", 
                     content = @Content(schema = @Schema(implementation = com.hazmelaucb.ms_anuncios.exception.GlobalExceptionHandler.ErrorResponse.class)))
-    })
-    @GetMapping("/usuario/{userId}")
+    })    @GetMapping("/usuario/{userId}")
     public ResponseEntity<List<AnuncioDTO>> obtenerPorUsuario(
-            @Parameter(description = "ID del usuario", required = true)
-            @PathVariable @Min(value = 1, message = "El ID de usuario debe ser mayor a 0") Integer userId) {
+            @Parameter(description = "ID del usuario en formato UUID", required = true)
+            @PathVariable 
+            @Pattern(regexp = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$", 
+                     message = "El ID del usuario debe tener formato UUID válido") 
+            String userId) {
         return ResponseEntity.ok(anuncioService.buscarPorUsuario(userId));
     }
     

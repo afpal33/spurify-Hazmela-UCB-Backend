@@ -3,13 +3,14 @@ package com.hazmelaucb.ms_anuncios.model.dto;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import java.math.BigDecimal;
 
-public class AnuncioCrearDTO {
-    
-    @NotNull(message = "El ID del usuario es obligatorio")
-    private Integer userId;
+public class AnuncioCrearDTO {    @NotNull(message = "El ID del usuario es obligatorio")
+    @Pattern(regexp = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$", 
+             message = "El ID del usuario debe tener formato UUID válido")
+    private String userId;
     
     @NotBlank(message = "El título es obligatorio")
     @Size(min = 5, max = 255, message = "El título debe tener entre 5 y 255 caracteres")
@@ -32,13 +33,12 @@ public class AnuncioCrearDTO {
     // Constructores
     public AnuncioCrearDTO() {
     }
-    
-    // Getters y Setters
-    public Integer getUserId() {
+      // Getters y Setters
+    public String getUserId() {
         return userId;
     }
 
-    public void setUserId(Integer userId) {
+    public void setUserId(String userId) {
         this.userId = userId;
     }
 

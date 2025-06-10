@@ -10,7 +10,7 @@ import java.util.List;
 @Repository
 public interface AnuncioRepository extends JpaRepository<Anuncio, Long> {
     
-    List<Anuncio> findByUserId(Integer userId);
+    List<Anuncio> findByUserId(String userId);
     
     List<Anuncio> findByAreaEspecializacion(String areaEspecializacion);
     

@@ -13,9 +13,8 @@ public class Anuncio {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    
-    @Column(name = "user_id", nullable = false)
-    private Integer userId;
+      @Column(name = "user_id", nullable = false)
+    private String userId;
     
     @Column(name = "titulo", nullable = false)
     private String titulo;
@@ -49,8 +48,7 @@ public class Anuncio {
     // Constructores
     public Anuncio() {
     }
-    
-    public Anuncio(Integer userId, String titulo, String descripcion, String areaEspecializacion, 
+      public Anuncio(String userId, String titulo, String descripcion, String areaEspecializacion, 
                   BigDecimal precio, String estado) {
         this.userId = userId;
         this.titulo = titulo;
@@ -67,13 +65,11 @@ public class Anuncio {
 
     public void setId(Integer id) {
         this.id = id;
-    }
-
-    public Integer getUserId() {
+    }    public String getUserId() {
         return userId;
     }
 
-    public void setUserId(Integer userId) {
+    public void setUserId(String userId) {
         this.userId = userId;
     }
 

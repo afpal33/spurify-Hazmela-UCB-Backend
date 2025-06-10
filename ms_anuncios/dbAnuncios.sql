@@ -9,7 +9,7 @@ CREATE DATABASE anuncios_db;
 -- ==============================
 CREATE TABLE anuncio (
     id SERIAL PRIMARY KEY,
-    user_id INTEGER NOT NULL, -- ID del usuario (de otro microservicio)
+    user_id VARCHAR(36) NOT NULL, -- ID del usuario en formato UUID (de otro microservicio)
     titulo VARCHAR(255) NOT NULL,
     descripcion TEXT NOT NULL,
     area_especializacion VARCHAR(100) NOT NULL,
@@ -20,6 +20,7 @@ CREATE TABLE anuncio (
 );
 
 -- Índices para optimizar búsquedas
+CREATE INDEX idx_anuncio_user_id ON anuncio (user_id);
 CREATE INDEX idx_anuncio_area ON anuncio (area_especializacion);
 CREATE INDEX idx_anuncio_precio ON anuncio (precio);
 CREATE INDEX idx_anuncio_estado ON anuncio (estado);
@@ -49,7 +50,7 @@ CREATE TABLE anuncio_tag (
 CREATE TABLE anuncio_auditoria (
     id SERIAL PRIMARY KEY,
     anuncio_id INTEGER NOT NULL,
-    user_id INTEGER NOT NULL, -- Usuario que realizó el cambio
+    user_id VARCHAR(36) NOT NULL, -- Usuario que realizó el cambio en formato UUID
     cambio VARCHAR(500) NOT NULL, -- Breve descripción del cambio
     fecha_cambio TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (anuncio_id) REFERENCES anuncio (id) ON DELETE CASCADE

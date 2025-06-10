@@ -6,9 +6,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class AnuncioDTO {
-    
-    private Integer id;
-    private Integer userId;
+      private Integer id;
+    private String userId;
     private String titulo;
     private String descripcion;
     private String areaEspecializacion;
@@ -29,13 +28,11 @@ public class AnuncioDTO {
 
     public void setId(Integer id) {
         this.id = id;
-    }
-
-    public Integer getUserId() {
+    }    public String getUserId() {
         return userId;
     }
 
-    public void setUserId(Integer userId) {
+    public void setUserId(String userId) {
         this.userId = userId;
     }
 

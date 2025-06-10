@@ -9,7 +9,6 @@ import com.hazmelaucb.ms_anuncios.model.entity.Anuncio;
 import com.hazmelaucb.ms_anuncios.model.enums.EstadoAnuncio;
 import com.hazmelaucb.ms_anuncios.repository.AnuncioRepository;
 import com.hazmelaucb.ms_anuncios.repository.TagRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,10 +21,8 @@ import java.util.stream.Collectors;
 @Service
 public class AnuncioService {
     
-    private final AnuncioRepository anuncioRepository;
-    private final TagRepository tagRepository;
+    private final AnuncioRepository anuncioRepository;    private final TagRepository tagRepository;
     
-    @Autowired
     public AnuncioService(AnuncioRepository anuncioRepository, TagRepository tagRepository) {
         this.anuncioRepository = anuncioRepository;
         this.tagRepository = tagRepository;
@@ -44,9 +41,8 @@ public class AnuncioService {
                 .orElseThrow(() -> new ResourceNotFoundException("Anuncio no encontrado con ID: " + id));
         return convertirADTO(anuncio);
     }
-    
-    @Transactional(readOnly = true)
-    public List<AnuncioDTO> buscarPorUsuario(Integer userId) {
+      @Transactional(readOnly = true)
+    public List<AnuncioDTO> buscarPorUsuario(String userId) {
         List<Anuncio> anuncios = anuncioRepository.findByUserId(userId);
         if (anuncios.isEmpty()) {
             throw new ResourceNotFoundException("No se encontraron anuncios para el usuario con ID: " + userId);
