@@ -125,7 +125,7 @@ public class AuthService {
 
 
 
-    public void register(RegisterRequest request) {
+    public UserEntity register(RegisterRequest request) {
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
             throw new UserAlreadyExistsException("El usuario ya existe");
         }
@@ -141,6 +141,7 @@ public class AuthService {
         newUser.getRoles().add(estudianteRole);
 
         userRepository.save(newUser);
+        return newUser;
     }
 
 
