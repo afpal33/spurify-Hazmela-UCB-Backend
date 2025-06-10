@@ -123,6 +123,56 @@ services:
     networks:
       - hazmela-net
 
+  # ---------------------------------------------------------
+  # Microservicio de anuncios
+  # ---------------------------------------------------------
+
+  db-anuncios:
+    image: postgres:15
+    container_name: db-anuncios
+    environment:
+      POSTGRES_DB: anuncios_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1590PPL
+    ports:
+      - "5433:5432"           # 5433 externo, 5432 interno
+    volumes:
+      - pgdata_anuncios:/var/lib/postgresql/data
+      - ./ms_anuncios/dbAnuncios.sql:/docker-entrypoint-initdb.d/dbAnuncios.sql
+    networks:
+      - hazmela-net
+    healthcheck:              # ← Postgres listo
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  ms-anuncios:
+    build: ./ms_anuncios
+    container_name: ms-anuncios
+    depends_on:
+      db-anuncios:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+      config-server:          # ← explícito y saludable
+        condition: service_healthy
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_CLOUD_CONFIG_URI=http://config-server:8888
+      - CONFIG_SERVER_USR=${CONFIG_SERVER_USR}
+      - CONFIG_SERVER_PWD=${CONFIG_SERVER_PWD}
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db-anuncios:5432/anuncios_db
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=1590PPL
+    ports:
+      - "7005:7005"
+    networks:
+      - hazmela-net
+    restart: always
+
+
+
   config-server:
     build: ./config-server
     container_name: config-server

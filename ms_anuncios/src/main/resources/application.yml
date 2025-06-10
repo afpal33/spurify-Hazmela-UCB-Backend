@@ -1,33 +1,28 @@
-server:
-  port: ${SERVER_PORT:7005}
+spring.config.import: "configserver:, classpath:application-openapi-anuncio.yml, classpath:application-openapi-tag.yml"
 
 spring:
   application:
-    name: ms-anuncios
-  jpa:
-    hibernate:
-      ddl-auto: update
-  datasource:
-    #url: jdbc:postgresql://localhost:5432/anuncios_db
-    #username: postgres
-    #password: pass123
-    url: ${SPRING_DATASOURCE_URL}
-    username: ${SPRING_DATASOURCE_USERNAME}
-    password: ${SPRING_DATASOURCE_PASSWORD}
-    driver-class-name: org.postgresql.Driver
-  config:
-    import:
-      - "classpath:application-openapi-anuncio.yml"
-      - "classpath:application-openapi-tag.yml"
+    name: ms-anuncios       # ⇦ Debe coincidir con el nombre del YAML en el Config Server
 
-app.eureka-server: eureka-server
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          secret-key: mi-super-clave-jwt-muy-segura-12345678   # mismo valor (o elimínalo y deja que venga del servidor)
 
-eureka:
-  client:
-    serviceUrl:
-      defaultZone: http://${app.eureka-server}:8761/eureka/
-    initialInstanceInfoReplicationIntervalSeconds: 5
-    registryFetchIntervalSeconds: 5
-  instance:
-    leaseRenewalIntervalInSeconds: 5
-    leaseExpirationDurationInSeconds: 5
+  cloud:
+    config:
+      failFast: true
+      retry:
+        initialInterval: 3000
+        multiplier: 1.3
+        maxInterval: 10000
+        maxAttempts: 20
+      uri: http://localhost:8888
+      username: ${CONFIG_SERVER_USR}
+      password: ${CONFIG_SERVER_PWD}
+
+---
+spring.config.activate.on-profile: docker
+
+spring.cloud.config.uri: http://config-server:8888
