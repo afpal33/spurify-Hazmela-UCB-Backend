@@ -131,6 +131,7 @@ services:
       - "5435:5432"
     volumes:
       - pgdata_rating:/var/lib/postgresql/data
+      - ./ms-rating/BD/create_rating.sql:/docker-entrypoint-initdb.d/create_rating.sql
     networks:
       - hazmela-net
     depends_on:
