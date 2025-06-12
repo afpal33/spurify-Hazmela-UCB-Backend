@@ -17,7 +17,7 @@ services:
       SPRING_DATASOURCE_PASSWORD: postgres
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/  # URL de Eureka
     ports:
-      - "9003:9003"                    # Puerto del microservicio
+      - "7010:7010"                    # Puerto del microservicio
     networks:
       - hazmela-net
 

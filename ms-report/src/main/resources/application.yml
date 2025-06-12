@@ -1,0 +1,65 @@
+spring.config.import: "optional:configserver:"
+
+spring:
+  application:
+    name: ms-report
+  cloud:
+    config:
+      failFast: true
+      retry:
+        initialInterval: 3000
+        multiplier: 1.3
+        maxInterval: 10000
+        maxAttempts: 20
+      uri: http://localhost:8888
+      username: ${CONFIG_SERVER_USR}
+      password: ${CONFIG_SERVER_PWD}
+  datasource:
+    url: jdbc:postgresql://localhost:5436/ms-report
+    username: postgres
+    password: ${DB_REPORT_PASSWORD:postgres}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        '[format_sql]': true
+  doc:
+    api:
+      title: Report API
+      description: API documentation for the Report microservice
+      version: 1.0.0
+      termsOfService: http://swagger.io/terms/
+      contact:
+        name: Support
+        url: http://support.example.com
+        email: support@example.com
+      license:
+        name: Apache 2.0
+        url: http://www.apache.org/licenses/LICENSE-2.0.html
+      servers:
+        - url: http://localhost:8080
+          description: Local server
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui/index.html
+    url: /v3/api-docs
+    layout: BaseLayout
+
+server:
+  port: 7011
+
+---
+spring.config.activate.on-profile: docker
+spring.cloud.config.uri: http://config-server:8888
+server:
+  port: 7010
+
+logging:
+  level:
+    '[org.springframework.cloud.config]': DEBUG
+    '[org.springframework.web.client.RestTemplate]': DEBUG
+    '[org.springframework.boot.context.config]': DEBUG

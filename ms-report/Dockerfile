@@ -22,6 +22,6 @@ COPY --from=builder extracted/snapshot-dependencies/ ./
 COPY --from=builder extracted/application/ ./
 
 # Update exposed port to match application.properties
-EXPOSE 9001
+EXPOSE 7010
 
 ENTRYPOINT ["java", "-cp","/application","org.springframework.boot.loader.launch.JarLauncher"]

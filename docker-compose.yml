@@ -173,8 +173,11 @@ services:
       - SPRING_CLOUD_CONFIG_URI=http://config-server:8888
       - CONFIG_SERVER_USR=${CONFIG_SERVER_USR}
       - CONFIG_SERVER_PWD=${CONFIG_SERVER_PWD}
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db-report:5432/ms-report
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
     ports:
-      - "7006:7006"
+      - "7006:7010"
     networks:
       - hazmela-net
 

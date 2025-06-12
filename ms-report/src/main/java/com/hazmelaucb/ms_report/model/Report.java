@@ -1,11 +1,12 @@
 package com.hazmelaucb.ms_report.model;
 
+import java.time.LocalDateTime;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "reportes")
@@ -21,16 +22,19 @@ public class Report {
 
     private LocalDateTime fecha;
 
+    private Long userId;
+
     // Constructores, getters y setters
 
     public Report() {
     }
 
-    public Report(Long id, String tipo, String descripcion, LocalDateTime fecha) {
+    public Report(Long id, String tipo, String descripcion, LocalDateTime fecha, Long userId) {
         this.id = id;
         this.tipo = tipo;
         this.descripcion = descripcion;
         this.fecha = fecha;
+        this.userId = userId;
     }
 
     public Long getId() {
@@ -63,5 +67,13 @@ public class Report {
 
     public void setFecha(LocalDateTime fecha) {
         this.fecha = fecha;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 }

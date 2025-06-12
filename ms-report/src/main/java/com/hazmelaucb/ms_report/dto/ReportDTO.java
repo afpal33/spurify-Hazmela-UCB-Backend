@@ -1,8 +1,9 @@
 package com.hazmelaucb.ms_report.dto;
 
+import java.time.LocalDateTime;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
-import java.time.LocalDateTime;
 
 @Schema(description = "Objeto de transferencia de datos para reportes de anuncios y perfiles")
 public class ReportDTO {
@@ -19,15 +20,18 @@ public class ReportDTO {
     @Schema(description = "Fecha y hora en que se realizó el reporte")
     private LocalDateTime fecha;
 
+    private Long userId;
+
     // Constructores, getters y setters
 
     public ReportDTO() {}
 
-    public ReportDTO(Long id, String tipo, String descripcion, LocalDateTime fecha) {
+    public ReportDTO(Long id, String tipo, String descripcion, LocalDateTime fecha, Long userId) {
         this.id = id;
         this.tipo = tipo;
         this.descripcion = descripcion;
         this.fecha = fecha;
+        this.userId = userId;
     }
 
     public Long getId() {
@@ -60,5 +64,13 @@ public class ReportDTO {
 
     public void setFecha(LocalDateTime fecha) {
         this.fecha = fecha;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 }

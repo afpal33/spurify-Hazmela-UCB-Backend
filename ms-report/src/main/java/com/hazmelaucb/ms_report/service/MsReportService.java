@@ -1,13 +1,14 @@
 package com.hazmelaucb.ms_report.service;
 
-import com.hazmelaucb.ms_report.model.Report;
-import com.hazmelaucb.ms_report.dto.ReportDTO;
-import com.hazmelaucb.ms_report.repository.ReportRepository;
-import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import org.springframework.stereotype.Service;
+
+import com.hazmelaucb.ms_report.dto.ReportDTO;
+import com.hazmelaucb.ms_report.model.Report;
+import com.hazmelaucb.ms_report.repository.ReportRepository;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -27,7 +28,8 @@ public class MsReportService {
                 report.getId(),
                 report.getTipo(),
                 report.getDescripcion(),
-                report.getFecha()
+                report.getFecha(),
+                report.getUserId()
         );
     }
 
@@ -37,7 +39,8 @@ public class MsReportService {
                 dto.getId(),
                 dto.getTipo(),
                 dto.getDescripcion(),
-                dto.getFecha()
+                dto.getFecha(),
+                dto.getUserId()
         );
     }
 
@@ -59,6 +62,14 @@ public class MsReportService {
     public List<ReportDTO> buscarPorTipo(String tipo) {
         return reportRepository.findAll().stream()
                 .filter(r -> r.getTipo().equalsIgnoreCase(tipo))
+                .map(this::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    // Buscar reportes por userId
+    public List<ReportDTO> buscarPorUserId(Long userId) {
+        return reportRepository.findByUserId(userId)
+                .stream()
                 .map(this::toDTO)
                 .collect(Collectors.toList());
     }
