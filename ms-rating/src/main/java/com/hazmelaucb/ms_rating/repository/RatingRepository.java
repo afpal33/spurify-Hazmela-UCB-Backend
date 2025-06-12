@@ -7,7 +7,8 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface RatingRepository extends JpaRepository<RatingEntity, Long> {
-    List<RatingEntity> findByIdAnuncio(Long idAnuncio);
-    List<RatingEntity> findByIdUsuario(Long idUsuario);
+public interface RatingRepository extends JpaRepository<RatingEntity, String> {
+    List<RatingEntity> findByIdAnuncio(String idAnuncio);
+
+    List<RatingEntity> findByIdUsuario(String idUsuario);
 }

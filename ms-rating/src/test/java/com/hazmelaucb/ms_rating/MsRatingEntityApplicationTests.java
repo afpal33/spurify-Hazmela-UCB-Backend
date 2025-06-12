@@ -47,7 +47,15 @@ class MsRatingEntityApplicationTests {
 	void setUp() {
 		// Registro el módulo para manejar LocalDateTime
 		objectMapper.registerModule(new JavaTimeModule());
-		sampleRating = new RatingRequestDTO(1L, 5L, 10L, 100L, LocalDateTime.now(), LocalDateTime.now());
+		// id, rating, idAnuncio, idUsuario, scoreAssigned, ratedAt, updatedAt
+		sampleRating = new RatingRequestDTO(
+				"asdasdasdasasdasd23", // id_rating (String)
+				5L, // rating (Long)
+				"anuncio123", // idAnuncio (String)
+				"user456", // idUsuario (String)
+				100, // scoreAssigned (Integer)
+				LocalDateTime.now(),
+				LocalDateTime.now());
 	}
 
 	@Test
@@ -56,22 +64,22 @@ class MsRatingEntityApplicationTests {
 		when(ratingService.getAllRatings()).thenReturn(ratings);
 
 		mockMvc.perform(get("/v1/rating")
-						.contentType(MediaType.APPLICATION_JSON)
-						.with(SecurityMockMvcRequestPostProcessors.user("user").password("password").roles("USER"))) // Simulando el usuario autenticado
+				.contentType(MediaType.APPLICATION_JSON)
+				.with(SecurityMockMvcRequestPostProcessors.user("user").password("password").roles("USER")))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$", hasSize(1)))
-				.andExpect(jsonPath("$[0].id", is(sampleRating.getId().intValue())));
+				.andExpect(jsonPath("$[0].id", is(sampleRating.getIdRating())));
 	}
 
 	@Test
 	void getRatingById_ShouldReturnRating() throws Exception {
-		when(ratingService.getRatingById(1L)).thenReturn(sampleRating);
+		when(ratingService.getRatingById("asdasdasdasasdasd23")).thenReturn(sampleRating);
 
-		mockMvc.perform(get("/v1/rating/1")
-						.contentType(MediaType.APPLICATION_JSON)
-						.with(SecurityMockMvcRequestPostProcessors.user("user").password("password").roles("USER"))) // Simulando el usuario autenticado
+		mockMvc.perform(get("/v1/rating/asdasdasdasasdasd23")
+				.contentType(MediaType.APPLICATION_JSON)
+				.with(SecurityMockMvcRequestPostProcessors.user("user").password("password").roles("USER")))
 				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.id", is(sampleRating.getId().intValue())));
+				.andExpect(jsonPath("$.id", is(sampleRating.getIdRating())));
 	}
 
 	@Test
@@ -81,33 +89,33 @@ class MsRatingEntityApplicationTests {
 		String jsonContent = objectMapper.writeValueAsString(sampleRating);
 
 		mockMvc.perform(post("/v1/rating")
-						.contentType(MediaType.APPLICATION_JSON)
-						.content(jsonContent)
-						.with(SecurityMockMvcRequestPostProcessors.user("user").password("password").roles("USER"))) // Simulando el usuario autenticado
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(jsonContent)
+				.with(SecurityMockMvcRequestPostProcessors.user("user").password("password").roles("USER")))
 				.andExpect(status().isCreated())
-				.andExpect(jsonPath("$.id", is(sampleRating.getId().intValue())));
+				.andExpect(jsonPath("$.id", is(sampleRating.getIdRating())));
 	}
 
 	@Test
 	void updateRating_ShouldReturnUpdatedRating() throws Exception {
-		when(ratingService.updateRating(eq(1L), any(RatingRequestDTO.class))).thenReturn(sampleRating);
+		when(ratingService.updateRating(eq("1"), any(RatingRequestDTO.class))).thenReturn(sampleRating);
 
 		String jsonContent = objectMapper.writeValueAsString(sampleRating);
 
 		mockMvc.perform(put("/v1/rating/1")
-						.contentType(MediaType.APPLICATION_JSON)
-						.content(jsonContent)
-						.with(SecurityMockMvcRequestPostProcessors.user("user").password("password").roles("USER"))) // Simulando el usuario autenticado
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(jsonContent)
+				.with(SecurityMockMvcRequestPostProcessors.user("user").password("password").roles("USER")))
 				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.id", is(sampleRating.getId().intValue())));
+				.andExpect(jsonPath("$.id", is(sampleRating.getIdRating())));
 	}
 
 	@Test
 	void deleteRating_ShouldReturnNoContent() throws Exception {
-		when(ratingService.deleteRating(1L)).thenReturn(true);
+		when(ratingService.deleteRating("1")).thenReturn(true);
 
 		mockMvc.perform(delete("/v1/rating/1")
-						.with(SecurityMockMvcRequestPostProcessors.user("user").password("password").roles("USER"))) // Simulando el usuario autenticado
+				.with(SecurityMockMvcRequestPostProcessors.user("user").password("password").roles("USER")))
 				.andExpect(status().isNoContent());
 	}
 }

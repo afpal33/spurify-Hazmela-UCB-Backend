@@ -13,13 +13,13 @@ public class RatingAuditoriaEntity {
 
     @ManyToOne
     @JoinColumn(name = "rating_id", nullable = false)
-    private RatingEntity rating;
+    private String rating;
 
     @Column(name = "anuncio_id", nullable = false)
-    private Long anuncioId;
+    private String anuncioId;
 
     @Column(name = "user_id", nullable = false)
-    private Long userId;
+    private String userId;
 
     @Column(name = "cambio", length = 500)
     private String cambio;
@@ -27,7 +27,8 @@ public class RatingAuditoriaEntity {
     @Column(name = "fecha_cambio", nullable = false)
     private LocalDateTime fechaCambio;
 
-    public RatingAuditoriaEntity(LocalDateTime fechaCambio, String cambio, Long userId, Long anuncioId, RatingEntity rating, Integer id) {
+    public RatingAuditoriaEntity(LocalDateTime fechaCambio, String cambio, String userId, String anuncioId,
+            String rating, Integer id) {
         this.fechaCambio = fechaCambio;
         this.cambio = cambio;
         this.userId = userId;
@@ -44,27 +45,27 @@ public class RatingAuditoriaEntity {
         this.id = id;
     }
 
-    public RatingEntity getRating() {
+    public String getRating() {
         return rating;
     }
 
-    public void setRating(RatingEntity rating) {
+    public void setRating(String rating) {
         this.rating = rating;
     }
 
-    public Long getAnuncioId() {
+    public String getAnuncioId() {
         return anuncioId;
     }
 
-    public void setAnuncioId(Long anuncioId) {
+    public void setAnuncioId(String anuncioId) {
         this.anuncioId = anuncioId;
     }
 
-    public Long getUserId() {
+    public String getUserId() {
         return userId;
     }
 
-    public void setUserId(Long userId) {
+    public void setUserId(String userId) {
         this.userId = userId;
     }
 

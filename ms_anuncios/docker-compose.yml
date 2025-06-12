@@ -1,32 +1,32 @@
-version: '3.8'
+version: "3.8"
 
 services:
   db-anuncios:
     image: postgres:15
     container_name: db-anuncios
     environment:
-      POSTGRES_DB: anuncios_db             # Nombre de la BD
-      POSTGRES_USER: postgres              # Usuario de la BD
-      POSTGRES_PASSWORD: 1590PPL           # Contraseña de la BD
+      POSTGRES_DB: anuncios_db # Nombre de la BD
+      POSTGRES_USER: postgres # Usuario de la BD
+      POSTGRES_PASSWORD: 1590PPL # Contraseña de la BD
     ports:
-      - "5432:5432"
+      - "5433:5433"
     networks:
       - anuncios-net
     volumes:
-      - pgdata_anuncios:/var/lib/postgresql/data    # Persiste datos aunque reinicies
-      - ./dbAnuncios.sql:/docker-entrypoint-initdb.d/dbAnuncios.sql    # Script de inicialización
+      - pgdata_anuncios:/var/lib/postgresql/data # Persiste datos aunque reinicies
+      - ./dbAnuncios.sql:/docker-entrypoint-initdb.d/dbAnuncios.sql # Script de inicialización
 
   ms-anuncios:
-    build: .                               # Construye usando tu Dockerfile local
+    build: . # Construye usando tu Dockerfile local
     container_name: ms-anuncios
     depends_on:
-      - db-anuncios                        # Espera que PostgreSQL esté listo
+      - db-anuncios # Espera que PostgreSQL esté listo
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db-anuncios:5432/anuncios_db
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: 1590PPL
     ports:
-      - "7005:7005"                        # Puerto local : puerto interno
+      - "7005:7005" # Puerto local : puerto interno
     networks:
       - anuncios-net
 

@@ -5,9 +5,9 @@ BEGIN;
 
 CREATE TABLE IF NOT EXISTS public.rating
 (
-    id_rating serial NOT NULL,
-    user_id integer,          -- Usuario que califica
-    id_anuncio integer,
+    id_rating varchar(100) NOT NULL,
+    user_id varchar(100),         -- Usuario que califica
+    id_anuncio varchar(100) NOT NULL,  -- Anuncio que se califica
     rating integer,           -- La calificación dada
     score_assigned integer,   -- El puntaje asignado al usuario calificado
     rated_at timestamp with time zone NOT NULL,
@@ -18,9 +18,9 @@ CREATE TABLE IF NOT EXISTS public.rating
 CREATE TABLE IF NOT EXISTS public.rating_auditoria
 (
     id_rau serial NOT NULL,
-    rating_id integer,
-    anuncio_id integer,
-    user_id integer,
+    rating_id varchar(100) NOT NULL,  -- ID de la calificación que se audita
+    anuncio_id varchar(100),
+    user_id varchar(100),
     cambio character varying(500) COLLATE pg_catalog."default",
     fecha_cambio timestamp with time zone NOT NULL,
     CONSTRAINT rating_auditoria_pkey PRIMARY KEY (id_rau)

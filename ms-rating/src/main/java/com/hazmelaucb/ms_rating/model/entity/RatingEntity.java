@@ -8,15 +8,14 @@ import java.time.LocalDateTime;
 @Table(name = "rating")
 public class RatingEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_rating")
-    private Long idRating;
+    @Column(name = "id_rating", nullable = false)
+    private String idRating;
 
     @Column(name = "id_anuncio", nullable = false)
-    private Long idAnuncio;
+    private String idAnuncio;
 
-    @Column(name = "user_id", nullable = false)
-    private Long idUsuario;
+    @Column(name = "user_id", nullable = false, length = 100)
+    private String idUsuario;
 
     @Column(name = "rating", nullable = false)
     private Long rating;
@@ -30,7 +29,7 @@ public class RatingEntity {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
-    public RatingEntity(Long idRating, Long idAnuncio, Long idUsuario, Long rating, Integer scoreAssigned,
+    public RatingEntity(String idRating, String idAnuncio, String idUsuario, Long rating, Integer scoreAssigned,
             LocalDateTime ratedAt, LocalDateTime updatedAt) {
         this.idRating = idRating;
         this.idAnuncio = idAnuncio;
@@ -45,27 +44,27 @@ public class RatingEntity {
 
     }
 
-    public Long getIdRating() {
+    public String getIdRating() {
         return idRating;
     }
 
-    public void setIdRating(Long idRating) {
+    public void setIdRating(String idRating) {
         this.idRating = idRating;
     }
 
-    public Long getIdAnuncio() {
+    public String getIdAnuncio() {
         return idAnuncio;
     }
 
-    public void setIdAnuncio(Long idAnuncio) {
+    public void setIdAnuncio(String idAnuncio) {
         this.idAnuncio = idAnuncio;
     }
 
-    public Long getIdUsuario() {
+    public String getIdUsuario() {
         return idUsuario;
     }
 
-    public void setIdUsuario(Long idUsuario) {
+    public void setIdUsuario(String idUsuario) {
         this.idUsuario = idUsuario;
     }
 

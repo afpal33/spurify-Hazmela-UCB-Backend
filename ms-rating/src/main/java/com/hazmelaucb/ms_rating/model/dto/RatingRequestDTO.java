@@ -7,10 +7,10 @@ import java.time.LocalDateTime;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class RatingRequestDTO {
-    private Long id;
+    private String idRating; // Cambiado de Long a String
     private Long rating;
-    private Long idAnuncio;
-    private Long idUsuario;
+    private String idAnuncio;
+    private String idUsuario;
     private Integer scoreAssigned;
 
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
@@ -23,21 +23,19 @@ public class RatingRequestDTO {
     public RatingRequestDTO() {
     }
 
-    // Constructor for creating new ratings (without scoreAssigned)
-    public RatingRequestDTO(Long id, Long rating, Long idAnuncio, Long idUsuario,
+    // Constructor para crear nuevos ratings (sin scoreAssigned)
+    public RatingRequestDTO(String idRating, Long rating, String idAnuncio, String idUsuario,
             LocalDateTime ratedAt, LocalDateTime updatedAt) {
-        this.id = id;
+        this.idRating = idRating;
         this.rating = rating;
         this.idAnuncio = idAnuncio;
         this.idUsuario = idUsuario;
-        this.ratedAt = ratedAt;
-        this.updatedAt = updatedAt;
     }
 
-    // Constructor for retrieving existing ratings (with scoreAssigned)
-    public RatingRequestDTO(Long id, Long rating, Long idAnuncio, Long idUsuario, Integer scoreAssigned,
+    // Constructor para recuperar ratings existentes (con scoreAssigned)
+    public RatingRequestDTO(String idRating, Long rating, String idAnuncio, String idUsuario, Integer scoreAssigned,
             LocalDateTime ratedAt, LocalDateTime updatedAt) {
-        this.id = id;
+        this.idRating = idRating;
         this.rating = rating;
         this.idAnuncio = idAnuncio;
         this.idUsuario = idUsuario;
@@ -48,12 +46,12 @@ public class RatingRequestDTO {
 
     // Getters and setters
 
-    public Long getId() {
-        return id;
+    public String getIdRating() {
+        return idRating;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setIdRating(String idRating) {
+        this.idRating = idRating;
     }
 
     public Long getRating() {
@@ -64,19 +62,19 @@ public class RatingRequestDTO {
         this.rating = rating;
     }
 
-    public Long getIdAnuncio() {
+    public String getIdAnuncio() {
         return idAnuncio;
     }
 
-    public void setIdAnuncio(Long idAnuncio) {
+    public void setIdAnuncio(String idAnuncio) {
         this.idAnuncio = idAnuncio;
     }
 
-    public Long getIdUsuario() {
+    public String getIdUsuario() {
         return idUsuario;
     }
 
-    public void setIdUsuario(Long idUsuario) {
+    public void setIdUsuario(String idUsuario) {
         this.idUsuario = idUsuario;
     }
 

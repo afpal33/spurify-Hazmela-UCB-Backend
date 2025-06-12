@@ -47,7 +47,7 @@ public class RatingController {
             @ApiResponse(responseCode = "404", description = "${api.responseCodes.notFound.description}") })
     @GetMapping(value = "/{id}", produces = "application/json")
     public ResponseEntity<RatingRequestDTO> getRatingById(
-            @Parameter(description = "${api.rating.get-rating-by-id.parameters.id}", required = true) @PathVariable("id") Long id) {
+            @Parameter(description = "${api.rating.get-rating-by-id.parameters.id}", required = true) @PathVariable("id") String id) {
         LOGGER.info("Obteniendo calificación con id: {}", id);
 
         RatingRequestDTO rating = ratingService.getRatingById(id);
@@ -56,7 +56,7 @@ public class RatingController {
 
     @Operation(summary = "${api.rating.get-ratings-by-user-id.description}", description = "${api.rating.get-ratings-by-user-id.notes}")
     @GetMapping(value = "/user/{userId}", produces = "application/json")
-    public ResponseEntity<List<RatingRequestDTO>> getRatingsByUserId(@PathVariable Long userId) {
+    public ResponseEntity<List<RatingRequestDTO>> getRatingsByUserId(@PathVariable String userId) {
         LOGGER.info("Obteniendo calificaciones del usuario con id: {}", userId);
 
         List<RatingRequestDTO> ratings = ratingService.getRatingsByUserId(userId);
@@ -83,7 +83,7 @@ public class RatingController {
 
     @Operation(summary = "${api.rating.update-rating.description}", description = "Actualiza una calificación existente. El rating debe estar entre 1-5 estrellas. El score_assigned (0-100 puntos) se recalculará automáticamente y se incluirá en la respuesta.")
     @PutMapping(value = "/{id}", produces = "application/json", consumes = "application/json")
-    public ResponseEntity<RatingRequestDTO> updateRating(@PathVariable Long id,
+    public ResponseEntity<RatingRequestDTO> updateRating(@PathVariable String id,
             @RequestBody RatingRequestDTO ratingRequestDTO) {
         LOGGER.info("Actualizando calificación con id: {}", id);
 
@@ -93,7 +93,7 @@ public class RatingController {
 
     @Operation(summary = "${api.rating.delete-rating.description}", description = "${api.rating.delete-rating.notes}")
     @DeleteMapping(value = "/{id}")
-    public ResponseEntity<Void> deleteRating(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteRating(@PathVariable String id) {
         LOGGER.info("Eliminando calificación con id: {}", id);
 
         boolean isDeleted = ratingService.deleteRating(id);
