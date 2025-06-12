@@ -88,4 +88,18 @@ public class StudentController {
         List<StudentDTO> dtos = studentBL.getAllStudents();
         return ResponseEntity.ok(dtos);
     }
+
+    @Operation(summary = "Obtener estudiante por email", description = "Retorna los datos del estudiante correspondiente al email dado.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Estudiante encontrado"),
+            @ApiResponse(responseCode = "404", description = "Estudiante no encontrado")
+    })
+    @GetMapping("/by-email")
+    public ResponseEntity<StudentDTO> getStudentByEmail(
+            @Parameter(description = "Email del estudiante", required = true)
+            @RequestParam("email") String email) {
+        StudentDTO dto = studentBL.getStudentByEmail(email);
+        return ResponseEntity.ok(dto);
+    }
+
 }

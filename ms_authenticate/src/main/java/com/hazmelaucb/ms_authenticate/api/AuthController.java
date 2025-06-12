@@ -7,6 +7,7 @@ import com.hazmelaucb.ms_authenticate.dao.UserRepository;
 import com.hazmelaucb.ms_authenticate.dto.AuthRequest;
 import com.hazmelaucb.ms_authenticate.dto.AuthResponse;
 import com.hazmelaucb.ms_authenticate.dto.RegisterRequest;
+import com.hazmelaucb.ms_authenticate.dto.RegisterResponse;
 import com.hazmelaucb.ms_authenticate.entity.RoleEntity;
 import com.hazmelaucb.ms_authenticate.entity.UserEntity;
 import com.hazmelaucb.ms_authenticate.security.JwtTokenProvider;
@@ -54,9 +55,10 @@ public class AuthController {
             @ApiResponse(responseCode = "409", description = "${api.responseCodes.conflict.description}")
     })
     @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody RegisterRequest request) {
-        authService.register(request);
-        return ResponseEntity.ok("Usuario registrado exitosamente");
+    public ResponseEntity<RegisterResponse> register(@RequestBody RegisterRequest request) {
+        UserEntity newUser = authService.register(request);
+        RegisterResponse response = new RegisterResponse("Usuario registrado exitosamente", newUser.getId().toString());
+        return ResponseEntity.ok(response);
     }
 
     @Operation(summary = "${api.auth.refreshToken.description}", description = "${api.auth.refreshToken.notes}")

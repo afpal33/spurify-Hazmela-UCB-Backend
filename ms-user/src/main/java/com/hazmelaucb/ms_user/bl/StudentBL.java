@@ -47,6 +47,7 @@ public class StudentBL {
 
         // Crear entidad User
         User user = new User();
+        user.setUserId(studentDTO.getUserId());
         user.setFirstName(studentDTO.getFirstName());
         user.setLastName(studentDTO.getLastName());
         user.setEmail(studentDTO.getEmail());
@@ -191,4 +192,11 @@ public class StudentBL {
         dto.setCompleteProfile(student.getCompleteProfile());
         return dto;
     }
+
+    public StudentDTO getStudentByEmail(String email) {
+        Student student = studentRepository.findByUserEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("Estudiante no encontrado con el email: " + email));
+        return convertStudentToDTO(student);
+    }
+
 }
